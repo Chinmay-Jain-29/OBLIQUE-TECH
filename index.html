@@ -1,0 +1,3025 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ObliqueTech — See Business Differently | Industrial Systems & Applied AI</title>
+  <meta name="description" content="ObliqueTech engineers mission-critical distributed systems, deterministic pgvector RAG pipelines, and high-density digital software with sub-50ms P95 latency commitments.">
+  <meta name="keywords" content="Distributed Systems, Cloud Architecture, pgvector, Applied AI, Linear Design, Edge Computing, Strangler-Fig, Go, Cloudflare">
+  <meta name="theme-color" content="#060709">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ObliqueTech — See Business Differently">
+  <meta property="og:description" content="Hardened distributed infrastructure, deterministic AI pipelines, and industrial digital products.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Inter, JetBrains Mono, Syne -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              void: '#060709',          // Primary background: Deep matte obsidian
+              dark: '#0B0D12',          // Secondary background: Charcoal substrate
+              surface: '#11141C',       // Card surface: High-density slate
+              elevated: '#171B26',      // Hover / elevated layer
+              border: '#232838',        // Hairline boundary (1px solid)
+              borderHover: '#3A4259',   // Reactive border state
+              gold: '#D4AF37',          // Accent 1: Precision metallic gold (Clarity & Rigor)
+              goldMuted: '#A38424',     // Subdued metallic gold
+              blue: '#00D2FF',          // Accent 2: High-throughput telemetry cyan/blue
+              cyan: '#06B6D4',          // Accent 3: Distributed mesh cyan
+              violet: '#7C3AED',        // Accent 4: Applied AI / Vector pipeline violet
+              emerald: '#10B981',       // System health / SLA operational green
+              mutedText: '#8F9CAE'      // High-contrast secondary typography
+            }
+          },
+          fontFamily: {
+            sans: ['"Inter"', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+            display: ['"Syne"', '"Inter"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- GSAP 3 & Lucide Icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Industrial Engineering CSS -->
+  <style>
+    /* Precision 32px Hairline Tech Grid */
+    .tech-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    }
+    .light .tech-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+    }
+
+    /* Linear-Style Spotlight Card Glow via CSS Variables */
+    .spotlight-card {
+      position: relative;
+      background-color: #11141C;
+      border: 1px solid #232838;
+      overflow: hidden;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .light .spotlight-card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+    .spotlight-card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: radial-gradient(420px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(0, 210, 255, 0.28), transparent 40%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .spotlight-card:hover {
+      border-color: #3A4259;
+    }
+    .light .spotlight-card:hover {
+      border-color: #cbd5e1;
+    }
+
+    /* Custom Industrial Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060709;
+    }
+    .light ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232838;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #D4AF37;
+    }
+
+    /* Micro Monospace Tag Accent */
+    .micro-tag {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+    }
+
+    /* Scanline overlay effect for terminal */
+    .terminal-scanlines {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+    }
+
+    /* Pulse beacon */
+    @keyframes beacon-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+    .beacon-active {
+      animation: beacon-pulse 2.2s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-brand-void text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-gold selection:text-brand-void transition-colors duration-200">
+
+  <!-- TOP STATUS TICKER & TELEMETRY BEACON -->
+  <div class="border-b border-brand-border bg-brand-dark/90 backdrop-blur text-xs font-mono py-1.5 px-4 z-40 sticky top-0 flex items-center justify-between overflow-x-auto whitespace-nowrap">
+    <div class="flex items-center space-x-6 text-[11px] text-brand-mutedText">
+      <div class="flex items-center space-x-2">
+        <span class="relative flex h-2 w-2">
+          <span class="beacon-active absolute inline-flex h-full w-full rounded-full bg-brand-emerald opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-emerald"></span>
+        </span>
+        <span class="text-brand-emerald font-semibold">ALL EDGE NODES NOMINAL</span>
+      </div>
+      <div class="hidden sm:inline-flex items-center space-x-1.5">
+        <span class="text-slate-500">INGRESS P95:</span>
+        <span class="text-brand-blue font-mono" id="telemetry-p95">38.2ms</span>
+      </div>
+      <div class="hidden md:inline-flex items-center space-x-1.5">
+        <span class="text-slate-500">ACTIVE REGIONS:</span>
+        <span class="text-slate-300">14 POPs (ANYCAST)</span>
+      </div>
+      <div class="hidden lg:inline-flex items-center space-x-1.5">
+        <span class="text-slate-500">SECURITY:</span>
+        <span class="text-brand-gold">SOC-2 TYPE II READY • RLS ENFORCED</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4 text-[11px]">
+      <button onclick="openCommandPalette()" class="text-brand-mutedText hover:text-white flex items-center space-x-1 bg-brand-surface px-2 py-0.5 rounded border border-brand-border">
+        <span>⌘K Command Palette</span>
+      </button>
+      <button id="theme-toggle" onclick="toggleTheme()" class="text-brand-mutedText hover:text-white px-2 py-0.5 rounded border border-brand-border">
+        <span id="theme-label">LIGHT</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN NAVIGATION HEADER -->
+  <header class="border-b border-brand-border bg-brand-void/90 backdrop-blur-md sticky top-[29px] z-30 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- LOGO: Mathematical Oblique Mark -->
+      <a href="#/" class="flex items-center space-x-3 group">
+        <div class="w-9 h-9 bg-brand-surface border border-brand-border rounded flex items-center justify-center relative overflow-hidden group-hover:border-brand-gold transition-colors">
+          <svg class="w-5 h-5 text-brand-gold transform -rotate-12 group-hover:rotate-0 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="6" y1="20" x2="18" y2="4"></line>
+            <circle cx="6" cy="20" r="2" fill="currentColor"></circle>
+            <circle cx="18" cy="4" r="2" fill="currentColor"></circle>
+          </svg>
+          <div class="absolute inset-0 bg-brand-gold/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center space-x-1.5">
+            <span class="font-display font-bold text-lg tracking-wider text-white uppercase">Oblique<span class="text-brand-gold">Tech</span></span>
+            <span class="bg-brand-border text-[9px] font-mono px-1 py-0.2 rounded text-brand-blue">v2.6</span>
+          </div>
+          <span class="text-[9.5px] font-mono tracking-widest text-brand-mutedText -mt-0.5">SEE BUSINESS DIFFERENTLY.</span>
+        </div>
+      </a>
+
+      <!-- DESKTOP NAV -->
+      <nav class="hidden md:flex items-center space-x-1 text-sm font-medium">
+        <a href="#/services" class="px-3 py-1.5 text-brand-mutedText hover:text-white hover:bg-brand-surface rounded transition-colors" data-nav="services">Services (RFC)</a>
+        <a href="#/portfolio" class="px-3 py-1.5 text-brand-mutedText hover:text-white hover:bg-brand-surface rounded transition-colors" data-nav="portfolio">Portfolio</a>
+        <a href="#/about" class="px-3 py-1.5 text-brand-mutedText hover:text-white hover:bg-brand-surface rounded transition-colors" data-nav="about">Origin & Manifesto</a>
+        <a href="#/insights" class="px-3 py-1.5 text-brand-mutedText hover:text-white hover:bg-brand-surface rounded transition-colors" data-nav="insights">Whitepapers</a>
+        <a href="#/faq" class="px-3 py-1.5 text-brand-mutedText hover:text-white hover:bg-brand-surface rounded transition-colors" data-nav="faq">Protocols</a>
+        <a href="#/admin" class="px-3 py-1.5 text-brand-mutedText hover:text-brand-gold hover:bg-brand-surface rounded transition-colors flex items-center space-x-1" data-nav="admin">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-gold"></span>
+          <span>Admin DB</span>
+        </a>
+      </nav>
+
+      <!-- RIGHT CTA ACTIONS -->
+      <div class="flex items-center space-x-3">
+        <button onclick="openDiscoveryModal()" class="hidden sm:inline-flex items-center space-x-2 text-xs font-mono text-brand-mutedText hover:text-white px-3 py-2 rounded border border-brand-border hover:border-brand-borderHover transition-colors">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-blue"></i>
+          <span>Schedule Discovery</span>
+        </button>
+
+        <a href="#/start-project" class="magnetic-btn inline-flex items-center space-x-2 bg-white text-brand-void font-semibold text-xs px-4 py-2 rounded hover:bg-brand-gold hover:text-brand-void transition-colors shadow-sm">
+          <span>Start a Project</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+        </a>
+
+        <!-- Mobile menu toggle button -->
+        <button onclick="toggleMobileNav()" class="md:hidden p-2 text-brand-mutedText hover:text-white border border-brand-border rounded">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- MOBILE NAVIGATION DROPDOWN -->
+    <div id="mobile-nav" class="hidden md:hidden border-t border-brand-border bg-brand-dark px-4 pt-3 pb-5 space-y-2 text-sm font-mono">
+      <a href="#/" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-slate-200 hover:bg-brand-surface">// 00. OVERVIEW</a>
+      <a href="#/services" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-slate-200 hover:bg-brand-surface">// 01. SERVICES & RFCs</a>
+      <a href="#/portfolio" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-slate-200 hover:bg-brand-surface">// 02. VERIFIED DEPLOYMENTS</a>
+      <a href="#/about" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-slate-200 hover:bg-brand-surface">// 03. ORIGIN MANIFESTO</a>
+      <a href="#/insights" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-slate-200 hover:bg-brand-surface">// 04. WHITEPAPERS</a>
+      <a href="#/faq" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-slate-200 hover:bg-brand-surface">// 05. PROTOCOLS & SLA</a>
+      <a href="#/start-project" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-brand-gold font-semibold hover:bg-brand-surface">// 06. SPECIFICATION ENGINE</a>
+      <a href="#/admin" onclick="closeMobileNav()" class="block px-3 py-2 rounded text-brand-blue hover:bg-brand-surface">// 07. ADMIN DB PORTAL</a>
+      <div class="pt-2 border-t border-brand-border flex justify-between text-xs">
+        <button onclick="openDiscoveryModal(); closeMobileNav()" class="text-brand-cyan">Schedule Call</button>
+        <button onclick="openDaemon(); closeMobileNav()" class="text-brand-emerald">Launch AI Daemon</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP ROUTER CONTAINER -->
+  <main id="app-root" class="flex-grow flex flex-col relative tech-grid min-h-[calc(100vh-140px)]">
+    <!-- Dynamic View Loaded Here via Router -->
+  </main>
+
+  <!-- INDUSTRIAL FOOTER -->
+  <footer class="border-t border-brand-border bg-brand-dark text-brand-mutedText text-xs font-mono py-12 px-4 sm:px-6 lg:px-8 z-20">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8">
+      <!-- Brand & Mission -->
+      <div class="md:col-span-2 space-y-4">
+        <div class="flex items-center space-x-2">
+          <div class="w-6 h-6 bg-brand-surface border border-brand-border rounded flex items-center justify-center">
+            <span class="text-brand-gold font-bold text-xs">/</span>
+          </div>
+          <span class="font-display font-bold text-white tracking-wider text-base">OBLIQUE<span class="text-brand-gold">TECH</span></span>
+        </div>
+        <p class="text-sm leading-relaxed text-slate-400 font-sans max-w-sm">
+          Applied systems engineering, edge-routed microservices, and deterministic pgvector AI pipelines. Refusing the crowded linear path to engineer unfair technical advantages for modern enterprises.
+        </p>
+        <div class="text-[11px] text-slate-500 space-y-1">
+          <div>TOPOLOGY: 14 Global Edge Anycast POPs</div>
+          <div>STATUS: 3 In Production • 2 In Active Bench Testing</div>
+          <div>COORDINATES: Global Distributed Lab [Founded 2024]</div>
+        </div>
+      </div>
+
+      <!-- Quick Systems Links -->
+      <div class="space-y-3">
+        <div class="text-white font-semibold tracking-wider text-xs">// ARCHITECTURE</div>
+        <ul class="space-y-2">
+          <li><a href="#/services/web-development" class="hover:text-white transition-colors">Distributed Web Mesh</a></li>
+          <li><a href="#/services/ai-ml" class="hover:text-white transition-colors">pgvector AI & RAG</a></li>
+          <li><a href="#/services/it-consulting" class="hover:text-white transition-colors">Strangler-Fig Modernization</a></li>
+          <li><a href="#/services/ui-ux" class="hover:text-white transition-colors">Industrial Product UI</a></li>
+          <li><a href="#/services/mobile" class="hover:text-white transition-colors">Local-First Mobile</a></li>
+        </ul>
+      </div>
+
+      <!-- Deep Dive -->
+      <div class="space-y-3">
+        <div class="text-white font-semibold tracking-wider text-xs">// VERIFIED PROOF</div>
+        <ul class="space-y-2">
+          <li><a href="#/portfolio/distributed-fintech-core" class="hover:text-white transition-colors">ApexPay 18.4ms Core</a></li>
+          <li><a href="#/portfolio/neural-clinical-rag" class="hover:text-white transition-colors">AegisHealth Clinical RAG</a></li>
+          <li><a href="#/portfolio/logistics-mesh-erp" class="hover:text-white transition-colors">Vanguard 1.2M req/s IoT</a></li>
+          <li><a href="#/portfolio" class="hover:text-white transition-colors">Deployment Archive (5 Cases)</a></li>
+          <li><a href="#/about" class="hover:text-white transition-colors">Student Origin Manifesto</a></li>
+        </ul>
+      </div>
+
+      <!-- Protocols & Ingestion -->
+      <div class="space-y-3">
+        <div class="text-white font-semibold tracking-wider text-xs">// GOVERNANCE & PROTOCOLS</div>
+        <ul class="space-y-2">
+          <li><a href="#/faq" class="hover:text-white transition-colors">IP Ownership Transfers</a></li>
+          <li><a href="#/faq" class="hover:text-white transition-colors">SOC-2 & RLS Compliance</a></li>
+          <li><a href="#/faq" class="hover:text-white transition-colors">SLA Performance Guarantees</a></li>
+          <li><a href="#/admin" class="text-brand-gold hover:underline">Database Telemetry & Leads</a></li>
+          <li><button onclick="openDiscoveryModal()" class="text-brand-blue hover:underline">Schedule Discovery Call</button></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright & Mechanical Signature -->
+    <div class="max-w-7xl mx-auto mt-12 pt-6 border-t border-brand-border flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500">
+      <div class="flex items-center space-x-2">
+        <span>© 2026 ObliqueTech Infrastructure Systems LLC. All rights reserved.</span>
+      </div>
+      <div class="mt-2 sm:mt-0 flex items-center space-x-4">
+        <span>COMMIT: <span class="text-brand-gold">sha256:7f3a81e</span></span>
+        <span>LATENCY: <span class="text-brand-emerald">38ms P95 TARGET</span></span>
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="hover:text-white flex items-center space-x-1">
+          <span>TOP</span>
+          <i data-lucide="arrow-up" class="w-3 h-3"></i>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- FLOATING OBLIQUE AI TERMINAL DAEMON (oblique-ai-agent --daemon) -->
+  <!-- ========================================================================= -->
+  <div id="ai-daemon-container" class="fixed bottom-5 right-5 z-50">
+    <!-- Minimized Beacon Button -->
+    <button id="ai-daemon-trigger" onclick="toggleDaemon()" class="group relative flex items-center space-x-2 bg-brand-surface/90 hover:bg-brand-elevated border border-brand-border hover:border-brand-blue px-3.5 py-2.5 rounded-lg shadow-2xl backdrop-blur-md transition-all duration-200">
+      <span class="relative flex h-2.5 w-2.5">
+        <span class="beacon-active absolute inline-flex h-full w-full rounded-full bg-brand-blue opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-blue"></span>
+      </span>
+      <span class="font-mono text-xs font-semibold text-slate-200 group-hover:text-white flex items-center space-x-1.5">
+        <i data-lucide="terminal" class="w-3.5 h-3.5 text-brand-blue"></i>
+        <span>oblique-daemon</span>
+      </span>
+      <span class="text-[9px] font-mono bg-brand-border px-1.5 py-0.5 rounded text-brand-mutedText">v2.6</span>
+    </button>
+
+    <!-- Expanded Terminal Window (Hidden by default) -->
+    <div id="ai-daemon-window" class="hidden absolute bottom-0 right-0 w-[92vw] sm:w-[460px] h-[520px] bg-brand-dark border border-brand-border rounded-xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-xl transition-all">
+      <!-- Terminal Window Bar -->
+      <div class="bg-brand-surface px-4 py-2.5 border-b border-brand-border flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="flex space-x-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500/80 cursor-pointer" onclick="closeDaemon()"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-emerald/80"></span>
+          </div>
+          <span class="text-xs font-mono font-semibold text-slate-300 ml-2 flex items-center space-x-1">
+            <span>oblique-ai-agent --daemon</span>
+            <span class="text-[10px] text-brand-gold bg-brand-gold/10 px-1 rounded">GEMINI 3 READY</span>
+          </span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="promptForApiKey()" title="Configure Gemini API Key" class="text-xs text-brand-mutedText hover:text-brand-gold p-1">
+            <i data-lucide="key" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick="closeDaemon()" class="text-brand-mutedText hover:text-white p-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Terminal Output Scroll Area -->
+      <div id="terminal-logs" class="flex-grow overflow-y-auto p-4 font-mono text-xs space-y-3 terminal-scanlines">
+        <div class="text-slate-500 text-[11px] pb-2 border-b border-brand-border/60">
+          [SYSTEM INIT] Oblique AI Daemon v2.6.4 (arm64-darwin)<br>
+          [SOCKET] Connected to edge cluster pop: FRA-02 (RTT: 14ms)<br>
+          [PERSONA] Senior Systems Advisor & Architectural Telemetry Bot
+        </div>
+
+        <div class="bg-brand-surface/70 border border-brand-border p-3 rounded text-[11.5px] text-slate-300 leading-relaxed">
+          <span class="text-brand-emerald font-semibold">daemon@oblique-edge:~$</span> Welcome. I am the Oblique AI telemetry advisor. I provide mathematically grounded guidance on our distributed edge mesh, deterministic pgvector RAG, and why our engineering student roots give our clients an unfair velocity advantage.
+        </div>
+
+        <!-- Dynamic conversation appends here -->
+      </div>
+
+      <!-- Suggested Quick Query Pills -->
+      <div class="px-3 py-1.5 bg-brand-surface/40 border-t border-brand-border flex items-center space-x-2 overflow-x-auto text-[11px] font-mono">
+        <button onclick="sendQuickQuery('Distributed Stack?')" class="whitespace-nowrap px-2 py-1 bg-brand-surface hover:bg-brand-elevated border border-brand-border rounded text-brand-blue hover:border-brand-blue transition-colors">
+          Distributed Stack?
+        </button>
+        <button onclick="sendQuickQuery('Private AI & RAG?')" class="whitespace-nowrap px-2 py-1 bg-brand-surface hover:bg-brand-elevated border border-brand-border rounded text-brand-violet hover:border-brand-violet transition-colors">
+          Private AI & RAG?
+        </button>
+        <button onclick="sendQuickQuery('Student Origin?')" class="whitespace-nowrap px-2 py-1 bg-brand-surface hover:bg-brand-elevated border border-brand-border rounded text-brand-gold hover:border-brand-gold transition-colors">
+          Student Origin?
+        </button>
+      </div>
+
+      <!-- Terminal Input Command Line -->
+      <div class="p-3 bg-brand-surface border-t border-brand-border">
+        <form id="daemon-form" onsubmit="handleDaemonSubmit(event)" class="flex items-center space-x-2">
+          <span class="text-brand-gold font-mono text-xs select-none">&gt;</span>
+          <input type="text" id="daemon-input" placeholder="Ask systems question or run command (help, bench, routes)..." class="flex-grow bg-brand-dark text-xs font-mono text-white px-2.5 py-1.5 rounded border border-brand-border focus:border-brand-gold focus:outline-none placeholder-slate-500">
+          <button type="submit" class="bg-brand-elevated hover:bg-brand-border px-3 py-1.5 rounded text-white text-xs font-mono flex items-center space-x-1">
+            <i data-lucide="corner-down-left" class="w-3.5 h-3.5"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- GLOBAL COMMAND PALETTE MODAL (⌘K / Ctrl+K) -->
+  <!-- ========================================================================= -->
+  <div id="cmd-palette-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4" onclick="handlePaletteBackdrop(event)">
+    <div class="bg-brand-dark border border-brand-border w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col font-sans" onclick="event.stopPropagation()">
+      <div class="p-4 border-b border-brand-border flex items-center space-x-3 bg-brand-surface">
+        <i data-lucide="search" class="w-5 h-5 text-brand-mutedText"></i>
+        <input type="text" id="cmd-palette-input" oninput="filterCommandPalette(this.value)" placeholder="Type a command, service name, or case study..." class="bg-transparent text-sm text-white focus:outline-none w-full font-mono placeholder-slate-500">
+        <kbd class="text-[10px] font-mono bg-brand-border px-1.5 py-0.5 rounded text-brand-mutedText">ESC</kbd>
+      </div>
+
+      <div id="cmd-results" class="max-h-96 overflow-y-auto p-2 space-y-1 text-sm">
+        <!-- Results populated dynamically -->
+      </div>
+
+      <div class="p-2.5 bg-brand-surface/70 border-t border-brand-border flex items-center justify-between text-[11px] font-mono text-brand-mutedText">
+        <div class="flex items-center space-x-3">
+          <span><kbd class="bg-brand-border px-1 rounded">↑↓</kbd> Navigate</span>
+          <span><kbd class="bg-brand-border px-1 rounded">↵</kbd> Select</span>
+          <span><kbd class="bg-brand-border px-1 rounded">ESC</kbd> Close</span>
+        </div>
+        <span class="text-brand-gold">OBLIQUE-INDEX: 28 NODES</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SCHEDULE ARCHITECTURE DISCOVERY MODAL -->
+  <!-- ========================================================================= -->
+  <div id="discovery-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="handleDiscoveryBackdrop(event)">
+    <div class="bg-brand-dark border border-brand-border w-full max-w-xl rounded-xl shadow-2xl overflow-hidden font-sans" onclick="event.stopPropagation()">
+      <div class="p-5 border-b border-brand-border bg-brand-surface flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded bg-brand-blue/10 border border-brand-blue/30 flex items-center justify-center text-brand-blue">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-white">Schedule Architecture Discovery</h3>
+            <p class="text-xs text-brand-mutedText font-mono">Direct 45-Min Systems Architecture Briefing</p>
+          </div>
+        </div>
+        <button onclick="closeDiscoveryModal()" class="text-brand-mutedText hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleDiscoverySubmit(event)" class="p-6 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-mono text-slate-300 mb-1">YOUR NAME</label>
+            <input type="text" required id="disc-name" placeholder="Alex Mercer" class="w-full bg-brand-surface border border-brand-border rounded px-3 py-2 text-xs text-white focus:border-brand-blue focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-slate-300 mb-1">WORK EMAIL</label>
+            <input type="email" required id="disc-email" placeholder="alex@enterprise.com" class="w-full bg-brand-surface border border-brand-border rounded px-3 py-2 text-xs text-white focus:border-brand-blue focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-slate-300 mb-1">ARCHITECTURAL DOMAIN</label>
+          <select id="disc-domain" class="w-full bg-brand-surface border border-brand-border rounded px-3 py-2 text-xs text-white focus:border-brand-blue focus:outline-none">
+            <option value="Distributed Web & Edge Ingress">Distributed Web & Edge Ingress (Sub-50ms)</option>
+            <option value="Deterministic pgvector RAG Pipeline">Deterministic pgvector RAG Pipeline</option>
+            <option value="Legacy Monolith Strangler-Fig Migration">Legacy Monolith Strangler-Fig Migration</option>
+            <option value="High-Density Industrial SaaS Product Design">High-Density Industrial SaaS Product Design</option>
+            <option value="Offline-First Native Mobile Architecture">Offline-First Native Mobile Architecture</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-slate-300 mb-1">CURRENT BOTTLENECK / PRODUCTION SYSTEM</label>
+          <textarea id="disc-bottleneck" rows="3" required placeholder="Describe current P95 latency issues, database contention, or hallucination rates..." class="w-full bg-brand-surface border border-brand-border rounded px-3 py-2 text-xs text-white focus:border-brand-blue focus:outline-none font-mono"></textarea>
+        </div>
+
+        <div class="bg-brand-surface/60 border border-brand-border p-3 rounded text-[11px] font-mono text-slate-400 flex items-start space-x-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-brand-emerald flex-shrink-0 mt-0.5"></i>
+          <span>Strict NDA Protection. We do not sell vendor SaaS licenses or superficial retainers. You will meet directly with a Principal Systems Architect.</span>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-2">
+          <button type="button" onclick="closeDiscoveryModal()" class="px-4 py-2 text-xs font-mono text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="bg-brand-blue text-brand-void font-semibold text-xs px-5 py-2 rounded hover:bg-brand-blue/90 flex items-center space-x-1.5 transition-colors">
+            <span>Confirm Discovery Call</span>
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- TOAST NOTIFICATION CONTAINER (Zero alert() Calls) -->
+  <!-- ========================================================================= -->
+  <div id="toast-container" class="fixed top-20 right-5 z-50 space-y-2 pointer-events-none max-w-sm w-full"></div>
+
+  <!-- ========================================================================= -->
+  <!-- CORE CLIENT-SIDE SYSTEMS SCRIPT & OBLIQUE DATA STORE -->
+  <!-- ========================================================================= -->
+  <script>
+    /* =======================================================================
+       1. RELATIONAL DATA MODEL: ObliqueDB
+       ======================================================================= */
+    const ObliqueDB = {
+      services: [
+        {
+          id: "web-development",
+          slug: "web-development",
+          tag: "// 01. SYSTEMS & ARCHITECTURE",
+          title: "High-Throughput Web & Distributed Systems",
+          summary: "Modernization of legacy monoliths into distributed edge-routed web services with deterministic sub-50ms P95 latency commitments.",
+          sla: "P95 Latency < 45ms • 99.99% Uptime SLA",
+          problem: "Traditional monolithic frameworks (legacy Rails, unindexed Node threadpools) suffer from blocking event loops, multi-region database lock contention, and multi-second first-contentful paint across transatlantic routes.",
+          solution: "Decoupled edge architecture deploying Cloudflare Workers / Vercel Edge POPs, asynchronous Go/Node workers, isolated multi-region read replicas, and cached micro-frontends with optimistic mutations.",
+          rfc: "RFC-8821 Edge Mesh Specification: Strangler-fig gateway proxy, dynamic Brotli compression, JWT validation at the POP, and deterministic Redis cache-invalidation websockets.",
+          stack: ["TypeScript", "Next.js 15", "Go 1.23", "Cloudflare Workers", "Tailwind CSS", "Redis Edge", "Docker / K8s"],
+          deliverables: [
+            "Edge Gateway & Ingress Topology Configuration",
+            "Zero-Downtime Database Migration Pipeline",
+            "Stateless Micro-frontend Architecture",
+            "Sub-50ms Global Routing Mesh",
+            "Automated Playwright E2E Regression Bench"
+          ]
+        },
+        {
+          id: "ai-ml",
+          slug: "ai-ml",
+          tag: "// 02. APPLIED INTELLIGENCE",
+          title: "Applied AI & Deterministic pgvector RAG",
+          summary: "Enterprise-grade private knowledge retrieval pipelines, custom LLM fine-tuning, and deterministic vector search without hallucinations.",
+          sla: "Embedding Cosine Sim > 0.88 • Retrieval < 35ms",
+          problem: "Off-the-shelf LLM wrappers produce non-deterministic hallucinations, leak proprietary enterprise IP into public training corpuses, and lack cryptographic audit trails for compliance.",
+          solution: "Self-hosted embedding clusters using BAAI/bge models, PostgreSQL `pgvector` with HNSW indexing, reranking via Cohere/Cross-Encoders, and strict Row-Level Security (RLS) partition isolation.",
+          rfc: "RFC-9042 Private Semantic RAG: Chunking algorithms with token-overlap preservation, multi-tenant vector space isolation, contextual compression, and cryptographic prompt logging.",
+          stack: ["Python 3.12", "PyTorch", "PostgreSQL (pgvector / HNSW)", "FastAPI", "Gemini 3 Flash", "Ollama / vLLM", "LangGraph"],
+          deliverables: [
+            "Custom Tokenization & Ingestion Engine",
+            "Multi-Tenant HNSW Vector Indexing Scheme",
+            "Hybrid BM25 + Vector Semantic Search Pipeline",
+            "Deterministic Guardrails & Prompt Firewalls",
+            "Offline Model Fallback & Caching Layer"
+          ]
+        },
+        {
+          id: "it-consulting",
+          slug: "it-consulting",
+          tag: "// 03. INFRASTRUCTURE & MIGRATION",
+          title: "Cloud Topology & Strangler-Fig Modernization",
+          summary: "De-risking legacy migrations through architectural audits, infrastructure-as-code, and zero-downtime database cutovers.",
+          sla: "Zero Unplanned Downtime • SOC-2 Type II Readied",
+          problem: "Enterprise core systems locked in aging on-premise hardware or multi-million-dollar AWS bills caused by unoptimized container sprawl and unindexed relational databases.",
+          solution: "Systematic strangler-fig pattern routing traffic through intelligent reverse proxies while incrementally extracting domain services into serverless or containerized micro-units with Terraform.",
+          rfc: "RFC-7419 Continuous Modernization: Shadow traffic mirroring, dual-write consistency verification, automated rollback triggers, and cost-optimized ARM64 compute profiling.",
+          stack: ["Terraform", "AWS / GCP", "Cloudflare Anycast", "PostgreSQL Aurora", "Kubernetes", "Prometheus & Grafana", "OpenTelemetry"],
+          deliverables: [
+            "System Topology Diagnostic & Cost Audit",
+            "Multi-Cloud Terraform Blueprints",
+            "Shadow-Traffic Mirroring Infrastructure",
+            "Zero-Data-Loss Cutover Runbook",
+            "FinOps Compute Profiling (-42% cost reduction)"
+          ]
+        },
+        {
+          id: "ui-ux",
+          slug: "ui-ux",
+          tag: "// 04. PRODUCT & ERGONOMICS",
+          title: "High-Density Industrial Product Design",
+          summary: "Precision ergonomics, high-information-density control planes, and micro-animated software interfaces engineered for complex operator workflows.",
+          sla: "Interaction Delay < 16ms (60 FPS Native)",
+          problem: "Modern enterprise SaaS suffers from generic low-density templates, sluggish transitions, and excessive visual noise that hampers operator productivity in data-intensive environments.",
+          solution: "Bespoke design systems built on mechanical grids, calibrated contrast tokens, physics-driven GSAP kinetic feedback, and keyboard-first command ergonomics (⌘K).",
+          rfc: "RFC-6104 Ergonomic Density Standards: 8pt baseline sub-grids, monospace data alignment, zero-layout-shift (CLS < 0.01) rendering, and WCAG AAA contrast accessibility.",
+          stack: ["Figma Design Tokens", "Tailwind CSS", "GSAP 3", "Lucide Vector Engine", "Framer Motion Principles", "CSS Custom Properties"],
+          deliverables: [
+            "Comprehensive Tokenized Design System",
+            "Figma Component Architecture & UI Kit",
+            "Interactive Systems Prototype Bench",
+            "Micro-Interaction & Physics Specification",
+            "WCAG AAA Compliance Verification Audit"
+          ]
+        },
+        {
+          id: "mobile",
+          slug: "mobile",
+          tag: "// 05. CLIENT SYSTEMS",
+          title: "Mission-Critical Cross-Platform Mobile",
+          summary: "Offline-first native mobile architectures, background telemetry synchronization, and sub-second cold starts for iOS and Android.",
+          sla: "Cold Start < 650ms • 100% Offline Persistence",
+          problem: "Hybrid mobile applications frequently freeze during network state transitions, drop critical telemetry in low-connectivity environments, and consume excessive battery.",
+          solution: "SQLite local-first storage with optimistic synchronization, background thread serialization in Rust/C++, and hardware-accelerated gesture pipelines.",
+          rfc: "RFC-5210 Offline-First Sync Protocol: Conflict-free Replicated Data Types (CRDTs), exponential backoff jitter, biometric key storage in Apple Secure Enclave / Android Keystore.",
+          stack: ["React Native / Expo", "Rust Native Modules", "SQLite (Local First)", "Swift / Kotlin Bridge", "WebSockets", "Firebase Cloud Messaging"],
+          deliverables: [
+            "Local-First CRDT Sync Engine",
+            "Biometric Vault Integration",
+            "Hardware Accelerated UI Pipeline",
+            "App Store & Play Store Automated CI/CD",
+            "Automated Device Farm E2E Tests"
+          ]
+        }
+      ],
+
+      portfolio: [
+        {
+          id: "distributed-fintech-core",
+          slug: "distributed-fintech-core",
+          tag: "FINTECH & EDGE MESH",
+          title: "ApexPay: Sub-20ms Distributed Settlement Engine",
+          status: "In Production",
+          statusType: "production",
+          client: "Apex Clearing Networks (Global)",
+          metricPrimary: "18.4ms",
+          metricLabel: "Global P95 Transaction Settlement",
+          memoryFootprint: "118 MB Edge Node",
+          problem: "Legacy clearing gateway suffered from centralized lock contention in Frankfurt, leading to 850ms transaction roundtrips for Asia-Pacific trade requests during high-volatility market windows.",
+          architecture: "Distributed multi-region active-active mesh deployed across 14 Cloudflare Edge points-of-presence with Raft consensus over CockroachDB and optimistic Redis locking.",
+          techStack: ["Go", "Cloudflare Workers", "CockroachDB", "Redis Cluster", "Prometheus", "OpenTelemetry"],
+          verifiedResults: [
+            "97.8% latency reduction across APAC (850ms -> 18.4ms)",
+            "$4.2M saved in transatlantic infrastructure egress fees",
+            "100% SLA uptime during Q4 2025 high-frequency volatility spikes"
+          ]
+        },
+        {
+          id: "neural-clinical-rag",
+          slug: "neural-clinical-rag",
+          tag: "APPLIED AI & HEALTHCARE",
+          title: "AegisHealth: Deterministic Clinical RAG Pipeline",
+          status: "In Production",
+          statusType: "production",
+          client: "Aegis Health Systems",
+          metricPrimary: "99.4%",
+          metricLabel: "Citation Accuracy (Zero Hallucinations)",
+          memoryFootprint: "320 MB Vector Node",
+          problem: "Hospital clinical researchers spent 3.5 hours per patient cross-referencing multi-thousand-page oncology trials with electronic health records.",
+          architecture: "Self-hosted HIPAA-compliant pgvector HNSW database indexing 4.2M clinical trial abstracts with Cross-Encoder reranking and strict citation verification.",
+          techStack: ["Python 3.12", "FastAPI", "PostgreSQL (pgvector)", "Gemini 3 Flash", "PyTorch", "Docker RLS"],
+          verifiedResults: [
+            "Query synthesis time reduced from 3.5 hours to 1.8 seconds",
+            "Passed blind double-blind clinical audit with zero hallucination incidents",
+            "SOC-2 Type II and HIPAA certification achieved on day 45"
+          ]
+        },
+        {
+          id: "logistics-mesh-erp",
+          slug: "logistics-mesh-erp",
+          tag: "IOT & DISTRIBUTED SYSTEMS",
+          title: "Vanguard Global: Real-Time Fleet Telemetry Mesh",
+          status: "In Production",
+          statusType: "production",
+          client: "Vanguard Intermodal Freight",
+          metricPrimary: "1.2M req/s",
+          metricLabel: "Throughput Capacity at Sub-8ms",
+          memoryFootprint: "210 MB Cluster Node",
+          problem: "Monolithic Node.js GPS tracking system dropped 14% of container telemetry packets during peak maritime port offloading operations.",
+          architecture: "Event-driven UDP/MQTT ingestion pipeline written in Rust feeding into Apache Kafka and TimescaleDB with automated geofencing triggers.",
+          techStack: ["Rust", "Apache Kafka", "TimescaleDB", "Next.js Control Plane", "WebSockets", "Docker"],
+          verifiedResults: [
+            "Telemetry packet loss dropped from 14% to 0.0001%",
+            "Sub-second vessel arrival calculations for 42 international deep-sea ports",
+            "Operational fuel burn reduced by 6.8% through intelligent route adjustments"
+          ]
+        },
+        {
+          id: "high-frequency-crypto-dex",
+          slug: "high-frequency-crypto-dex",
+          tag: "SYSTEMS & ALGORITHMS",
+          title: "ObliqueDEX: Deterministic Order-Book Matching Engine",
+          status: "Active Bench Testing",
+          statusType: "testing",
+          client: "Institutional Liquidity Group",
+          metricPrimary: "4.2μs",
+          metricLabel: "Microsecond Internal Order Matching",
+          memoryFootprint: "64 MB In-Memory Ring Buffer",
+          problem: "Existing EVM order books face front-running (MEV) and unbounded latency spikes during sudden crypto liquidity cascades.",
+          architecture: "Lock-free LMAX Disruptor pattern written in Go/C++ with ring-buffer memory alignment and zero-alloc serialization.",
+          techStack: ["Go (Lock-free)", "C++ Core", "ZeroMQ", "Disruptor Ring Buffers", "WebSockets"],
+          verifiedResults: [
+            "Simulated 450,000 matches/second with 0 memory allocation GC pauses",
+            "Active soak testing under 10x historical flash-crash volume"
+          ]
+        },
+        {
+          id: "autonomous-supply-chain-agent",
+          slug: "autonomous-supply-chain-agent",
+          tag: "APPLIED AI",
+          title: "NexusAgent: Multi-Agent Procurement Orchestrator",
+          status: "Active Bench Testing",
+          statusType: "testing",
+          client: "Alliance Automotive Tier-1",
+          metricPrimary: "89% Auto-Resolved",
+          metricLabel: "Supply Disruptions Pre-empted",
+          memoryFootprint: "480 MB Container",
+          problem: "Semiconductor supply interruptions took 12 business days to manually identify alternatives, causing automotive assembly line shutdowns.",
+          architecture: "Hierarchical multi-agent framework orchestrating supplier inventory webhooks, pricing fluctuation predictors, and automated RFQ generators.",
+          techStack: ["Python", "LangGraph", "Gemini 3 Flash", "PostgreSQL", "Tailwind CSS Control Plane"],
+          verifiedResults: [
+            "Benchmarked against 5,000 synthetic supply shock scenarios with 98.4% supply chain continuity",
+            "Slated for Q3 2026 enterprise live pilot across 3 continental manufacturing plants"
+          ]
+        }
+      ],
+
+      insights: [
+        {
+          id: "strangler-fig-modernization",
+          slug: "strangler-fig-modernization",
+          tag: "// WHITEPAPER 01 • ARCHITECTURE",
+          title: "The Strangler-Fig Architectural Pattern: De-Risking Monolith Deconstruction",
+          author: "Oblique Systems Engineering Group",
+          date: "August 2025",
+          readTime: "8 min read",
+          summary: "Why big-bang migrations fail 84% of the time, and how incremental proxy interception maintains 100% production uptime while tearing down legacy debt.",
+          body: `
+            <h4 class="text-white font-mono text-base font-semibold mb-3">1. The Anti-Pattern of the "Big Bang" Rewrite</h4>
+            <p class="mb-4 text-slate-300 leading-relaxed">
+              Every seasoned technology executive has witnessed the catastrophic multi-million-dollar failure of a complete greenfield rewrite. When enterprise organizations attempt to rebuild a decade-old monolithic core from scratch, they face a moving target: the production codebase continues to accumulate bug fixes, regulatory changes, and custom client logic while the rewrite team builds in isolation.
+            </p>
+            <h4 class="text-white font-mono text-base font-semibold mb-3">2. The Strangler-Fig Ingress Proxy</h4>
+            <p class="mb-4 text-slate-300 leading-relaxed">
+              Named after the Australian rainforest fig that roots in the canopy and slowly envelops the host tree, the Strangler-Fig pattern introduces an intelligent reverse proxy at the network boundary. Incoming HTTP requests are intercepted at the edge:
+            </p>
+            <div class="bg-brand-surface border border-brand-border p-3 rounded font-mono text-xs text-brand-blue mb-4">
+              [Ingress POP: Cloudflare Anycast]<br>
+              &nbsp;&nbsp;│── path: /api/v2/settlement &nbsp;──► [Go Microservice (18ms)]<br>
+              &nbsp;&nbsp;│── path: /api/v2/auth &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;──► [Isolated Auth Node (12ms)]<br>
+              &nbsp;&nbsp;└── path: /* (Legacy Catch-all)──► [Legacy Rails Monolith (340ms)]
+            </div>
+            <p class="mb-4 text-slate-300 leading-relaxed">
+              By peeling away the highest-contention routes first, we eliminate the database bottlenecks without touching the long tail of low-volume CRUD operations.
+            </p>
+            <h4 class="text-white font-mono text-base font-semibold mb-3">3. Dual-Write Verification & Zero-Downtime Cutovers</h4>
+            <p class="text-slate-300 leading-relaxed">
+              The critical safeguard is shadow traffic mirroring. The proxy sends asynchronous duplicate writes to the new edge datastore and compares outputs cryptographically. When zero divergence is measured across 10,000,000 requests, the read switch is executed with zero downtime.
+            </p>
+          `
+        },
+        {
+          id: "deterministic-pgvector-rag",
+          slug: "deterministic-pgvector-rag",
+          tag: "// WHITEPAPER 02 • APPLIED AI",
+          title: "Eliminating Hallucinations: Deterministic pgvector RAG with Cross-Encoder Reranking",
+          author: "Applied AI Research Lab",
+          date: "November 2025",
+          readTime: "11 min read",
+          summary: "A mathematical breakdown of vector embeddings, HNSW indexing parameters, and why naive RAG pipelines fail in enterprise production.",
+          body: `
+            <h4 class="text-white font-mono text-base font-semibold mb-3">1. The Fallacy of Naive Vector Search</h4>
+            <p class="mb-4 text-slate-300 leading-relaxed">
+              Most commercial AI agencies string together LangChain and an external vector database, pass the top-5 cosine similarity results into an LLM prompt, and claim to have an "Enterprise RAG solution." In production, this architecture breaks down immediately due to semantic drift, cross-tenant data leakage, and lost contextual boundaries.
+            </p>
+            <h4 class="text-white font-mono text-base font-semibold mb-3">2. HNSW Mathematical Rigor in PostgreSQL</h4>
+            <p class="mb-4 text-slate-300 leading-relaxed">
+              We engineer our vector storage directly inside PostgreSQL using the pgvector extension with Hierarchical Navigable Small World (HNSW) graphs. By tuning <code>m = 16</code> and <code>ef_construction = 64</code>, we achieve sub-12ms nearest-neighbor traversals across millions of high-dimensional vectors:
+            </p>
+            <div class="bg-brand-surface border border-brand-border p-3 rounded font-mono text-xs text-brand-emerald mb-4">
+              CREATE INDEX ON document_embeddings <br>
+              USING hnsw (embedding vector_cosine_ops) <br>
+              WITH (m = 16, ef_construction = 64);
+            </div>
+            <h4 class="text-white font-mono text-base font-semibold mb-3">3. Two-Stage Retrieval with Cross-Encoder Reranking</h4>
+            <p class="text-slate-300 leading-relaxed">
+              Cosine similarity is merely stage one. Stage two passes the top 40 candidates through a fine-tuned Cross-Encoder model that evaluates joint token attention between query and passage. The result is verifiable 99.4% citation accuracy and total elimination of speculative hallucinations.
+            </p>
+          `
+        },
+        {
+          id: "engineering-experience-paradox",
+          slug: "engineering-experience-paradox",
+          tag: "// WHITEPAPER 03 • FOUNDING MANIFESTO",
+          title: "Breaking the Junior Experience Paradox: Why We Founded Oblique as an Open Lab",
+          author: "Founding Engineering Team",
+          date: "January 2026",
+          readTime: "6 min read",
+          summary: "The systemic barrier demanding 3+ years experience for entry positions, and how Oblique's open-architecture project lab created an elite talent pipeline.",
+          body: `
+            <h4 class="text-white font-mono text-base font-semibold mb-3">1. The Broken Industry Onboarding Gate</h4>
+            <p class="mb-4 text-slate-300 leading-relaxed">
+              Across global software engineering, a cruel paradox exists: every company demands multi-year production experience for entry-level roles, yet virtually none are willing to grant ambitious engineers the opportunity to acquire it. Brilliant engineering students graduate having written toy algorithms in academic sandboxes, entirely unexposed to high-throughput message queues, zero-downtime database migrations, or real SOC-2 compliance.
+            </p>
+            <h4 class="text-white font-mono text-base font-semibold mb-3">2. The Open-Architecture Project Lab</h4>
+            <p class="mb-4 text-slate-300 leading-relaxed">
+              ObliqueTech was born out of frustration with this status quo. We established Oblique not as a traditional agency, but as an open-architecture project laboratory. We paired top student engineers with veteran systems architects to build real commercial prototypes under brutal production conditions: 48-hour hackathon sprints, simulated DDoS stress-testing, and live edge deployments.
+            </p>
+            <h4 class="text-white font-mono text-base font-semibold mb-3">3. The Unfair Advantage for Global Enterprises</h4>
+            <p class="text-slate-300 leading-relaxed">
+              What began as a grassroots lab evolved into our greatest structural advantage. While traditional consultancies rely on fatigued mid-level generalists billing hours, Oblique brings an unyielding hunger, modern engineering mastery, and an obsessive work ethic. We don't just see business differently—we build systems that conventional teams thought impossible.
+            </p>
+          `
+        }
+      ],
+
+      faqs: [
+        {
+          q: "How does ObliqueTech handle Intellectual Property (IP) and code ownership?",
+          a: "Upon completion and milestone sign-off, 100% of all custom source code, Terraform scripts, database schemas, and architectural documentation transfer cleanly and irrevocably to your enterprise. We do not lock clients into proprietary runtimes or recurring license fees."
+        },
+        {
+          q: "What are your guaranteed SLA targets and operational metrics?",
+          a: "Every engagement carries codified service-level agreements: Sub-50ms P95 API response times, 99.99% infrastructure uptime commitments, and dedicated P1 incident response within 15 minutes via automated PagerDuty edge triggers."
+        },
+        {
+          q: "How do you achieve zero downtime during legacy database migrations?",
+          a: "We execute strict dual-write strangler-fig protocols. The legacy relational database and new distributed cluster run in lockstep synchronization with continuous reconciliation audits. We only execute the DNS cutover after achieving zero divergence across millions of shadowed transactions."
+        },
+        {
+          q: "Can our internal engineering team pair-program or review the architecture?",
+          a: "Yes. In fact, we mandate weekly architectural walkthroughs and transparent PR reviews. We treat our team as an elite embedded strike unit, ensuring your internal engineers master every system nuance before complete operational handover."
+        },
+        {
+          q: "What security and compliance frameworks do you adhere to?",
+          a: "All systems are built to meet or exceed SOC-2 Type II, HIPAA (for healthcare workloads), and ISO-27001 standards. We enforce Row-Level Security (RLS) in databases, KMS hardware-encrypted secrets, and zero-trust IAM role policies."
+        }
+      ],
+
+      inquiries: [
+        {
+          id: "INQ-901",
+          timestamp: "2026-09-07 14:22 UTC",
+          name: "Marcus Vance",
+          email: "m.vance@vanguard-logistics.com",
+          scope: "Distributed Web & Edge Ingress",
+          slaTarget: "<50ms P95",
+          status: "Under Architectural Review",
+          notes: "Need multi-region edge proxy to bypass transatlantic database lock contention."
+        },
+        {
+          id: "INQ-902",
+          timestamp: "2026-09-06 09:15 UTC",
+          name: "Dr. Aris Thorne",
+          email: "thorne@aegishealth.org",
+          scope: "Deterministic pgvector RAG Pipeline",
+          slaTarget: "99.4% Citation Accuracy",
+          status: "Discovery Call Scheduled",
+          notes: "Indexing 1.4M clinical PDF oncology trials with zero hallucinations."
+        },
+        {
+          id: "INQ-903",
+          timestamp: "2026-09-05 18:40 UTC",
+          name: "Elena Rostova",
+          email: "e.rostova@apexfreight.io",
+          scope: "Legacy Monolith Strangler-Fig Migration",
+          slaTarget: "Zero Downtime",
+          status: "Contract RFC Issued",
+          notes: "Migrating core Rails ERP to Go edge mesh over 6-month phased rollout."
+        }
+      ]
+    };
+
+    /* =======================================================================
+       2. CLIENT-SIDE HASH ROUTER
+       ======================================================================= */
+    const routes = {
+      "": renderHomeView,
+      "/": renderHomeView,
+      "/services": renderServicesView,
+      "/portfolio": renderPortfolioView,
+      "/about": renderAboutView,
+      "/insights": renderInsightsView,
+      "/faq": renderFaqView,
+      "/contact": renderContactView,
+      "/start-project": renderStartProjectView,
+      "/admin": renderAdminView
+    };
+
+    function router() {
+      const rawHash = window.location.hash.slice(1) || "/";
+      const cleanHash = rawHash.startsWith("/") ? rawHash : "/" + rawHash;
+      const appRoot = document.getElementById("app-root");
+
+      // Update active nav highlights
+      document.querySelectorAll("[data-nav]").forEach(el => {
+        const navTarget = el.getAttribute("data-nav");
+        if (cleanHash.startsWith("/" + navTarget)) {
+          el.classList.add("text-brand-gold", "bg-brand-surface");
+          el.classList.remove("text-brand-mutedText");
+        } else {
+          el.classList.remove("text-brand-gold", "bg-brand-surface");
+          el.classList.add("text-brand-mutedText");
+        }
+      });
+
+      // Handle Dynamic Slug Routes: #/services/:slug
+      if (cleanHash.startsWith("/services/")) {
+        const slug = cleanHash.replace("/services/", "");
+        renderServiceDetailView(slug);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        reinitIconsAndPhysics();
+        return;
+      }
+
+      // Handle Dynamic Slug Routes: #/portfolio/:slug
+      if (cleanHash.startsWith("/portfolio/")) {
+        const slug = cleanHash.replace("/portfolio/", "");
+        renderPortfolioDetailView(slug);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        reinitIconsAndPhysics();
+        return;
+      }
+
+      // Handle Static Routes
+      const renderFn = routes[cleanHash] || renderNotFoundView;
+      renderFn();
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      reinitIconsAndPhysics();
+    }
+
+    window.addEventListener("hashchange", router);
+    window.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      router();
+      initKeyboardShortcuts();
+      initObliqueCanvas();
+      startTelemetrySimulation();
+    });
+
+    /* =======================================================================
+       3. ROUTE VIEWS IMPLEMENTATION
+       ======================================================================= */
+
+    // ROUTE: #/ (Home, Hero, Bench, Capabilities, Work, Philosophy)
+    function renderHomeView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <!-- HERO SECTION WITH INDUSTRIAL DENSITY -->
+        <section class="relative pt-12 pb-20 px-4 sm:px-6 lg:px-8 border-b border-brand-border overflow-hidden">
+          <!-- Background Mathematical Canvas (Tilted 16deg shear) -->
+          <canvas id="oblique-canvas" class="absolute inset-0 pointer-events-none opacity-40 z-0"></canvas>
+
+          <div class="max-w-7xl mx-auto relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              
+              <!-- Left Hero Text Column -->
+              <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center space-x-2 bg-brand-surface/90 border border-brand-border px-3 py-1 rounded-full text-xs font-mono">
+                  <span class="w-2 h-2 rounded-full bg-brand-gold animate-pulse"></span>
+                  <span class="text-slate-300">INDUSTRIAL ARCHITECTURE SPECIFICATION</span>
+                  <span class="text-brand-gold font-bold">2026.1</span>
+                </div>
+
+                <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.08]">
+                  See Business <br>
+                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-brand-cyan to-brand-gold">
+                    Differently.
+                  </span>
+                </h1>
+
+                <p class="text-base sm:text-lg text-slate-400 max-w-xl font-sans leading-relaxed">
+                  We engineer hardened distributed systems, deterministic pgvector AI pipelines, and high-density digital software for enterprises refusing the crowded linear path.
+                </p>
+
+                <!-- Micro Engineering Metrics Banner -->
+                <div class="grid grid-cols-3 gap-3 py-2 max-w-lg font-mono text-xs">
+                  <div class="bg-brand-surface/70 border border-brand-border p-2.5 rounded">
+                    <div class="text-[10px] text-slate-500">// SLA GUARANTEE</div>
+                    <div class="text-brand-blue font-bold text-sm">Sub-50ms P95</div>
+                  </div>
+                  <div class="bg-brand-surface/70 border border-brand-border p-2.5 rounded">
+                    <div class="text-[10px] text-slate-500">// AI DETERMINISM</div>
+                    <div class="text-brand-emerald font-bold text-sm">99.4% Accuracy</div>
+                  </div>
+                  <div class="bg-brand-surface/70 border border-brand-border p-2.5 rounded">
+                    <div class="text-[10px] text-slate-500">// DEPLOYMENTS</div>
+                    <div class="text-brand-gold font-bold text-sm">3 Live • 2 Bench</div>
+                  </div>
+                </div>
+
+                <!-- CTAs -->
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                  <a href="#/start-project" class="magnetic-btn inline-flex items-center space-x-2 bg-brand-gold text-brand-void font-bold text-sm px-6 py-3.5 rounded hover:bg-yellow-400 transition-colors shadow-lg">
+                    <span>Initialize Project Spec</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  </a>
+
+                  <button onclick="openDiscoveryModal()" class="inline-flex items-center space-x-2 bg-brand-surface hover:bg-brand-elevated text-slate-200 border border-brand-border text-sm px-5 py-3.5 rounded font-mono transition-colors">
+                    <i data-lucide="terminal" class="w-4 h-4 text-brand-blue"></i>
+                    <span>Schedule Architecture Call</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Hero Column: INTERACTIVE ARCHITECTURE BENCH -->
+              <div class="lg:col-span-5">
+                <div class="spotlight-card rounded-xl p-5 shadow-2xl relative">
+                  <div class="flex items-center justify-between pb-4 border-b border-brand-border mb-4">
+                    <div class="flex items-center space-x-2">
+                      <i data-lucide="cpu" class="w-4 h-4 text-brand-blue"></i>
+                      <span class="text-xs font-mono font-bold text-white tracking-wider">SYSTEMS DIAGNOSTIC BENCH</span>
+                    </div>
+                    <span class="text-[10px] font-mono bg-brand-border px-2 py-0.5 rounded text-brand-gold">LIVE HARNESS</span>
+                  </div>
+
+                  <!-- Mode Switcher -->
+                  <div class="bg-brand-void p-1 rounded-lg border border-brand-border flex items-center mb-5 font-mono text-xs">
+                    <button id="bench-mode-monolith" onclick="setBenchMode('monolith')" class="flex-1 py-1.5 rounded text-slate-400 hover:text-white transition-all text-center">
+                      Legacy Monolith
+                    </button>
+                    <button id="bench-mode-oblique" onclick="setBenchMode('oblique')" class="flex-1 py-1.5 rounded bg-brand-blue text-brand-void font-bold transition-all text-center">
+                      Oblique Distributed Mesh
+                    </button>
+                  </div>
+
+                  <!-- Telemetry Metrics Display -->
+                  <div class="space-y-4 font-mono text-xs">
+                    <!-- Layer 1: Edge Gateway -->
+                    <div>
+                      <div class="flex justify-between text-[11px] mb-1">
+                        <span class="text-slate-400">EDGE GATEWAY INGRESS:</span>
+                        <span id="bench-layer1-val" class="text-brand-emerald font-bold">12ms • Cloudflare POP</span>
+                      </div>
+                      <div class="w-full bg-brand-void h-2 rounded overflow-hidden border border-brand-border">
+                        <div id="bench-layer1-bar" class="bg-brand-emerald h-full transition-all duration-500" style="width: 12%;"></div>
+                      </div>
+                    </div>
+
+                    <!-- Layer 2: Microservices / Threadpool -->
+                    <div>
+                      <div class="flex justify-between text-[11px] mb-1">
+                        <span class="text-slate-400">SERVICES & COMPUTE:</span>
+                        <span id="bench-layer2-val" class="text-brand-cyan font-bold">18ms • Go / TS Async Mesh</span>
+                      </div>
+                      <div class="w-full bg-brand-void h-2 rounded overflow-hidden border border-brand-border">
+                        <div id="bench-layer2-bar" class="bg-brand-cyan h-full transition-all duration-500" style="width: 18%;"></div>
+                      </div>
+                    </div>
+
+                    <!-- Layer 3: Storage & Vector Query -->
+                    <div>
+                      <div class="flex justify-between text-[11px] mb-1">
+                        <span class="text-slate-400">STORAGE & VECTOR QUERY:</span>
+                        <span id="bench-layer3-val" class="text-brand-gold font-bold">8ms • pgvector HNSW / Redis</span>
+                      </div>
+                      <div class="w-full bg-brand-void h-2 rounded overflow-hidden border border-brand-border">
+                        <div id="bench-layer3-bar" class="bg-brand-gold h-full transition-all duration-500" style="width: 8%;"></div>
+                      </div>
+                    </div>
+
+                    <!-- Aggregate Readout Summary Box -->
+                    <div class="mt-4 pt-4 border-t border-brand-border grid grid-cols-2 gap-3">
+                      <div class="bg-brand-void/80 p-2.5 rounded border border-brand-border">
+                        <div class="text-[10px] text-slate-500 uppercase">Combined P95 Latency</div>
+                        <div id="bench-total-latency" class="text-xl font-bold text-brand-emerald font-mono mt-0.5">38ms</div>
+                        <div id="bench-total-status" class="text-[10px] text-brand-emerald font-mono">SUB-50MS SLA MET</div>
+                      </div>
+                      <div class="bg-brand-void/80 p-2.5 rounded border border-brand-border">
+                        <div class="text-[10px] text-slate-500 uppercase">Memory Footprint</div>
+                        <div id="bench-memory" class="text-xl font-bold text-brand-blue font-mono mt-0.5">142 MB</div>
+                        <div id="bench-memory-status" class="text-[10px] text-brand-mutedText font-mono">OPTIMIZED EDGE NODE</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 text-[10px] font-mono text-slate-500 text-center flex items-center justify-center space-x-1">
+                    <i data-lucide="activity" class="w-3 h-3 text-brand-emerald"></i>
+                    <span>Real-time testbench: Switch modes above to inspect latency variance.</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- CAPABILITIES & RFC SPECIFICATIONS SECTION -->
+        <section class="py-20 px-4 sm:px-6 lg:px-8 border-b border-brand-border bg-brand-dark/40">
+          <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+              <div>
+                <div class="micro-tag text-brand-gold mb-1">// CORE CAPABILITY MATRIX</div>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Hardened Engineering Disciplines</h2>
+              </div>
+              <p class="text-sm text-slate-400 font-mono mt-2 md:mt-0 max-w-md">
+                No generic agency retainers. Every engagement is bounded by formal RFC specifications, measurable latency SLAs, and clean code transfers.
+              </p>
+            </div>
+
+            <!-- Service Cards Grid with Spotlight Glow -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              ${ObliqueDB.services.map(svc => `
+                <div class="spotlight-card rounded-xl p-6 flex flex-col justify-between group cursor-pointer" onclick="window.location.hash = '#/services/${svc.slug}'">
+                  <div>
+                    <div class="flex items-center justify-between text-xs font-mono text-slate-500 mb-3">
+                      <span class="text-brand-gold">${svc.tag}</span>
+                      <span class="bg-brand-surface px-1.5 py-0.5 rounded border border-brand-border text-brand-blue">${svc.id}</span>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-white group-hover:text-brand-gold transition-colors mb-2">
+                      ${svc.title}
+                    </h3>
+
+                    <p class="text-xs text-slate-400 leading-relaxed font-sans mb-4">
+                      ${svc.summary}
+                    </p>
+
+                    <div class="bg-brand-void p-2.5 rounded border border-brand-border text-[11px] font-mono text-brand-emerald mb-4">
+                      ${svc.sla}
+                    </div>
+                  </div>
+
+                  <div class="pt-4 border-t border-brand-border/60 flex items-center justify-between text-xs font-mono">
+                    <span class="text-slate-400 group-hover:text-white transition-colors">Inspect RFC Spec</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-brand-mutedText group-hover:text-brand-gold group-hover:translate-x-1 transition-all"></i>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+
+        <!-- VERIFIED DEPLOYMENTS (PORTFOLIO ARCHIVE) -->
+        <section class="py-20 px-4 sm:px-6 lg:px-8 border-b border-brand-border">
+          <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+              <div>
+                <div class="micro-tag text-brand-blue mb-1">// VERIFIED PRODUCTION TELEMETRY</div>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Production Case Studies</h2>
+              </div>
+              <div class="mt-4 md:mt-0 flex items-center space-x-2 text-xs font-mono">
+                <span class="w-2.5 h-2.5 rounded-full bg-brand-emerald"></span>
+                <span class="text-slate-300">3 In Production</span>
+                <span class="text-slate-600">•</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                <span class="text-slate-300">2 In Active Bench Testing</span>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              ${ObliqueDB.portfolio.slice(0, 3).map(cs => `
+                <div class="spotlight-card rounded-xl p-6 sm:p-8 cursor-pointer group" onclick="window.location.hash = '#/portfolio/${cs.slug}'">
+                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-8 space-y-3">
+                      <div class="flex items-center space-x-3 text-xs font-mono">
+                        <span class="px-2 py-0.5 rounded border ${cs.statusType === 'production' ? 'bg-brand-emerald/10 border-brand-emerald/30 text-brand-emerald' : 'bg-amber-400/10 border-amber-400/30 text-amber-400'}">
+                          ● ${cs.status}
+                        </span>
+                        <span class="text-slate-500">${cs.tag}</span>
+                        <span class="text-slate-600 hidden sm:inline">•</span>
+                        <span class="text-slate-400 hidden sm:inline">${cs.client}</span>
+                      </div>
+
+                      <h3 class="text-xl sm:text-2xl font-bold text-white group-hover:text-brand-blue transition-colors">
+                        ${cs.title}
+                      </h3>
+
+                      <p class="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans max-w-3xl">
+                        ${cs.problem}
+                      </p>
+
+                      <div class="flex flex-wrap gap-2 pt-2">
+                        ${cs.techStack.map(t => `
+                          <span class="text-[11px] font-mono bg-brand-void px-2 py-0.5 rounded border border-brand-border text-slate-300">
+                            ${t}
+                          </span>
+                        `).join('')}
+                      </div>
+                    </div>
+
+                    <div class="lg:col-span-4 bg-brand-void p-5 rounded-lg border border-brand-border flex flex-col justify-center text-center">
+                      <div class="text-[11px] font-mono text-slate-500 uppercase">${cs.metricLabel}</div>
+                      <div class="text-3xl sm:text-4xl font-extrabold text-brand-blue font-mono my-1">${cs.metricPrimary}</div>
+                      <div class="text-xs font-mono text-slate-400">Node Footprint: ${cs.memoryFootprint}</div>
+                      <div class="mt-3 text-xs font-mono text-brand-gold group-hover:underline flex items-center justify-center space-x-1">
+                        <span>Read Architecture Breakdown</span>
+                        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="mt-8 text-center">
+              <a href="#/portfolio" class="inline-flex items-center space-x-2 text-xs font-mono text-slate-300 hover:text-white bg-brand-surface border border-brand-border px-4 py-2.5 rounded hover:border-brand-borderHover transition-colors">
+                <span>Explore Full 5-Case Deployment Archive</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- AUTHENTIC STORYTELLING: WHERE OBLIQUE BEGAN -->
+        <section class="py-20 px-4 sm:px-6 lg:px-8 border-b border-brand-border bg-brand-dark/30">
+          <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div class="lg:col-span-5 space-y-4">
+                <div class="micro-tag text-brand-gold">// FOUNDING ORIGIN</div>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">
+                  The Engineering Student Paradox & The Meaning of Oblique
+                </h2>
+                <div class="p-4 bg-brand-void rounded-lg border border-brand-border font-mono text-xs text-slate-400 space-y-2">
+                  <div class="text-brand-blue font-semibold">[OBLIQUE: /əˈbliːk/]</div>
+                  <div>Neither parallel nor perpendicular. An intentional angle of attack; refusing the crowded, conventional path to solve complex problems.</div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-7 space-y-4 text-sm text-slate-300 font-sans leading-relaxed">
+                <p>
+                  ObliqueTech was founded from a direct observation of a systemic failure: <strong>The Engineering Student Experience Paradox</strong>. Across the software industry, companies demand 3 to 5 years of verified production experience for entry-level roles, yet virtually no enterprise is willing to grant young, hungry developers the real-world surface area to acquire it.
+                </p>
+                <p>
+                  We refused to accept that circular barrier. Oblique originated as an open-architecture project laboratory—running brutal 48-hour production hackathons, building live commercial prototypes, and pairing exceptionally gifted engineering students directly with seasoned enterprise systems architects.
+                </p>
+                <p>
+                  That relentless culture of execution evolved into a hardened digital engineering firm. Today, we ship global distributed infrastructure, sub-50ms web meshes, and private vector RAG pipelines for enterprises across North America, Europe, and Asia.
+                </p>
+                <div class="pt-2">
+                  <a href="#/about" class="text-xs font-mono text-brand-gold hover:underline flex items-center space-x-1.5">
+                    <span>Read The Complete Origin & Engineering Manifesto</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FINAL CALL TO ACTION: INITIALIZE PROJECT -->
+        <section class="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-brand-void">
+          <div class="max-w-4xl mx-auto text-center space-y-6 relative z-10">
+            <div class="micro-tag text-brand-emerald">// EXECUTION PROTOCOL</div>
+            <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+              Your next move starts from a different angle.
+            </h2>
+            <p class="text-base text-slate-400 max-w-2xl mx-auto font-sans leading-relaxed">
+              Whether you are strangler-fig modernizing a legacy core, deploying deterministic private AI, or engineering a high-density digital product—let's build what conventional teams cannot.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+              <a href="#/start-project" class="magnetic-btn inline-flex items-center space-x-2 bg-brand-gold text-brand-void font-bold text-sm px-8 py-4 rounded hover:bg-yellow-400 transition-colors shadow-xl">
+                <span>Start a Project Specification</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </a>
+              <button onclick="openDiscoveryModal()" class="inline-flex items-center space-x-2 bg-brand-surface hover:bg-brand-elevated text-slate-200 border border-brand-border text-sm px-6 py-4 rounded font-mono transition-colors">
+                <i data-lucide="calendar" class="w-4 h-4 text-brand-blue"></i>
+                <span>Talk to a Systems Architect</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      `;
+
+      // Set default bench state
+      setTimeout(() => setBenchMode('oblique'), 50);
+    }
+
+    // ROUTE: #/services (RFC Capability Index)
+    function renderServicesView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">SERVICES (RFC INDEX)</span>
+          </div>
+
+          <div class="border-b border-brand-border pb-8 mb-12">
+            <div class="micro-tag text-brand-gold mb-1">// FORMAL ARCHITECTURE SPECIFICATIONS</div>
+            <h1 class="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+              Systems & Engineering Index
+            </h1>
+            <p class="text-sm sm:text-base text-slate-400 font-sans mt-3 max-w-3xl leading-relaxed">
+              Every ObliqueTech capability is structured as a formal engineering Request For Comments (RFC). We provide explicit P95 latency commitments, zero-downtime cutover runbooks, and 100% intellectual property transfer.
+            </p>
+          </div>
+
+          <div class="space-y-8">
+            ${ObliqueDB.services.map(svc => `
+              <div class="spotlight-card rounded-xl p-8 border border-brand-border" id="service-${svc.slug}">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  <div class="lg:col-span-8 space-y-4">
+                    <div class="flex items-center space-x-3 text-xs font-mono">
+                      <span class="text-brand-gold">${svc.tag}</span>
+                      <span class="text-slate-600">•</span>
+                      <span class="bg-brand-surface px-2 py-0.5 rounded text-brand-blue border border-brand-border">ID: ${svc.slug}</span>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-white font-display">
+                      <a href="#/services/${svc.slug}" class="hover:text-brand-gold transition-colors">${svc.title}</a>
+                    </h2>
+
+                    <p class="text-sm text-slate-300 font-sans leading-relaxed">
+                      ${svc.summary}
+                    </p>
+
+                    <!-- Problem vs Solution Matrix -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 font-mono text-xs">
+                      <div class="bg-brand-void p-3.5 rounded border border-brand-border">
+                        <div class="text-red-400 font-semibold mb-1 flex items-center space-x-1">
+                          <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                          <span>// THE BOTTLENECK</span>
+                        </div>
+                        <p class="text-slate-400 font-sans text-xs leading-relaxed">${svc.problem}</p>
+                      </div>
+
+                      <div class="bg-brand-void p-3.5 rounded border border-brand-border">
+                        <div class="text-brand-emerald font-semibold mb-1 flex items-center space-x-1">
+                          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                          <span>// OBLIQUE ARCHITECTURE</span>
+                        </div>
+                        <p class="text-slate-400 font-sans text-xs leading-relaxed">${svc.solution}</p>
+                      </div>
+                    </div>
+
+                    <div class="pt-2">
+                      <div class="text-xs font-mono text-slate-500 uppercase mb-2">Technical Delivery Sequence:</div>
+                      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-mono text-slate-300">
+                        ${svc.deliverables.map(d => `
+                          <li class="flex items-center space-x-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-gold flex-shrink-0"></span>
+                            <span>${d}</span>
+                          </li>
+                        `).join('')}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="lg:col-span-4 bg-brand-void p-6 rounded-lg border border-brand-border flex flex-col justify-between">
+                    <div>
+                      <div class="text-xs font-mono text-slate-500 uppercase">// SLA GUARANTEE</div>
+                      <div class="text-base font-bold text-brand-emerald font-mono my-2">${svc.sla}</div>
+                      
+                      <div class="text-xs font-mono text-slate-500 uppercase mt-4 mb-2">// RFC REFERENCE</div>
+                      <div class="text-xs font-mono text-slate-300 bg-brand-surface p-2 rounded border border-brand-border">
+                        ${svc.rfc}
+                      </div>
+
+                      <div class="text-xs font-mono text-slate-500 uppercase mt-4 mb-2">// PRODUCTION STACK</div>
+                      <div class="flex flex-wrap gap-1.5">
+                        ${svc.stack.map(s => `
+                          <span class="text-[10px] font-mono bg-brand-surface px-2 py-0.5 rounded border border-brand-border text-slate-400">
+                            ${s}
+                          </span>
+                        `).join('')}
+                      </div>
+                    </div>
+
+                    <div class="pt-6">
+                      <a href="#/services/${svc.slug}" class="w-full inline-flex items-center justify-center space-x-2 bg-brand-surface hover:bg-brand-elevated border border-brand-border text-white text-xs font-mono py-2.5 rounded transition-colors">
+                        <span>View Complete RFC Specification</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ROUTE: #/services/:slug (Dedicated RFC Specifications)
+    function renderServiceDetailView(slug) {
+      const svc = ObliqueDB.services.find(s => s.slug === slug);
+      const appRoot = document.getElementById("app-root");
+
+      if (!svc) {
+        renderNotFoundView();
+        return;
+      }
+
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <a href="#/services" class="hover:text-white">SERVICES</a>
+            <span>/</span>
+            <span class="text-brand-gold">${svc.slug.toUpperCase()}</span>
+          </div>
+
+          <div class="spotlight-card rounded-xl p-8 sm:p-10 border border-brand-border space-y-8">
+            <div class="border-b border-brand-border pb-6">
+              <div class="flex items-center space-x-3 text-xs font-mono text-brand-gold mb-2">
+                <span>${svc.tag}</span>
+                <span>•</span>
+                <span class="text-brand-blue">DOCUMENT ID: RFC-${svc.slug.toUpperCase()}</span>
+              </div>
+              <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                ${svc.title}
+              </h1>
+              <div class="mt-4 p-3 bg-brand-void rounded border border-brand-border text-xs font-mono text-brand-emerald">
+                SLA ENFORCEMENT: ${svc.sla}
+              </div>
+            </div>
+
+            <!-- Executive Summary -->
+            <div class="space-y-3 font-sans text-sm sm:text-base text-slate-300 leading-relaxed">
+              <h3 class="font-mono text-xs uppercase text-slate-500">// 1.0 EXECUTIVE SUMMARY</h3>
+              <p>${svc.summary}</p>
+            </div>
+
+            <!-- Problem Space & Root Cause -->
+            <div class="space-y-3 font-sans text-sm sm:text-base text-slate-300 leading-relaxed bg-brand-void p-5 rounded-lg border border-brand-border">
+              <h3 class="font-mono text-xs uppercase text-red-400">// 2.0 ARCHITECTURAL BOTTLENECK & ROOT CAUSE</h3>
+              <p>${svc.problem}</p>
+            </div>
+
+            <!-- The Solution Specification -->
+            <div class="space-y-3 font-sans text-sm sm:text-base text-slate-300 leading-relaxed bg-brand-void p-5 rounded-lg border border-brand-border">
+              <h3 class="font-mono text-xs uppercase text-brand-emerald">// 3.0 OBLIQUE ARCHITECTURE TOPOLOGY</h3>
+              <p>${svc.solution}</p>
+              <div class="p-3 bg-brand-surface rounded font-mono text-xs text-brand-blue border border-brand-border mt-3">
+                ${svc.rfc}
+              </div>
+            </div>
+
+            <!-- Deliverables Schedule -->
+            <div class="space-y-3">
+              <h3 class="font-mono text-xs uppercase text-slate-500">// 4.0 FORMAL DELIVERABLES & RUNBOOKS</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+                ${svc.deliverables.map((d, idx) => `
+                  <div class="bg-brand-surface p-3 rounded border border-brand-border flex items-start space-x-2">
+                    <span class="text-brand-gold font-bold">0${idx+1}.</span>
+                    <span class="text-slate-200">${d}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Stack Components -->
+            <div class="space-y-3 pt-2">
+              <h3 class="font-mono text-xs uppercase text-slate-500">// 5.0 VERIFIED PRODUCTION STACK</h3>
+              <div class="flex flex-wrap gap-2">
+                ${svc.stack.map(item => `
+                  <span class="bg-brand-void px-3 py-1 rounded border border-brand-border font-mono text-xs text-slate-300">
+                    ${item}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Action footer -->
+            <div class="pt-6 border-t border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4">
+              <a href="#/services" class="text-xs font-mono text-slate-400 hover:text-white flex items-center space-x-1">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                <span>Back to RFC Index</span>
+              </a>
+              <a href="#/start-project" class="magnetic-btn bg-brand-gold text-brand-void font-bold text-xs px-6 py-3 rounded hover:bg-yellow-400 transition-colors">
+                Configure Project Spec with this Architecture
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ROUTE: #/portfolio (Production Archive)
+    function renderPortfolioView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">PORTFOLIO ARCHIVE</span>
+          </div>
+
+          <div class="border-b border-brand-border pb-8 mb-10 flex flex-col md:flex-row md:items-end justify-between">
+            <div>
+              <div class="micro-tag text-brand-blue mb-1">// PRODUCTION TELEMETRY ARCHIVE</div>
+              <h1 class="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                Verified Systems Deployments
+              </h1>
+              <p class="text-sm text-slate-400 font-mono mt-2">
+                Factual positioning: 3 Systems In Live Production • 2 Under Active Bench Testing
+              </p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="mt-4 md:mt-0 flex items-center space-x-2 font-mono text-xs bg-brand-surface p-1 rounded border border-brand-border">
+              <button onclick="filterPortfolio('all')" id="filter-btn-all" class="px-3 py-1 rounded bg-brand-elevated text-white">All</button>
+              <button onclick="filterPortfolio('production')" id="filter-btn-production" class="px-3 py-1 rounded text-slate-400 hover:text-white">In Production (3)</button>
+              <button onclick="filterPortfolio('testing')" id="filter-btn-testing" class="px-3 py-1 rounded text-slate-400 hover:text-white">Bench Testing (2)</button>
+            </div>
+          </div>
+
+          <div id="portfolio-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            ${ObliqueDB.portfolio.map(cs => renderCaseStudyCard(cs)).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCaseStudyCard(cs) {
+      return `
+        <div class="spotlight-card rounded-xl p-6 sm:p-7 flex flex-col justify-between cursor-pointer group" onclick="window.location.hash = '#/portfolio/${cs.slug}'" data-status="${cs.statusType}">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <span class="px-2 py-0.5 rounded border ${cs.statusType === 'production' ? 'bg-brand-emerald/10 border-brand-emerald/30 text-brand-emerald' : 'bg-amber-400/10 border-amber-400/30 text-amber-400'}">
+                ● ${cs.status}
+              </span>
+              <span class="text-slate-500">${cs.tag}</span>
+            </div>
+
+            <h3 class="text-xl font-bold text-white group-hover:text-brand-blue transition-colors font-display">
+              ${cs.title}
+            </h3>
+
+            <p class="text-xs sm:text-sm text-slate-400 font-sans leading-relaxed">
+              ${cs.problem}
+            </p>
+
+            <div class="bg-brand-void p-3 rounded border border-brand-border flex items-center justify-between font-mono text-xs my-3">
+              <div>
+                <div class="text-[10px] text-slate-500 uppercase">${cs.metricLabel}</div>
+                <div class="text-xl font-bold text-brand-blue">${cs.metricPrimary}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-[10px] text-slate-500 uppercase">MEMORY FOOTPRINT</div>
+                <div class="text-xs text-slate-300">${cs.memoryFootprint}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-brand-border/60 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400 group-hover:text-white">Inspect Architecture Breakdown</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-brand-gold group-hover:translate-x-1 transition-all"></i>
+          </div>
+        </div>
+      `;
+    }
+
+    function filterPortfolio(type) {
+      document.querySelectorAll("[data-status]").forEach(card => {
+        if (type === 'all' || card.getAttribute('data-status') === type) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+      // Toggle button active classes
+      ['all', 'production', 'testing'].forEach(t => {
+        const btn = document.getElementById(`filter-btn-${t}`);
+        if (btn) {
+          if (t === type) {
+            btn.className = "px-3 py-1 rounded bg-brand-elevated text-white";
+          } else {
+            btn.className = "px-3 py-1 rounded text-slate-400 hover:text-white";
+          }
+        }
+      });
+    }
+
+    // ROUTE: #/portfolio/:slug (Deep Dive Case Breakdown)
+    function renderPortfolioDetailView(slug) {
+      const cs = ObliqueDB.portfolio.find(c => c.slug === slug);
+      const appRoot = document.getElementById("app-root");
+
+      if (!cs) {
+        renderNotFoundView();
+        return;
+      }
+
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <a href="#/portfolio" class="hover:text-white">PORTFOLIO</a>
+            <span>/</span>
+            <span class="text-brand-blue">${cs.slug.toUpperCase()}</span>
+          </div>
+
+          <div class="spotlight-card rounded-xl p-8 sm:p-10 border border-brand-border space-y-8">
+            <div class="border-b border-brand-border pb-6">
+              <div class="flex items-center space-x-3 text-xs font-mono mb-2">
+                <span class="px-2 py-0.5 rounded border ${cs.statusType === 'production' ? 'bg-brand-emerald/10 border-brand-emerald/30 text-brand-emerald' : 'bg-amber-400/10 border-amber-400/30 text-amber-400'}">
+                  ● ${cs.status}
+                </span>
+                <span class="text-slate-500">${cs.tag}</span>
+                <span class="text-slate-600">•</span>
+                <span class="text-slate-400">CLIENT: ${cs.client}</span>
+              </div>
+              <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                ${cs.title}
+              </h1>
+            </div>
+
+            <!-- Primary Metric Callout Box -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-brand-void p-5 rounded-lg border border-brand-border font-mono text-center">
+              <div>
+                <div class="text-[10px] text-slate-500 uppercase">PRIMARY TELEMETRY</div>
+                <div class="text-3xl font-extrabold text-brand-blue mt-1">${cs.metricPrimary}</div>
+                <div class="text-[11px] text-slate-400">${cs.metricLabel}</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-500 uppercase">MEMORY CONSUMPTION</div>
+                <div class="text-2xl font-bold text-slate-200 mt-1">${cs.memoryFootprint}</div>
+                <div class="text-[11px] text-slate-400">Isolated Edge Boundary</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-500 uppercase">PRODUCTION SLA</div>
+                <div class="text-2xl font-bold text-brand-emerald mt-1">99.99%</div>
+                <div class="text-[11px] text-slate-400">Zero Unplanned Downtime</div>
+              </div>
+            </div>
+
+            <!-- Problem Space -->
+            <div class="space-y-3 font-sans text-sm sm:text-base text-slate-300 leading-relaxed bg-brand-void p-5 rounded-lg border border-brand-border">
+              <h3 class="font-mono text-xs uppercase text-red-400">// 1.0 THE PRODUCTION BOTTLENECK</h3>
+              <p>${cs.problem}</p>
+            </div>
+
+            <!-- Architectural Topology -->
+            <div class="space-y-3 font-sans text-sm sm:text-base text-slate-300 leading-relaxed bg-brand-void p-5 rounded-lg border border-brand-border">
+              <h3 class="font-mono text-xs uppercase text-brand-blue">// 2.0 OBLIQUE DISTRIBUTED ARCHITECTURE</h3>
+              <p>${cs.architecture}</p>
+            </div>
+
+            <!-- Verified Results -->
+            <div class="space-y-3">
+              <h3 class="font-mono text-xs uppercase text-brand-emerald">// 3.0 VERIFIED AUDIT RESULTS</h3>
+              <div class="space-y-2 font-mono text-xs">
+                ${cs.verifiedResults.map(r => `
+                  <div class="bg-brand-surface p-3 rounded border border-brand-border flex items-center space-x-2">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-brand-emerald flex-shrink-0"></i>
+                    <span class="text-slate-200">${r}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Tech Stack -->
+            <div class="space-y-3 pt-2">
+              <h3 class="font-mono text-xs uppercase text-slate-500">// 4.0 TECHNICAL REPOSITORY STACK</h3>
+              <div class="flex flex-wrap gap-2">
+                ${cs.techStack.map(item => `
+                  <span class="bg-brand-void px-3 py-1 rounded border border-brand-border font-mono text-xs text-slate-300">
+                    ${item}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Action footer -->
+            <div class="pt-6 border-t border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4">
+              <a href="#/portfolio" class="text-xs font-mono text-slate-400 hover:text-white flex items-center space-x-1">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                <span>Back to Archive</span>
+              </a>
+              <button onclick="openDiscoveryModal()" class="magnetic-btn bg-brand-blue text-brand-void font-bold text-xs px-6 py-3 rounded hover:bg-cyan-300 transition-colors">
+                Schedule Technical Review for Similar System
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ROUTE: #/about (Origin, Manifesto, 2024-2026 Coordinates)
+    function renderAboutView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">ORIGIN & MANIFESTO</span>
+          </div>
+
+          <div class="spotlight-card rounded-xl p-8 sm:p-12 border border-brand-border space-y-10">
+            <div class="border-b border-brand-border pb-8">
+              <div class="micro-tag text-brand-gold mb-2">// CORPORATE EVOLUTION • 2024 TO 2026</div>
+              <h1 class="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                Where Oblique Began
+              </h1>
+              <p class="text-base sm:text-lg text-slate-400 font-sans mt-3 max-w-2xl leading-relaxed">
+                The authentic founding narrative: Dismantling the Engineering Student Experience Paradox and building an industrial technology flagship.
+              </p>
+            </div>
+
+            <!-- Section 1: The Meaning of Oblique -->
+            <div class="space-y-4 font-sans text-slate-300 leading-relaxed text-sm sm:text-base">
+              <h3 class="font-mono text-sm uppercase text-brand-blue font-bold flex items-center space-x-2">
+                <span class="text-brand-gold">01.</span>
+                <span>The Geometric Meaning of "Oblique"</span>
+              </h3>
+              <p>
+                In geometry, an <em>oblique</em> angle is neither parallel nor perpendicular. It is an intentional angle of departure. In business and software architecture, nearly all organizations rush down the identical crowded, linear path: adopting the same bloated SaaS subscriptions, hiring identical multi-tier consultancy agencies, and stacking fragile, buzzword-laden frameworks that collapse under load.
+              </p>
+              <p>
+                Oblique was founded on the conviction that real technological breakthroughs require looking at the problem from an unconventional angle. When everyone builds monolithic web apps, we deploy distributed edge meshes. When everyone deploys hallucinating LLM wrappers, we engineer deterministic HNSW vector pipelines with strict cryptographic verification.
+              </p>
+            </div>
+
+            <!-- Section 2: The Student Experience Paradox -->
+            <div class="space-y-4 font-sans text-slate-300 leading-relaxed text-sm sm:text-base bg-brand-void p-6 rounded-xl border border-brand-border">
+              <h3 class="font-mono text-sm uppercase text-brand-gold font-bold flex items-center space-x-2">
+                <span class="text-brand-gold">02.</span>
+                <span>The Engineering Student Experience Paradox</span>
+              </h3>
+              <p>
+                The foundation of Oblique began with an acute realization of an industry injustice: <strong>Companies refuse to hire engineers without production experience, yet refuse to provide the opportunities required to build it.</strong>
+              </p>
+              <p>
+                Brilliant university students spend years mastering linear algebra, discrete mathematics, and compiler construction, only to be rejected by traditional recruiters for lacking "commercial experience." Rather than complaining, we built an engine to destroy this barrier.
+              </p>
+              <p>
+                Oblique originated as an open-architecture project laboratory. We gathered the hungriest student developers, paired them directly with battle-tested systems architects, and began shipping real commercial prototypes under brutal production conditions:
+              </p>
+              <ul class="space-y-2 font-mono text-xs text-slate-300 pl-4 border-l border-brand-border">
+                <li>• 48-hour continuous hackathon engineering sprints</li>
+                <li>• Real multi-region database migration rehearsals</li>
+                <li>• Distributed stress-testing against synthetic DDoS attack vectors</li>
+                <li>• Strict peer-reviewed RFC design documents before writing a single line of code</li>
+              </ul>
+            </div>
+
+            <!-- Section 3: The Global Horizon -->
+            <div class="space-y-4 font-sans text-slate-300 leading-relaxed text-sm sm:text-base">
+              <h3 class="font-mono text-sm uppercase text-brand-emerald font-bold flex items-center space-x-2">
+                <span class="text-brand-gold">03.</span>
+                <span>The Global Horizon (2024 - 2026 Coordinates)</span>
+              </h3>
+              <p>
+                What started as an insurgent project lab evolved into a premier digital engineering and applied AI enterprise. Today, Oblique operates across 14 distributed edge points-of-presence globally, supporting financial institutions, healthcare providers, and high-throughput logistics meshes.
+              </p>
+              <p>
+                Our roots remain our competitive moat. Our engineering teams possess an insatiable work ethic, deep mathematical rigor, and zero tolerance for superficial "agency vibe coding." We treat software engineering not as an outsourced commodity, but as mission-critical industrial craftsmanship.
+              </p>
+            </div>
+
+            <!-- Evolution Coordinates Table -->
+            <div class="pt-4 border-t border-brand-border">
+              <h3 class="font-mono text-xs uppercase text-slate-500 mb-4">// EVOLUTION TIMELINE</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+                <div class="bg-brand-void p-4 rounded border border-brand-border">
+                  <div class="text-brand-gold font-bold text-sm">2024: THE OPEN LAB</div>
+                  <div class="text-slate-400 mt-2 leading-relaxed">
+                    Founded in response to the experience paradox. Launched open-architecture project incubators, shipping commercial prototypes and training raw talent.
+                  </div>
+                </div>
+                <div class="bg-brand-void p-4 rounded border border-brand-border">
+                  <div class="text-brand-blue font-bold text-sm">2025: ENTERPRISE SHIFT</div>
+                  <div class="text-slate-400 mt-2 leading-relaxed">
+                    Deployed sub-20ms settlement core for global fintech and HIPAA-compliant clinical RAG pipeline. Scaled edge infrastructure globally.
+                  </div>
+                </div>
+                <div class="bg-brand-void p-4 rounded border border-brand-border">
+                  <div class="text-brand-emerald font-bold text-sm">2026: APPLIED FLAGSHIP</div>
+                  <div class="text-slate-400 mt-2 leading-relaxed">
+                    Hardened multi-region edge mesh, deterministic vector systems, and high-density industrial design frameworks. Standardized on sub-50ms P95 SLAs.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-between items-center text-xs font-mono">
+              <a href="#/insights" class="text-brand-blue hover:underline">Read Technical Whitepapers →</a>
+              <a href="#/start-project" class="text-brand-gold font-bold hover:underline">Initialize Project Specification →</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ROUTE: #/insights (Technical Whitepapers)
+    function renderInsightsView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">WHITEPAPERS & INSIGHTS</span>
+          </div>
+
+          <div class="border-b border-brand-border pb-8 mb-10">
+            <div class="micro-tag text-brand-gold mb-1">// ARCHITECTURAL COMMENTARY</div>
+            <h1 class="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+              Engineering Whitepapers
+            </h1>
+            <p class="text-sm sm:text-base text-slate-400 font-sans mt-3 max-w-2xl leading-relaxed">
+              In-depth systems analyses, mathematical proofs, and architectural blueprints written by our principal engineering groups.
+            </p>
+          </div>
+
+          <div class="space-y-8">
+            ${ObliqueDB.insights.map(item => `
+              <article class="spotlight-card rounded-xl p-8 border border-brand-border space-y-6">
+                <div class="flex flex-wrap items-center justify-between text-xs font-mono text-slate-500 pb-3 border-b border-brand-border/60">
+                  <span class="text-brand-gold">${item.tag}</span>
+                  <div class="flex items-center space-x-3">
+                    <span>${item.author}</span>
+                    <span>•</span>
+                    <span>${item.date}</span>
+                    <span>•</span>
+                    <span class="text-brand-blue">${item.readTime}</span>
+                  </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white font-display">
+                  ${item.title}
+                </h2>
+
+                <p class="text-sm text-slate-300 font-sans leading-relaxed">
+                  ${item.summary}
+                </p>
+
+                <!-- Full paper body -->
+                <div class="pt-4 border-t border-brand-border/60 text-sm font-sans text-slate-300">
+                  ${item.body}
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ROUTE: #/faq (Engagement Protocols & SLA)
+    function renderFaqView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">ENGAGEMENT PROTOCOLS & FAQ</span>
+          </div>
+
+          <div class="border-b border-brand-border pb-8 mb-10">
+            <div class="micro-tag text-brand-emerald mb-1">// GOVERNANCE & SLA STANDARDS</div>
+            <h1 class="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+              Engineering Protocols
+            </h1>
+            <p class="text-sm sm:text-base text-slate-400 font-sans mt-3 max-w-2xl leading-relaxed">
+              Transparent terms, irrevocable IP ownership, strict SOC-2 standards, and codified latency guarantees.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            ${ObliqueDB.faqs.map((faq, idx) => `
+              <div class="spotlight-card rounded-xl border border-brand-border overflow-hidden">
+                <button onclick="toggleFaq(${idx})" class="w-full p-6 text-left flex items-center justify-between space-x-4">
+                  <span class="font-semibold text-white text-base font-sans">${faq.q}</span>
+                  <i id="faq-icon-${idx}" data-lucide="chevron-down" class="w-4 h-4 text-brand-gold transition-transform duration-200"></i>
+                </button>
+                <div id="faq-answer-${idx}" class="hidden px-6 pb-6 text-sm text-slate-300 font-sans leading-relaxed border-t border-brand-border/40 pt-4">
+                  ${faq.a}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="mt-12 p-6 bg-brand-surface rounded-xl border border-brand-border flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 class="text-white font-bold text-sm">Require bespoke architectural compliance agreements?</h4>
+              <p class="text-xs text-slate-400 font-mono mt-0.5">We execute mutual enterprise NDAs and bespoke SLA schedules.</p>
+            </div>
+            <button onclick="openDiscoveryModal()" class="bg-brand-gold text-brand-void font-bold text-xs px-5 py-2.5 rounded hover:bg-yellow-400 transition-colors whitespace-nowrap">
+              Contact Systems Counsel
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleFaq(idx) {
+      const el = document.getElementById(`faq-answer-${idx}`);
+      const icon = document.getElementById(`faq-icon-${idx}`);
+      if (el.classList.contains("hidden")) {
+        el.classList.remove("hidden");
+        icon.classList.add("rotate-180");
+      } else {
+        el.classList.add("hidden");
+        icon.classList.remove("rotate-180");
+      }
+    }
+
+    // ROUTE: #/contact (Direct Intake & Transmission Mock)
+    function renderContactView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">DIRECT INTAKE</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-5 space-y-6">
+              <div>
+                <div class="micro-tag text-brand-blue mb-1">// TRANSMISSION INTAKE</div>
+                <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  Direct Ingress
+                </h1>
+                <p class="text-xs text-slate-400 font-mono mt-2 leading-relaxed">
+                  Encrypted intake channels monitored directly by our executive engineering council.
+                </p>
+              </div>
+
+              <div class="space-y-3 font-mono text-xs">
+                <div class="bg-brand-surface p-3.5 rounded border border-brand-border">
+                  <div class="text-slate-500 uppercase">// PRINCIPAL EMAIL</div>
+                  <div class="text-brand-gold font-bold mt-1">systems@obliquetech.internal</div>
+                </div>
+                <div class="bg-brand-surface p-3.5 rounded border border-brand-border">
+                  <div class="text-slate-500 uppercase">// PGP FINGERPRINT</div>
+                  <div class="text-slate-400 text-[10px] mt-1 break-all">4A9F 82BC 3D11 E902 7C45 99F1 A83D 0014</div>
+                </div>
+                <div class="bg-brand-surface p-3.5 rounded border border-brand-border">
+                  <div class="text-slate-500 uppercase">// RESPONSE SLA</div>
+                  <div class="text-brand-emerald font-bold mt-1">&lt; 4 Hours for Enterprise Inquiries</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7">
+              <div class="spotlight-card rounded-xl p-6 sm:p-8 border border-brand-border">
+                <form onsubmit="handleContactSubmit(event)" class="space-y-4 font-mono text-xs">
+                  <div>
+                    <label class="block text-slate-300 mb-1">OPERATOR NAME</label>
+                    <input type="text" id="contact-name" required placeholder="Dr. Evelyn Vance" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-white focus:border-brand-gold focus:outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-slate-300 mb-1">WORK EMAIL</label>
+                    <input type="email" id="contact-email" required placeholder="vance@enterprise.com" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-white focus:border-brand-gold focus:outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-slate-300 mb-1">SUBJECT / TOPOLOGY</label>
+                    <input type="text" id="contact-subject" required placeholder="Multi-Region Database Contention Audit" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-white focus:border-brand-gold focus:outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-slate-300 mb-1">SPECIFICATION DETAILS</label>
+                    <textarea id="contact-message" rows="4" required placeholder="Provide parameters, current throughput bottlenecks, or system requirements..." class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-white focus:border-brand-gold focus:outline-none"></textarea>
+                  </div>
+
+                  <button type="submit" class="w-full bg-brand-gold text-brand-void font-bold py-3 rounded hover:bg-yellow-400 transition-colors flex items-center justify-center space-x-2 text-xs">
+                    <span>Dispatch Encrypted Transmission</span>
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ROUTE: #/start-project (4-step Project Specification Engine)
+    function renderStartProjectView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">PROJECT SPECIFICATION ENGINE</span>
+          </div>
+
+          <div class="border-b border-brand-border pb-6 mb-8">
+            <div class="micro-tag text-brand-gold mb-1">// INTERACTIVE INTAKE HARNESS</div>
+            <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+              4-Step Technical Specification Engine
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-400 font-mono mt-1">
+              No generic pricing sliders. Configure precise latency, architecture, and compliance parameters.
+            </p>
+          </div>
+
+          <!-- Step Progress Tracker -->
+          <div class="grid grid-cols-4 gap-2 mb-8 font-mono text-[11px]">
+            <div id="step-ind-1" class="border-b-2 border-brand-gold text-brand-gold pb-1.5 font-bold">01. SCOPE</div>
+            <div id="step-ind-2" class="border-b-2 border-brand-border text-slate-500 pb-1.5">02. SLA TARGETS</div>
+            <div id="step-ind-3" class="border-b-2 border-brand-border text-slate-500 pb-1.5">03. TOPOLOGY</div>
+            <div id="step-ind-4" class="border-b-2 border-brand-border text-slate-500 pb-1.5">04. DISPATCH</div>
+          </div>
+
+          <form id="spec-form" onsubmit="handleSpecSubmit(event)" class="spotlight-card rounded-xl p-8 border border-brand-border">
+            
+            <!-- STEP 1: Architecture Scope Selection -->
+            <div id="step-1" class="space-y-6">
+              <div class="text-xs font-mono text-slate-400 uppercase">// STEP 1: PRIMARY ARCHITECTURAL DOMAIN</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label class="bg-brand-void p-4 rounded-lg border border-brand-border hover:border-brand-gold cursor-pointer flex items-start space-x-3">
+                  <input type="radio" name="spec-domain" value="Distributed Web & Edge Ingress" checked class="mt-1 text-brand-gold focus:ring-brand-gold">
+                  <div>
+                    <div class="text-sm font-bold text-white font-mono">Distributed Web & Edge Ingress</div>
+                    <div class="text-xs text-slate-400 mt-1">Strangler-fig proxy, sub-50ms P95, Cloudflare edge compute.</div>
+                  </div>
+                </label>
+
+                <label class="bg-brand-void p-4 rounded-lg border border-brand-border hover:border-brand-gold cursor-pointer flex items-start space-x-3">
+                  <input type="radio" name="spec-domain" value="Deterministic pgvector RAG Pipeline" class="mt-1 text-brand-gold focus:ring-brand-gold">
+                  <div>
+                    <div class="text-sm font-bold text-white font-mono">Deterministic pgvector AI</div>
+                    <div class="text-xs text-slate-400 mt-1">Private embeddings, HNSW graphs, zero-hallucination citations.</div>
+                  </div>
+                </label>
+
+                <label class="bg-brand-void p-4 rounded-lg border border-brand-border hover:border-brand-gold cursor-pointer flex items-start space-x-3">
+                  <input type="radio" name="spec-domain" value="Legacy Monolith Strangler-Fig Migration" class="mt-1 text-brand-gold focus:ring-brand-gold">
+                  <div>
+                    <div class="text-sm font-bold text-white font-mono">Monolith Modernization</div>
+                    <div class="text-xs text-slate-400 mt-1">Zero-downtime database dual-writes, Terraform cloud infra.</div>
+                  </div>
+                </label>
+
+                <label class="bg-brand-void p-4 rounded-lg border border-brand-border hover:border-brand-gold cursor-pointer flex items-start space-x-3">
+                  <input type="radio" name="spec-domain" value="High-Density Industrial SaaS Product Design" class="mt-1 text-brand-gold focus:ring-brand-gold">
+                  <div>
+                    <div class="text-sm font-bold text-white font-mono">Industrial SaaS Ergonomics</div>
+                    <div class="text-xs text-slate-400 mt-1">High-density control planes, GSAP micro-physics, ⌘K navigation.</div>
+                  </div>
+                </label>
+              </div>
+
+              <div class="flex justify-end pt-4">
+                <button type="button" onclick="goToStep(2)" class="bg-brand-blue text-brand-void font-bold text-xs px-6 py-2.5 rounded font-mono flex items-center space-x-1">
+                  <span>Continue to SLA Targets</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: Target Performance & SLA -->
+            <div id="step-2" class="hidden space-y-6">
+              <div class="text-xs font-mono text-slate-400 uppercase">// STEP 2: SLA & PERFORMANCE TARGETS</div>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-mono text-slate-300 mb-1">TARGET P95 LATENCY</label>
+                  <select id="spec-latency" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-xs font-mono text-white focus:border-brand-gold focus:outline-none">
+                    <option value="Sub-50ms (Global Edge Mesh)">Sub-50ms (Global Edge Mesh)</option>
+                    <option value="Sub-20ms (High Frequency Settlement)">Sub-20ms (High Frequency Settlement)</option>
+                    <option value="Sub-100ms (Regional Monolith Cutover)">Sub-100ms (Regional Monolith Cutover)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-mono text-slate-300 mb-1">COMPLIANCE & GOVERNANCE BOUNDARIES</label>
+                  <div class="grid grid-cols-2 gap-3 text-xs font-mono text-slate-300">
+                    <label class="flex items-center space-x-2 bg-brand-void p-3 rounded border border-brand-border cursor-pointer">
+                      <input type="checkbox" id="comp-soc2" checked class="text-brand-gold focus:ring-brand-gold rounded">
+                      <span>SOC-2 Type II Readied</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-brand-void p-3 rounded border border-brand-border cursor-pointer">
+                      <input type="checkbox" id="comp-rls" checked class="text-brand-gold focus:ring-brand-gold rounded">
+                      <span>Row-Level Security (RLS)</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-brand-void p-3 rounded border border-brand-border cursor-pointer">
+                      <input type="checkbox" id="comp-hipaa" class="text-brand-gold focus:ring-brand-gold rounded">
+                      <span>HIPAA / Healthcare Isolated</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-brand-void p-3 rounded border border-brand-border cursor-pointer">
+                      <input type="checkbox" id="comp-clean-ip" checked class="text-brand-gold focus:ring-brand-gold rounded">
+                      <span>100% Clean IP Transfer</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-between pt-4">
+                <button type="button" onclick="goToStep(1)" class="text-xs font-mono text-slate-400 hover:text-white">← Previous</button>
+                <button type="button" onclick="goToStep(3)" class="bg-brand-blue text-brand-void font-bold text-xs px-6 py-2.5 rounded font-mono flex items-center space-x-1">
+                  <span>Continue to Topology</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Current Topology & Constraints -->
+            <div id="step-3" class="hidden space-y-6">
+              <div class="text-xs font-mono text-slate-400 uppercase">// STEP 3: EXISTING TOPOLOGY & CONSTRAINTS</div>
+
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-mono text-slate-300 mb-1">CURRENT INFRASTRUCTURE HOST</label>
+                  <input type="text" id="spec-cloud" placeholder="AWS (us-east-1) / On-Premise Kubernetes / Vercel" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-xs font-mono text-white focus:border-brand-gold focus:outline-none">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-mono text-slate-300 mb-1">CORE DATASTORE</label>
+                  <input type="text" id="spec-datastore" placeholder="PostgreSQL Aurora / MongoDB / Oracle" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-xs font-mono text-white focus:border-brand-gold focus:outline-none">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-mono text-slate-300 mb-1">PRIMARY ARCHITECTURAL BOTTLENECK</label>
+                  <textarea id="spec-bottleneck" rows="3" placeholder="Describe peak concurrency limits, lock contention, or slow RAG retrieval times..." class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-xs font-mono text-white focus:border-brand-gold focus:outline-none"></textarea>
+                </div>
+              </div>
+
+              <div class="flex justify-between pt-4">
+                <button type="button" onclick="goToStep(2)" class="text-xs font-mono text-slate-400 hover:text-white">← Previous</button>
+                <button type="button" onclick="goToStep(4)" class="bg-brand-blue text-brand-void font-bold text-xs px-6 py-2.5 rounded font-mono flex items-center space-x-1">
+                  <span>Proceed to Final Dispatch</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 4: Organization Intake & Dispatch -->
+            <div id="step-4" class="hidden space-y-6">
+              <div class="text-xs font-mono text-slate-400 uppercase">// STEP 4: OPERATOR CREDENTIALS & DISPATCH</div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-slate-300 mb-1">OPERATOR NAME</label>
+                  <input type="text" id="spec-name" required placeholder="Elena Rostova" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-xs font-mono text-white focus:border-brand-gold focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-slate-300 mb-1">ENTERPRISE WORK EMAIL</label>
+                  <input type="email" id="spec-email" required placeholder="elena@enterprise.io" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-xs font-mono text-white focus:border-brand-gold focus:outline-none">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-mono text-slate-300 mb-1">DESIRED COMMENCEMENT SPRINT</label>
+                <select id="spec-timeline" class="w-full bg-brand-void border border-brand-border rounded px-3 py-2 text-xs font-mono text-white focus:border-brand-gold focus:outline-none">
+                  <option value="Immediate Strike Team (Next 14 Days)">Immediate Strike Team (Next 14 Days)</option>
+                  <option value="Q3 2026 Scheduled Release">Q3 2026 Scheduled Release</option>
+                  <option value="Architectural Feasibility Discovery Only">Architectural Feasibility Discovery Only</option>
+                </select>
+              </div>
+
+              <div class="bg-brand-void p-3 rounded border border-brand-border font-mono text-[11px] text-slate-400">
+                [TRANSMISSION PAYLOAD] Specification will be indexed in ObliqueDB and dispatched directly to the Chief Systems Architect. A cryptographic verification token will be generated upon submission.
+              </div>
+
+              <div class="flex justify-between pt-4">
+                <button type="button" onclick="goToStep(3)" class="text-xs font-mono text-slate-400 hover:text-white">← Previous</button>
+                <button type="submit" class="bg-brand-gold text-brand-void font-bold text-xs px-8 py-3 rounded font-mono hover:bg-yellow-400 transition-colors flex items-center space-x-1.5">
+                  <span>Transmit Project Specification</span>
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      `;
+    }
+
+    function goToStep(stepNum) {
+      for (let i = 1; i <= 4; i++) {
+        const stepEl = document.getElementById(`step-${i}`);
+        const indEl = document.getElementById(`step-ind-${i}`);
+        if (stepEl && indEl) {
+          if (i === stepNum) {
+            stepEl.classList.remove("hidden");
+            indEl.className = "border-b-2 border-brand-gold text-brand-gold pb-1.5 font-bold";
+          } else if (i < stepNum) {
+            stepEl.classList.add("hidden");
+            indEl.className = "border-b-2 border-brand-emerald text-brand-emerald pb-1.5";
+          } else {
+            stepEl.classList.add("hidden");
+            indEl.className = "border-b-2 border-brand-border text-slate-500 pb-1.5";
+          }
+        }
+      }
+      reinitIconsAndPhysics();
+    }
+
+    function handleSpecSubmit(e) {
+      e.preventDefault();
+      const domain = document.querySelector('input[name="spec-domain"]:checked')?.value || "Distributed Web";
+      const latency = document.getElementById("spec-latency")?.value || "Sub-50ms";
+      const name = document.getElementById("spec-name")?.value || "Operator";
+      const email = document.getElementById("spec-email")?.value || "operator@enterprise.com";
+      const bottleneck = document.getElementById("spec-bottleneck")?.value || "Production latency reduction";
+
+      const newInquiry = {
+        id: "INQ-" + Math.floor(1000 + Math.random() * 9000),
+        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + " UTC",
+        name: name,
+        email: email,
+        scope: domain,
+        slaTarget: latency,
+        status: "Ingested via Spec Engine",
+        notes: bottleneck
+      };
+
+      ObliqueDB.inquiries.unshift(newInquiry);
+
+      showToast(`Specification Transmitted: ${newInquiry.id}`, 'emerald');
+      
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-16 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto text-center space-y-6">
+          <div class="w-14 h-14 bg-brand-emerald/10 border border-brand-emerald/40 rounded-full flex items-center justify-center mx-auto text-brand-emerald">
+            <i data-lucide="shield-check" class="w-7 h-7"></i>
+          </div>
+          <h2 class="text-3xl font-bold font-display text-white">Specification Cryptographically Recorded</h2>
+          <div class="bg-brand-surface p-6 rounded-xl border border-brand-border font-mono text-xs text-left space-y-3">
+            <div class="flex justify-between border-b border-brand-border pb-2">
+              <span class="text-slate-500">SPECIFICATION TOKEN:</span>
+              <span class="text-brand-gold font-bold">${newInquiry.id}</span>
+            </div>
+            <div class="flex justify-between border-b border-brand-border pb-2">
+              <span class="text-slate-500">OPERATOR:</span>
+              <span class="text-slate-200">${newInquiry.name} (${newInquiry.email})</span>
+            </div>
+            <div class="flex justify-between border-b border-brand-border pb-2">
+              <span class="text-slate-500">ARCHITECTURAL DOMAIN:</span>
+              <span class="text-brand-blue font-semibold">${newInquiry.scope}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">TARGET SLA COMMITMENT:</span>
+              <span class="text-brand-emerald font-semibold">${newInquiry.slaTarget}</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 font-mono">
+            A Principal Systems Architect will review your parameters and dispatch an RFC document within 4 business hours.
+          </p>
+          <div class="pt-4 flex justify-center space-x-4 font-mono text-xs">
+            <a href="#/admin" class="text-brand-gold hover:underline">Inspect In Admin DB →</a>
+            <a href="#/" class="text-slate-400 hover:text-white">Return to Overview</a>
+          </div>
+        </div>
+      `;
+      reinitIconsAndPhysics();
+    }
+
+    // ROUTE: #/admin (Relational DB Inspection Portal & Leads Management)
+    function renderAdminView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+          <!-- Breadcrumb -->
+          <div class="flex items-center space-x-2 text-xs font-mono text-slate-500 mb-6">
+            <a href="#/" class="hover:text-white">HOME</a>
+            <span>/</span>
+            <span class="text-brand-gold">RELATIONAL DB INSPECTION PORTAL</span>
+          </div>
+
+          <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-brand-border pb-6 mb-8">
+            <div>
+              <div class="micro-tag text-brand-gold mb-1">// INTERNAL SYSTEM CONTROL PLANE</div>
+              <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                ObliqueDB Live Inspector
+              </h1>
+              <p class="text-xs sm:text-sm text-slate-400 font-mono mt-1">
+                Real-time relational database state: Inquiries, verified deployments, and telemetry sync.
+              </p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="mt-4 md:mt-0 flex items-center space-x-3 font-mono text-xs">
+              <button onclick="addMockLead()" class="bg-brand-surface hover:bg-brand-elevated border border-brand-border px-3 py-1.5 rounded text-brand-blue flex items-center space-x-1">
+                <i data-lucide="plus" class="w-3 h-3"></i>
+                <span>Inject Synthetic Lead</span>
+              </button>
+              <button onclick="clearInquiries()" class="bg-brand-surface hover:bg-brand-elevated border border-brand-border px-3 py-1.5 rounded text-red-400">
+                Reset Inquiries
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Database Stats Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 font-mono text-xs">
+            <div class="bg-brand-surface p-4 rounded-lg border border-brand-border">
+              <div class="text-[10px] text-slate-500 uppercase">ACTIVE INQUIRIES</div>
+              <div class="text-2xl font-bold text-brand-gold mt-1" id="admin-lead-count">${ObliqueDB.inquiries.length}</div>
+              <div class="text-[10px] text-brand-emerald">Synced In-Memory Store</div>
+            </div>
+            <div class="bg-brand-surface p-4 rounded-lg border border-brand-border">
+              <div class="text-[10px] text-slate-500 uppercase">SERVICES DEFINED</div>
+              <div class="text-2xl font-bold text-brand-blue mt-1">${ObliqueDB.services.length}</div>
+              <div class="text-[10px] text-slate-400">RFC Specifications Live</div>
+            </div>
+            <div class="bg-brand-surface p-4 rounded-lg border border-brand-border">
+              <div class="text-[10px] text-slate-500 uppercase">PORTFOLIO RECORDS</div>
+              <div class="text-2xl font-bold text-white mt-1">${ObliqueDB.portfolio.length}</div>
+              <div class="text-[10px] text-slate-400">3 Prod • 2 Bench</div>
+            </div>
+            <div class="bg-brand-surface p-4 rounded-lg border border-brand-border">
+              <div class="text-[10px] text-slate-500 uppercase">SYSTEM HEALTH</div>
+              <div class="text-2xl font-bold text-brand-emerald mt-1">100%</div>
+              <div class="text-[10px] text-brand-emerald">RLS Enforced • No Leaks</div>
+            </div>
+          </div>
+
+          <!-- Inquiries Data Table -->
+          <div class="spotlight-card rounded-xl border border-brand-border overflow-hidden mb-8">
+            <div class="p-4 bg-brand-surface border-b border-brand-border flex items-center justify-between">
+              <div class="font-mono text-xs font-bold text-white flex items-center space-x-2">
+                <i data-lucide="database" class="w-4 h-4 text-brand-gold"></i>
+                <span>RELATIONAL TABLE: inquiries (Live Stream)</span>
+              </div>
+              <span class="text-[10px] font-mono bg-brand-border px-2 py-0.5 rounded text-slate-300">AUTO-REFRESHING</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left font-mono text-xs">
+                <thead class="bg-brand-void text-slate-400 border-b border-brand-border text-[10.5px]">
+                  <tr>
+                    <th class="p-3">ID / TIME</th>
+                    <th class="p-3">OPERATOR / CONTACT</th>
+                    <th class="p-3">DOMAIN / SCOPE</th>
+                    <th class="p-3">TARGET SLA</th>
+                    <th class="p-3">STATUS</th>
+                    <th class="p-3 text-right">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-table-body" class="divide-y divide-brand-border text-slate-300">
+                  ${renderAdminInquiryRows()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Services State Toggle Table -->
+          <div class="spotlight-card rounded-xl border border-brand-border overflow-hidden">
+            <div class="p-4 bg-brand-surface border-b border-brand-border">
+              <div class="font-mono text-xs font-bold text-white flex items-center space-x-2">
+                <i data-lucide="layers" class="w-4 h-4 text-brand-blue"></i>
+                <span>RELATIONAL TABLE: services (RFC Registry)</span>
+              </div>
+            </div>
+
+            <div class="p-4 space-y-3 font-mono text-xs">
+              ${ObliqueDB.services.map(svc => `
+                <div class="flex items-center justify-between p-3 bg-brand-void rounded border border-brand-border">
+                  <div>
+                    <span class="text-brand-gold font-semibold">${svc.id}</span>
+                    <span class="text-slate-400 ml-2">(${svc.title})</span>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <span class="text-[11px] text-brand-emerald">${svc.sla}</span>
+                    <a href="#/services/${svc.slug}" class="text-brand-blue hover:underline text-[11px]">Inspect →</a>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminInquiryRows() {
+      if (ObliqueDB.inquiries.length === 0) {
+        return `<tr><td colspan="6" class="p-6 text-center text-slate-500 font-mono">No active inquiries recorded. Click "Inject Synthetic Lead" above.</td></tr>`;
+      }
+      return ObliqueDB.inquiries.map(inq => `
+        <tr class="hover:bg-brand-surface/40 transition-colors">
+          <td class="p-3 whitespace-nowrap">
+            <div class="font-bold text-brand-gold">${inq.id}</div>
+            <div class="text-[10px] text-slate-500">${inq.timestamp}</div>
+          </td>
+          <td class="p-3">
+            <div class="font-semibold text-white">${inq.name}</div>
+            <div class="text-[10.5px] text-slate-400">${inq.email}</div>
+          </td>
+          <td class="p-3 text-brand-blue">${inq.scope}</td>
+          <td class="p-3 text-brand-emerald">${inq.slaTarget}</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] bg-brand-elevated border border-brand-border text-slate-300">
+              ${inq.status}
+            </span>
+          </td>
+          <td class="p-3 text-right">
+            <button onclick="dismissInquiry('${inq.id}')" class="text-slate-500 hover:text-red-400 text-[11px]">
+              Dismiss
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function addMockLead() {
+      const mockLead = {
+        id: "INQ-" + Math.floor(1000 + Math.random() * 9000),
+        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + " UTC",
+        name: "Synthetic Lead (" + ["Fintech Architect", "Bioinformatics Lead", "Principal SRE"][Math.floor(Math.random() * 3)] + ")",
+        email: "telemetry." + Math.floor(Math.random() * 100) + "@synthetic-corp.io",
+        scope: ["Distributed Web", "pgvector AI", "Strangler-Fig"][Math.floor(Math.random() * 3)],
+        slaTarget: "Sub-50ms P95 Target",
+        status: "Simulated Ingestion",
+        notes: "Automated bench stress injection"
+      };
+      ObliqueDB.inquiries.unshift(mockLead);
+      showToast(`Synthetic Lead Injected: ${mockLead.id}`, 'blue');
+      renderAdminView();
+    }
+
+    function dismissInquiry(id) {
+      ObliqueDB.inquiries = ObliqueDB.inquiries.filter(i => i.id !== id);
+      showToast(`Inquiry ${id} dismissed`, 'muted');
+      renderAdminView();
+    }
+
+    function clearInquiries() {
+      ObliqueDB.inquiries = [];
+      showToast('All inquiries reset', 'muted');
+      renderAdminView();
+    }
+
+    // 404 NOT FOUND
+    function renderNotFoundView() {
+      const appRoot = document.getElementById("app-root");
+      appRoot.innerHTML = `
+        <div class="py-24 px-4 text-center max-w-lg mx-auto space-y-6">
+          <div class="text-brand-gold font-mono text-6xl font-bold">404</div>
+          <h2 class="text-2xl font-bold font-display text-white">Route Outside System Boundary</h2>
+          <p class="text-xs text-slate-400 font-mono">
+            The requested URI does not exist within the client hash router table.
+          </p>
+          <a href="#/" class="inline-flex items-center space-x-2 bg-brand-surface border border-brand-border px-4 py-2 rounded text-xs font-mono text-white hover:border-brand-gold transition-colors">
+            <span>Return to Systems Root (#/)</span>
+          </a>
+        </div>
+      `;
+    }
+
+    /* =======================================================================
+       4. INTERACTIVE SYSTEMS ARCHITECTURE BENCH ENGINE
+       ======================================================================= */
+    let currentBenchMode = "oblique";
+
+    function setBenchMode(mode) {
+      currentBenchMode = mode;
+      const btnMonolith = document.getElementById("bench-mode-monolith");
+      const btnOblique = document.getElementById("bench-mode-oblique");
+
+      if (!btnMonolith || !btnOblique) return;
+
+      if (mode === "monolith") {
+        btnMonolith.className = "flex-1 py-1.5 rounded bg-red-500/90 text-white font-bold transition-all text-center shadow";
+        btnOblique.className = "flex-1 py-1.5 rounded text-slate-400 hover:text-white transition-all text-center";
+
+        // Conventional Monolith Values
+        document.getElementById("bench-layer1-val").innerHTML = '<span class="text-red-400 font-bold">140ms • Monolith Nginx Load Balancer</span>';
+        document.getElementById("bench-layer1-bar").style.width = "75%";
+        document.getElementById("bench-layer1-bar").className = "bg-red-500 h-full transition-all duration-500";
+
+        document.getElementById("bench-layer2-val").innerHTML = '<span class="text-red-400 font-bold">480ms • Blocking Node/Ruby Threadpool</span>';
+        document.getElementById("bench-layer2-bar").style.width = "95%";
+        document.getElementById("bench-layer2-bar").className = "bg-red-500 h-full transition-all duration-500";
+
+        document.getElementById("bench-layer3-val").innerHTML = '<span class="text-red-400 font-bold">160ms • Unindexed Single-Instance SQL</span>';
+        document.getElementById("bench-layer3-bar").style.width = "65%";
+        document.getElementById("bench-layer3-bar").className = "bg-red-500 h-full transition-all duration-500";
+
+        document.getElementById("bench-total-latency").textContent = "780ms";
+        document.getElementById("bench-total-latency").className = "text-xl font-bold text-red-400 font-mono mt-0.5";
+        document.getElementById("bench-total-status").textContent = "HIGH CONTENTION (780ms)";
+        document.getElementById("bench-total-status").className = "text-[10px] text-red-400 font-mono";
+
+        document.getElementById("bench-memory").textContent = "940 MB";
+        document.getElementById("bench-memory").className = "text-xl font-bold text-red-400 font-mono mt-0.5";
+        document.getElementById("bench-memory-status").textContent = "6.6X BLOATED RUNTIME";
+      } else {
+        btnMonolith.className = "flex-1 py-1.5 rounded text-slate-400 hover:text-white transition-all text-center";
+        btnOblique.className = "flex-1 py-1.5 rounded bg-brand-blue text-brand-void font-bold transition-all text-center shadow";
+
+        // Oblique Distributed Mesh Values
+        document.getElementById("bench-layer1-val").innerHTML = '<span class="text-brand-emerald font-bold">12ms • Cloudflare Edge Anycast</span>';
+        document.getElementById("bench-layer1-bar").style.width = "12%";
+        document.getElementById("bench-layer1-bar").className = "bg-brand-emerald h-full transition-all duration-500";
+
+        document.getElementById("bench-layer2-val").innerHTML = '<span class="text-brand-cyan font-bold">18ms • Go / TS Async Mesh</span>';
+        document.getElementById("bench-layer2-bar").style.width = "18%";
+        document.getElementById("bench-layer2-bar").className = "bg-brand-cyan h-full transition-all duration-500";
+
+        document.getElementById("bench-layer3-val").innerHTML = '<span class="text-brand-gold font-bold">8ms • pgvector / Redis Cluster</span>';
+        document.getElementById("bench-layer3-bar").style.width = "8%";
+        document.getElementById("bench-layer3-bar").className = "bg-brand-gold h-full transition-all duration-500";
+
+        document.getElementById("bench-total-latency").textContent = "38ms";
+        document.getElementById("bench-total-latency").className = "text-xl font-bold text-brand-emerald font-mono mt-0.5";
+        document.getElementById("bench-total-status").textContent = "SUB-50MS SLA MET";
+        document.getElementById("bench-total-status").className = "text-[10px] text-brand-emerald font-mono";
+
+        document.getElementById("bench-memory").textContent = "142 MB";
+        document.getElementById("bench-memory").className = "text-xl font-bold text-brand-blue font-mono mt-0.5";
+        document.getElementById("bench-memory-status").textContent = "OPTIMIZED EDGE MEMORY";
+      }
+    }
+
+    /* =======================================================================
+       5. 16° OBLIQUE VECTOR PERSPECTIVE CANVAS
+       ======================================================================= */
+    function initObliqueCanvas() {
+      const canvas = document.getElementById("oblique-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = 700;
+
+      window.addEventListener("resize", () => {
+        if (!canvas) return;
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = 700;
+      });
+
+      let mouseX = width / 2;
+      let mouseY = height / 2;
+      window.addEventListener("mousemove", e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      // Perspective shear lines: 16 degrees slope (tan(16deg) ~= 0.286)
+      const slope = 0.286;
+      let offset = 0;
+
+      function renderFrame() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Grid lines tilted obliquely
+        ctx.strokeStyle = "rgba(0, 210, 255, 0.04)";
+        ctx.lineWidth = 1;
+
+        const spacing = 48;
+        for (let x = -width; x < width * 2; x += spacing) {
+          ctx.beginPath();
+          ctx.moveTo(x + offset, 0);
+          ctx.lineTo(x - (height * slope) + offset, height);
+          ctx.stroke();
+        }
+
+        // Horizontal perspective cross-beams
+        ctx.strokeStyle = "rgba(212, 175, 55, 0.03)";
+        for (let y = 0; y < height; y += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(width, y + (width * 0.05));
+          ctx.stroke();
+        }
+
+        // Subtle kinetic telemetry nodes
+        ctx.fillStyle = "rgba(0, 210, 255, 0.4)";
+        const nodeCount = 8;
+        for (let i = 0; i < nodeCount; i++) {
+          const nx = ((i * 180 + offset * 2) % (width + 200)) - 100;
+          const ny = (i * 70) % height;
+          ctx.beginPath();
+          ctx.arc(nx, ny, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        offset += 0.25;
+        requestAnimationFrame(renderFrame);
+      }
+
+      // Check reduced motion
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        renderFrame();
+      }
+    }
+
+    /* =======================================================================
+       6. MOTION & PHYSICS: MAGNETIC CTAS & SPOTLIGHT CARDS
+       ======================================================================= */
+    function reinitIconsAndPhysics() {
+      // Re-initialize Lucide Icons
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
+      // Reduced motion guardrail
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Spotlight card cursor position tracking
+      document.querySelectorAll('.spotlight-card').forEach(card => {
+        card.onmousemove = e => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
+        };
+      });
+
+      // Magnetic Kinetic CTAs (Cursor attraction)
+      if (!prefersReducedMotion && window.gsap) {
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+          btn.onmousemove = e => {
+            const rect = btn.getBoundingClientRect();
+            const deltaX = (e.clientX - rect.left - rect.width / 2) * 0.25;
+            const deltaY = (e.clientY - rect.top - rect.height / 2) * 0.25;
+            gsap.to(btn, { x: deltaX, y: deltaY, duration: 0.2, ease: "power2.out" });
+          };
+          btn.onmouseleave = () => {
+            gsap.to(btn, { x: 0, y: 0, duration: 0.2, ease: "power2.out" });
+          };
+        });
+      }
+    }
+
+    /* =======================================================================
+       7. GLOBAL COMMAND PALETTE (⌘K / Ctrl+K)
+       ======================================================================= */
+    const commandPaletteItems = [
+      { type: "Action", title: "Schedule Architecture Discovery Call", hint: "Direct 45-min Principal Session", action: () => { closeCommandPalette(); openDiscoveryModal(); } },
+      { type: "Action", title: "Launch Oblique AI Terminal Daemon", hint: "oblique-ai-agent --daemon", action: () => { closeCommandPalette(); openDaemon(); } },
+      { type: "Action", title: "Toggle Light/Dark Theme", hint: "Switch visual mode", action: () => { toggleTheme(); closeCommandPalette(); } },
+      { type: "Action", title: "Initialize 4-Step Project Spec", hint: "Start structured intake", action: () => { closeCommandPalette(); window.location.hash = "#/start-project"; } },
+      
+      { type: "Route", title: "Overview Flagship", hint: "#/", action: () => { closeCommandPalette(); window.location.hash = "#/"; } },
+      { type: "Route", title: "Services RFC Matrix", hint: "#/services", action: () => { closeCommandPalette(); window.location.hash = "#/services"; } },
+      { type: "Route", title: "Production Portfolio Archive", hint: "#/portfolio", action: () => { closeCommandPalette(); window.location.hash = "#/portfolio"; } },
+      { type: "Route", title: "Origin Manifesto & Student Paradox", hint: "#/about", action: () => { closeCommandPalette(); window.location.hash = "#/about"; } },
+      { type: "Route", title: "Architectural Whitepapers", hint: "#/insights", action: () => { closeCommandPalette(); window.location.hash = "#/insights"; } },
+      { type: "Route", title: "Engagement Protocols & SLA", hint: "#/faq", action: () => { closeCommandPalette(); window.location.hash = "#/faq"; } },
+      { type: "Route", title: "Relational Admin DB Inspector", hint: "#/admin", action: () => { closeCommandPalette(); window.location.hash = "#/admin"; } },
+      
+      { type: "Service", title: "RFC: Distributed Web & Edge Ingress", hint: "Sub-50ms P95", action: () => { closeCommandPalette(); window.location.hash = "#/services/web-development"; } },
+      { type: "Service", title: "RFC: Applied AI & pgvector RAG", hint: "Zero hallucinations", action: () => { closeCommandPalette(); window.location.hash = "#/services/ai-ml"; } },
+      { type: "Service", title: "RFC: Strangler-Fig Modernization", hint: "Zero downtime", action: () => { closeCommandPalette(); window.location.hash = "#/services/it-consulting"; } },
+      { type: "Service", title: "RFC: Industrial Product UI & Ergonomics", hint: "High density", action: () => { closeCommandPalette(); window.location.hash = "#/services/ui-ux"; } },
+      { type: "Service", title: "RFC: Mission-Critical Mobile", hint: "Offline-first SQLite", action: () => { closeCommandPalette(); window.location.hash = "#/services/mobile"; } },
+
+      { type: "Case", title: "Case: ApexPay 18.4ms Clearing Core", hint: "Fintech & Raft", action: () => { closeCommandPalette(); window.location.hash = "#/portfolio/distributed-fintech-core"; } },
+      { type: "Case", title: "Case: AegisHealth Clinical RAG", hint: "99.4% citation accuracy", action: () => { closeCommandPalette(); window.location.hash = "#/portfolio/neural-clinical-rag"; } },
+      { type: "Case", title: "Case: Vanguard 1.2M req/s Fleet Mesh", hint: "Rust & TimescaleDB", action: () => { closeCommandPalette(); window.location.hash = "#/portfolio/logistics-mesh-erp"; } }
+    ];
+
+    function openCommandPalette() {
+      const modal = document.getElementById("cmd-palette-modal");
+      const input = document.getElementById("cmd-palette-input");
+      modal.classList.remove("hidden");
+      input.value = "";
+      filterCommandPalette("");
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closeCommandPalette() {
+      const modal = document.getElementById("cmd-palette-modal");
+      modal.classList.add("hidden");
+    }
+
+    function handlePaletteBackdrop(e) {
+      closeCommandPalette();
+    }
+
+    function filterCommandPalette(query) {
+      const resultsContainer = document.getElementById("cmd-results");
+      const q = query.toLowerCase().trim();
+      const filtered = commandPaletteItems.filter(item => 
+        item.title.toLowerCase().includes(q) || 
+        item.type.toLowerCase().includes(q) || 
+        item.hint.toLowerCase().includes(q)
+      );
+
+      if (filtered.length === 0) {
+        resultsContainer.innerHTML = `<div class="p-4 text-center text-slate-500 font-mono text-xs">No matching system directives found for "${query}"</div>`;
+        return;
+      }
+
+      resultsContainer.innerHTML = filtered.map((item, idx) => `
+        <div onclick="executePaletteItem(${idx})" class="p-3 rounded-lg hover:bg-brand-surface cursor-pointer flex items-center justify-between group transition-colors">
+          <div class="flex items-center space-x-3">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border border-brand-border ${
+              item.type === 'Action' ? 'text-brand-gold bg-brand-gold/10' :
+              item.type === 'Service' ? 'text-brand-blue bg-brand-blue/10' :
+              item.type === 'Case' ? 'text-brand-emerald bg-brand-emerald/10' : 'text-slate-400 bg-brand-void'
+            }">
+              ${item.type}
+            </span>
+            <span class="text-white font-medium text-xs sm:text-sm group-hover:text-brand-gold transition-colors">${item.title}</span>
+          </div>
+          <span class="text-[11px] font-mono text-slate-500">${item.hint}</span>
+        </div>
+      `).join('');
+
+      // Store filtered list on container for keyboard selection
+      resultsContainer.currentFiltered = filtered;
+    }
+
+    function executePaletteItem(index) {
+      const resultsContainer = document.getElementById("cmd-results");
+      const item = resultsContainer.currentFiltered ? resultsContainer.currentFiltered[index] : commandPaletteItems[index];
+      if (item && item.action) {
+        item.action();
+      }
+    }
+
+    function initKeyboardShortcuts() {
+      window.addEventListener("keydown", e => {
+        // ⌘K or Ctrl+K trigger
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          const modal = document.getElementById("cmd-palette-modal");
+          if (modal.classList.contains("hidden")) {
+            openCommandPalette();
+          } else {
+            closeCommandPalette();
+          }
+        }
+        // Escape key closes modals
+        if (e.key === 'Escape') {
+          closeCommandPalette();
+          closeDiscoveryModal();
+          closeDaemon();
+        }
+      });
+    }
+
+    /* =======================================================================
+       8. OBLIQUE AI TERMINAL DAEMON (oblique-ai-agent --daemon)
+       ======================================================================= */
+    let geminiApiKey = localStorage.getItem("oblique_gemini_api_key") || "";
+
+    function toggleDaemon() {
+      const win = document.getElementById("ai-daemon-window");
+      if (win.classList.contains("hidden")) {
+        openDaemon();
+      } else {
+        closeDaemon();
+      }
+    }
+
+    function openDaemon() {
+      const win = document.getElementById("ai-daemon-window");
+      win.classList.remove("hidden");
+      setTimeout(() => document.getElementById("daemon-input").focus(), 50);
+      reinitIconsAndPhysics();
+    }
+
+    function closeDaemon() {
+      const win = document.getElementById("ai-daemon-window");
+      win.classList.add("hidden");
+    }
+
+    function promptForApiKey() {
+      const current = localStorage.getItem("oblique_gemini_api_key") || "";
+      const input = window.prompt("Configure Gemini 3 Flash API Key (Optional. Leave blank for deterministic offline fallback):", current);
+      if (input !== null) {
+        localStorage.setItem("oblique_gemini_api_key", input.trim());
+        geminiApiKey = input.trim();
+        showToast(geminiApiKey ? "Gemini API Key Saved" : "Operating in Deterministic Offline Mode", "emerald");
+      }
+    }
+
+    function sendQuickQuery(text) {
+      document.getElementById("daemon-input").value = text;
+      handleDaemonSubmit(new Event('submit'));
+    }
+
+    async function handleDaemonSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById("daemon-input");
+      const query = input.value.trim();
+      if (!query) return;
+
+      input.value = "";
+      appendDaemonLog(`&gt; ${query}`, "user");
+
+      // Check local terminal commands
+      const lower = query.toLowerCase();
+      if (lower === "help") {
+        appendDaemonLog(`
+          AVAILABLE COMMANDS:<br>
+          • <strong>bench</strong>: Print current latency benchmark readouts<br>
+          • <strong>routes</strong>: List all registered SPA endpoints<br>
+          • <strong>specs</strong>: Open Project Specification Engine<br>
+          • <strong>metrics</strong>: Show active telemetry status<br>
+          • <strong>clear</strong>: Clear terminal log scrollback<br>
+          • <strong>about</strong>: Print company origin and student paradox summary
+        `, "system");
+        return;
+      }
+      if (lower === "clear") {
+        document.getElementById("terminal-logs").innerHTML = `<div class="text-slate-500 text-[11px] pb-2">[TERMINAL CLEARED]</div>`;
+        return;
+      }
+      if (lower === "bench") {
+        appendDaemonLog(`
+          [TELEMETRY READOUT]<br>
+          Mode: ${currentBenchMode.toUpperCase()}<br>
+          Ingress: ${currentBenchMode === 'oblique' ? '12ms (Cloudflare Edge)' : '140ms (Monolith Load Balancer)'}<br>
+          Compute: ${currentBenchMode === 'oblique' ? '18ms (Go / TS Mesh)' : '480ms (Blocking Threadpool)'}<br>
+          Storage: ${currentBenchMode === 'oblique' ? '8ms (pgvector / Redis)' : '160ms (Unindexed Single DB)'}<br>
+          P95 Total: ${currentBenchMode === 'oblique' ? '38ms (Target Met)' : '780ms (Contention Warning)'}
+        `, "system");
+        return;
+      }
+      if (lower === "routes") {
+        appendDaemonLog(`
+          REGISTERED ROUTES:<br>
+          #/, #/services, #/services/:slug, #/portfolio, #/portfolio/:slug, #/about, #/insights, #/faq, #/contact, #/start-project, #/admin
+        `, "system");
+        return;
+      }
+
+      // Show typing indicator
+      const typingId = appendDaemonLog(`<span class="text-brand-cyan animate-pulse">[PROCESSING TELEMETRY VECTOR...]</span>`, "agent");
+
+      // Attempt Gemini 3 Flash Call or Deterministic Heuristic Fallback
+      if (geminiApiKey) {
+        try {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `You are Oblique AI, senior technical systems advisor for ObliqueTech (Tagline: 'See Business Differently'). Maintain an engineering-grade, mathematically grounded, concise tone. Explain edge topologies, microservice architectures, and deterministic RAG systems. Reference the engineering student experience paradox when asked about company origins.\n\nUser Question: ${query}`
+                }]
+              }]
+            })
+          });
+          const data = await response.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Unable to parse API response stream.";
+          removeLog(typingId);
+          appendDaemonLog(text.replace(/\n/g, '<br>'), "agent");
+          return;
+        } catch (err) {
+          removeLog(typingId);
+          appendDaemonLog(`[API FALLBACK] ${err.message}. Switching to local heuristic engine...`, "system");
+        }
+      }
+
+      // Deterministic Offline Heuristic Engine
+      setTimeout(() => {
+        removeLog(typingId);
+        const reply = getDeterministicHeuristicResponse(query);
+        appendDaemonLog(reply, "agent");
+      }, 400);
+    }
+
+    function getDeterministicHeuristicResponse(q) {
+      const query = q.toLowerCase();
+      if (query.includes("student") || query.includes("origin") || query.includes("found")) {
+        return `<strong>[ORIGIN & STUDENT PARADOX]</strong> ObliqueTech was founded to eliminate the Engineering Student Experience Paradox: companies demand 3-5 years production experience for entry positions, but grant no opportunity to acquire it. We began as an open-architecture project laboratory pairing hungry developers with senior systems architects to build real commercial prototypes under brutal production hackathons. That execution culture now powers our global distributed enterprise.`;
+      }
+      if (query.includes("rag") || query.includes("ai") || query.includes("hallucinat")) {
+        return `<strong>[DETERMINISTIC RAG TOPOLOGY]</strong> We eliminate speculative hallucinations by pairing PostgreSQL <code>pgvector</code> HNSW graphs (m=16, ef_construction=64) with two-stage Cross-Encoder reranking. We achieve sub-35ms vector retrieval with 99.4% citation accuracy, strictly bound by Row-Level Security (RLS).`;
+      }
+      if (query.includes("distributed") || query.includes("stack") || query.includes("edge") || query.includes("latency")) {
+        return `<strong>[DISTRIBUTED EDGE MESH]</strong> Ingress traffic is intercepted via 14 Cloudflare Anycast POPs (sub-12ms). Services execute asynchronously in Go and TypeScript with CockroachDB Raft consensus and Redis caching. Combined global P95 latency is bounded deterministically under 45ms.`;
+      }
+      if (query.includes("strangler") || query.includes("monolith") || query.includes("migrat")) {
+        return `<strong>[STRANGLER-FIG PROTOCOL]</strong> We de-risk legacy migrations by introducing an intelligent reverse proxy at the network perimeter. Shadow traffic mirroring tests dual-write data consistency across millions of transactions with zero downtime before any production cutover.`;
+      }
+      return `<strong>[OBLIQUE ARCHITECTURE DIRECTIVE]</strong> ObliqueTech engineers mission-critical software, custom RAG pipelines, and digital platforms globally. For this system specification, we recommend an edge-routed mesh with pgvector deterministic indexing. Run <code>bench</code> for latency comparisons or <code>specs</code> to initialize a project specification.`;
+    }
+
+    function appendDaemonLog(html, sender) {
+      const logs = document.getElementById("terminal-logs");
+      const id = "log-" + Math.random().toString(36).substring(2, 9);
+      const div = document.createElement("div");
+      div.id = id;
+
+      if (sender === "user") {
+        div.className = "text-white font-mono text-xs bg-brand-surface/40 p-2 rounded border border-brand-border/40";
+        div.innerHTML = html;
+      } else if (sender === "agent") {
+        div.className = "text-slate-300 font-mono text-xs bg-brand-surface/90 p-3 rounded border border-brand-border leading-relaxed";
+        div.innerHTML = `<span class="text-brand-emerald font-bold">oblique-ai:~$</span> ` + html;
+      } else {
+        div.className = "text-slate-400 font-mono text-[11px] p-1";
+        div.innerHTML = html;
+      }
+
+      logs.appendChild(div);
+      logs.scrollTop = logs.scrollHeight;
+      return id;
+    }
+
+    function removeLog(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    /* =======================================================================
+       9. MODAL & INTAKE HANDLERS (Zero native alert() calls)
+       ======================================================================= */
+    function openDiscoveryModal() {
+      document.getElementById("discovery-modal").classList.remove("hidden");
+    }
+
+    function closeDiscoveryModal() {
+      document.getElementById("discovery-modal").classList.add("hidden");
+    }
+
+    function handleDiscoveryBackdrop(e) {
+      closeDiscoveryModal();
+    }
+
+    function handleDiscoverySubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById("disc-name")?.value;
+      const email = document.getElementById("disc-email")?.value;
+      const domain = document.getElementById("disc-domain")?.value;
+      const bottleneck = document.getElementById("disc-bottleneck")?.value;
+
+      const newInquiry = {
+        id: "DISC-" + Math.floor(1000 + Math.random() * 9000),
+        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + " UTC",
+        name: name,
+        email: email,
+        scope: domain,
+        slaTarget: "45-Min Architectural Discovery",
+        status: "Confirmed on Calendar",
+        notes: bottleneck
+      };
+
+      ObliqueDB.inquiries.unshift(newInquiry);
+      closeDiscoveryModal();
+      showToast(`Architecture Discovery Scheduled: ${newInquiry.id}`, 'emerald');
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById("contact-name")?.value;
+      const email = document.getElementById("contact-email")?.value;
+      const subject = document.getElementById("contact-subject")?.value;
+      const msg = document.getElementById("contact-message")?.value;
+
+      const newInquiry = {
+        id: "INQ-" + Math.floor(1000 + Math.random() * 9000),
+        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + " UTC",
+        name: name,
+        email: email,
+        scope: subject,
+        slaTarget: "< 4h Enterprise SLA",
+        status: "Direct Transmission Ingested",
+        notes: msg
+      };
+
+      ObliqueDB.inquiries.unshift(newInquiry);
+      showToast(`Transmission Dispatched [${newInquiry.id}]`, 'blue');
+      e.target.reset();
+    }
+
+    function showToast(message, color = 'gold') {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `p-3 rounded-lg border shadow-xl backdrop-blur-md font-mono text-xs flex items-center justify-between pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300 ${
+        color === 'emerald' ? 'bg-brand-dark/95 border-brand-emerald text-brand-emerald' :
+        color === 'blue' ? 'bg-brand-dark/95 border-brand-blue text-brand-blue' :
+        color === 'muted' ? 'bg-brand-dark/95 border-brand-border text-slate-400' :
+        'bg-brand-dark/95 border-brand-gold text-brand-gold'
+      }`;
+      toast.innerHTML = `
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full ${color === 'emerald' ? 'bg-brand-emerald' : color === 'blue' ? 'bg-brand-blue' : 'bg-brand-gold'}"></span>
+          <span>${message}</span>
+        </div>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* =======================================================================
+       10. THEME RESILIENCE (Dark & Light Modes)
+       ======================================================================= */
+    function initTheme() {
+      const saved = localStorage.getItem("oblique_theme") || "dark";
+      applyTheme(saved);
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const next = isDark ? "light" : "dark";
+      applyTheme(next);
+      localStorage.setItem("oblique_theme", next);
+    }
+
+    function applyTheme(theme) {
+      const label = document.getElementById("theme-label");
+      if (theme === "light") {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+        if (label) label.textContent = "DARK";
+      } else {
+        document.documentElement.classList.remove("light");
+        document.documentElement.classList.add("dark");
+        if (label) label.textContent = "LIGHT";
+      }
+    }
+
+    function toggleMobileNav() {
+      const nav = document.getElementById("mobile-nav");
+      nav.classList.toggle("hidden");
+    }
+
+    function closeMobileNav() {
+      const nav = document.getElementById("mobile-nav");
+      nav.classList.add("hidden");
+    }
+
+    function startTelemetrySimulation() {
+      setInterval(() => {
+        const el = document.getElementById("telemetry-p95");
+        if (el) {
+          const jitter = (37.8 + Math.random() * 1.4).toFixed(1);
+          el.textContent = `${jitter}ms`;
+        }
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
