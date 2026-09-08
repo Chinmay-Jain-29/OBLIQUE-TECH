@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send, Sparkles, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { MessageSquare, X, Send, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 interface Message {
@@ -12,10 +12,12 @@ interface Message {
 }
 
 const QUICK_PROMPTS = [
-  'What services does ObliqueTech provide?',
-  'How do we start a project?',
-  'What is your development process?',
-  'Can you help integrate AI into our systems?'
+  'What services do you provide?',
+  'What kinds of projects do you build?',
+  'Can you work with startups?',
+  'Do you work internationally?',
+  'How do I start a project?',
+  'How do I schedule a call?'
 ];
 
 export function ObliqueAIChatbot() {
@@ -25,7 +27,7 @@ export function ObliqueAIChatbot() {
     {
       id: 'welcome',
       sender: 'ai',
-      text: 'Welcome to ObliqueTech. I am Oblique AI. How can I help you explore our services, technical process, or guide your next project?',
+      text: 'Hello. I am Ask Oblique. How can I help you explore our services, review our work, or connect with our team?',
       links: [
         { label: 'Start a Project', href: '/start-project' },
         { label: 'Schedule a Call', href: '/schedule' }
@@ -43,178 +45,219 @@ export function ObliqueAIChatbot() {
   const generateAIResponse = (query: string): Message => {
     const q = query.toLowerCase();
 
-    if (q.includes('service') || q.includes('what do you do') || q.includes('capabilities')) {
+    // 1. What services do you provide?
+    if (q.includes('service') || q.includes('what do you do') || q.includes('offer')) {
       return {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        text: 'ObliqueTech specializes in 7 primary disciplines:\n• Web Development (Scalable Next.js/React platforms)\n• IT Consulting & Architecture Strategy\n• AI / ML & Intelligent Automation Systems\n• UI/UX Design & Product Strategy\n• Mobile App Development (iOS & Android)\n• Custom Software & API Engineering\n• Technical Digital Marketing & SEO\n\nWould you like to scope a project with us?',
+        text: 'ObliqueTech provides 4 primary service areas:\n• Web Development — High-performance web applications and platforms.\n• AI & ML — Practical AI solutions, automation, and intelligent pipelines.\n• UI/UX Design — Human-centered interfaces built for clarity.\n• IT Consulting — Strategic technology direction and architecture.\n\nWe also deliver custom software, mobile apps, and technical digital marketing.',
         links: [
-          { label: 'Explore All Services', href: '/services' },
+          { label: 'View All Services', href: '/services' },
           { label: 'Start a Project', href: '/start-project' }
         ]
       };
     }
 
-    if (q.includes('start') || q.includes('quote') || q.includes('price') || q.includes('cost') || q.includes('hire')) {
+    // 2. What kinds of projects do you build?
+    if (q.includes('project') || q.includes('portfolio') || q.includes('built') || q.includes('work')) {
       return {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        text: 'We do not generate arbitrary pricing quotes without understanding your exact technical requirements and goals. You can submit your requirements through our 5-step Project Wizard, or book a direct 30-minute introductory call with our engineering team.',
+        text: 'We have 3 completed enterprise projects and 2 active initiatives:\n• Cloud-Native Enterprise Inventory Platform (Web)\n• Predictive Maintenance Analytics Engine (AI/ML)\n• Patient Care & Health Records Hub (Healthcare SaaS)\n• Enterprise Knowledge Graph Assistant (Active)\n• Cross-Platform Field Operations Suite (Active)',
         links: [
-          { label: 'Start Project Wizard', href: '/start-project' },
-          { label: 'Schedule a Call (30-45m)', href: '/schedule' }
+          { label: 'Explore Portfolio', href: '/portfolio' },
+          { label: 'Start a Project', href: '/start-project' }
         ]
       };
     }
 
-    if (q.includes('process') || q.includes('how it works') || q.includes('steps') || q.includes('timeline')) {
+    // 3. Can you work with startups?
+    if (q.includes('startup') || q.includes('mvp') || q.includes('early stage') || q.includes('founder')) {
       return {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        text: 'Our engineering workflow follows 7 clear stages:\n1. Discover — Business goals & scope definition\n2. Strategize — Tech stack & architecture blueprint\n3. Design — Figma prototypes & UI systems\n4. Build — Agile sprint-based engineering\n5. Test — QA, performance & security checks\n6. Launch — Production rollout\n7. Grow — SLA maintenance and scaling.',
+        text: 'Yes. Startups and entrepreneurs are one of our core client audiences. We help founders validate technical feasibility, design high-converting prototypes, and engineer scalable MVPs with clean architecture.',
         links: [
-          { label: 'Schedule a Discovery Call', href: '/schedule' }
-        ]
-      };
-    }
-
-    if (q.includes('ai') || q.includes('ml') || q.includes('llm') || q.includes('machine learning') || q.includes('gpt')) {
-      return {
-        id: `ai-${Date.now()}`,
-        sender: 'ai',
-        text: 'We build domain-specific AI systems, document intelligence pipelines (RAG), and predictive analytics models with strict data privacy boundaries. Your proprietary data is never used for public model training.',
-        links: [
-          { label: 'View AI / ML Service', href: '/services/ai-ml' },
-          { label: 'Schedule an AI Discussion', href: '/schedule' }
-        ]
-      };
-    }
-
-    if (q.includes('student') || q.includes('intern') || q.includes('career') || q.includes('origin')) {
-      return {
-        id: `ai-${Date.now()}`,
-        sender: 'ai',
-        text: 'Oblique began by recognizing the experience gap faced by engineering students—where companies expect production experience that graduates rarely get a chance to build. We actively support mentorship, real-world project collaboration, and tech speaker sessions.',
-        links: [
-          { label: 'Read Our Story', href: '/about' },
-          { label: 'Contact Us', href: '/contact' }
-        ]
-      };
-    }
-
-    if (q.includes('contact') || q.includes('email') || q.includes('call') || q.includes('phone') || q.includes('whatsapp')) {
-      return {
-        id: `ai-${Date.now()}`,
-        sender: 'ai',
-        text: 'You can reach us through our direct contact page, book a meeting via our scheduler, or send a WhatsApp message anytime.',
-        links: [
-          { label: 'Contact Details', href: '/contact' },
+          { label: 'Start a Project', href: '/start-project' },
           { label: 'Schedule a Call', href: '/schedule' }
         ]
       };
     }
 
+    // 4. Do you work internationally?
+    if (q.includes('international') || q.includes('global') || q.includes('remote') || q.includes('timezone') || q.includes('country')) {
+      return {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: 'Yes, absolutely. We work with international clients across diverse time zones. Our communication is structured around regular async updates, weekly sprint reviews, and direct Slack/WhatsApp channels.',
+        links: [
+          { label: 'Schedule a Call', href: '/schedule' },
+          { label: 'Contact Us', href: '/contact' }
+        ]
+      };
+    }
+
+    // 5. How do I start?
+    if (q.includes('start') || q.includes('hire') || q.includes('cost') || q.includes('price') || q.includes('quote')) {
+      return {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: 'Starting is straightforward. You can fill out our neutral 5-step Project Specification form with what you are building, or book a direct 30–45 minute consultation call with our engineering team.',
+        links: [
+          { label: 'Start a Project (5 Steps)', href: '/start-project' },
+          { label: 'Schedule a Call (30-45m)', href: '/schedule' }
+        ]
+      };
+    }
+
+    // 6. How do I schedule a call?
+    if (q.includes('call') || q.includes('meet') || q.includes('schedule') || q.includes('talk')) {
+      return {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: 'You can select a preferred topic, date, and time slot on our Schedule page. It is a focused 30–45 minute technical conversation without any sales pressure.',
+        links: [
+          { label: 'Schedule a Call Now', href: '/schedule' },
+          { label: 'Direct WhatsApp Chat', href: 'https://wa.me/15550192834' }
+        ]
+      };
+    }
+
+    // 7. Student / Origin questions
+    if (q.includes('origin') || q.includes('student') || q.includes('story') || q.includes('why oblique')) {
+      return {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: 'Oblique started after seeing a common challenge among engineering students: companies wanted experience, but students struggled to find opportunities to gain it. We began as a hands-on project lab connecting developers with seasoned architects, and evolved into an applied technology enterprise.',
+        links: [
+          { label: 'Read Our Story', href: '/about' },
+          { label: 'Schedule a Call', href: '/schedule' }
+        ]
+      };
+    }
+
+    // Default Fallback
     return {
       id: `ai-${Date.now()}`,
       sender: 'ai',
-      text: 'Thank you for your question. To ensure you receive precise, tailored information without assumptions, I recommend speaking directly with our engineering team or completing our discovery wizard.',
+      text: 'We build practical technology solutions that help businesses work better. Would you like to tell us about what you are building, or schedule a 30-minute discovery call?',
       links: [
-        { label: 'Start Project Wizard', href: '/start-project' },
-        { label: 'Schedule a 30-min Call', href: '/schedule' }
+        { label: 'Start a Project', href: '/start-project' },
+        { label: 'Schedule a Call', href: '/schedule' }
       ]
     };
   };
 
-  const handleSend = (textToSend?: string) => {
-    const text = textToSend || input.trim();
-    if (!text) return;
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const userText = input.trim();
+    setInput('');
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text
+      text: userText
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    if (!textToSend) setInput('');
+    setMessages((prev) => [...prev, userMessage]);
 
     setTimeout(() => {
-      const response = generateAIResponse(text);
-      setMessages(prev => [...prev, response]);
-    }, 450);
+      const response = generateAIResponse(userText);
+      setMessages((prev) => [...prev, response]);
+    }, 250);
+  };
+
+  const handleQuickPrompt = (prompt: string) => {
+    const userMessage: Message = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: prompt
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    setTimeout(() => {
+      const response = generateAIResponse(prompt);
+      setMessages((prev) => [...prev, response]);
+    }, 250);
   };
 
   return (
     <>
       {/* Floating Trigger Button */}
-      <aside aria-label="AI Assistant" className="fixed bottom-6 left-6 z-40">
+      <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          aria-label="Open Oblique AI Assistant"
-          className="relative group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-900/90 text-white border border-cyan-500/40 hover:border-cyan-400 shadow-[0_0_20px_rgba(0,210,255,0.25)] hover:shadow-[0_0_25px_rgba(0,210,255,0.4)] backdrop-blur-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#0B0B0D] dark:bg-white text-white dark:text-[#0B0B0D] text-xs font-semibold shadow-lg hover:scale-105 transition-all border border-white/20 dark:border-slate-300"
+          aria-label="Open Ask Oblique"
         >
-          <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-          <Bot className="w-4 h-4 text-cyan-400" />
-          <span className="text-xs font-medium tracking-wide">Oblique AI</span>
-          <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase bg-cyan-500/20 text-cyan-300 rounded border border-cyan-500/30">
-            Assistant
-          </span>
+          <div className="w-2 h-2 rounded-full bg-[#20A779] animate-pulse" />
+          <span>Ask Oblique</span>
         </button>
-      </aside>
+      </div>
 
-      {/* Chat Drawer / Modal */}
+      {/* Floating Chat Window */}
       {isOpen && (
-        <section aria-label="Oblique AI Chat Drawer" className="fixed bottom-20 left-6 z-50 w-[92vw] max-w-sm sm:max-w-md h-[560px] max-h-[80vh] flex flex-col rounded-2xl bg-slate-950/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-20 right-6 z-50 w-[92vw] sm:w-96 max-h-[560px] bg-white dark:bg-[#121317] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200">
           {/* Header */}
-          <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                <Sparkles className="w-4 h-4" />
+          <div className="p-4 bg-[#0B0B0D] text-white flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-6 h-6 rounded bg-white flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-[#0B0B0D]">
+                  <path
+                    d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="9" cy="15" r="2.5" fill="#C7A45D" />
+                </svg>
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-white tracking-wide">Oblique AI</h2>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                </div>
-                <p className="text-[11px] text-slate-400">Technology & Project Advisory</p>
+                <h3 className="text-xs font-bold tracking-tight">Ask Oblique</h3>
+                <p className="text-[10px] text-slate-400">Technology & Project Guidance</p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-              aria-label="Close Oblique AI chat"
+              className="text-slate-400 hover:text-white p-1"
+              aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Messages Body */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4 text-xs">
-            {messages.map((m) => (
+          {/* Messages */}
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 max-h-[380px] bg-slate-50/50 dark:bg-transparent">
+            {messages.map((msg) => (
               <div
-                key={m.id}
-                className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
+                key={msg.id}
+                className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
-                    m.sender === 'user'
-                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-br-xs'
-                      : 'bg-slate-900 border border-white/10 text-slate-200 rounded-bl-xs whitespace-pre-line'
+                  className={`p-3 rounded-xl text-xs max-w-[85%] leading-relaxed ${
+                    msg.sender === 'user'
+                      ? 'bg-[#3B82F6] text-white rounded-br-xs'
+                      : 'bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-bl-xs shadow-xs'
                   }`}
                 >
-                  {m.text}
+                  <p className="whitespace-pre-line">{msg.text}</p>
                 </div>
 
-                {m.links && m.links.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {m.links.map((link, idx) => (
+                {/* Quick Link Buttons if present */}
+                {msg.links && msg.links.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {msg.links.map((link, idx) => (
                       <Link
                         key={idx}
                         href={link.href}
                         onClick={() => setIsOpen(false)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all hover:scale-105"
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-[#3B82F6]/10 text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white transition-colors"
                       >
-                        {link.label}
+                        <span>{link.label}</span>
                         <ArrowUpRight className="w-3 h-3" />
                       </Link>
                     ))}
@@ -225,46 +268,37 @@ export function ObliqueAIChatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Prompts */}
-          <div className="px-4 py-2 border-t border-white/5 flex gap-2 overflow-x-auto no-scrollbar">
-            {QUICK_PROMPTS.map((prompt, idx) => (
+          {/* Quick Questions */}
+          <div className="px-3 py-2 bg-white dark:bg-[#121317] border-t border-slate-100 dark:border-white/5 overflow-x-auto flex gap-1.5 scrollbar-none">
+            {QUICK_PROMPTS.slice(0, 4).map((qp, idx) => (
               <button
                 key={idx}
-                onClick={() => handleSend(prompt)}
-                className="shrink-0 px-2.5 py-1 text-[11px] rounded-full bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+                onClick={() => handleQuickPrompt(qp)}
+                className="whitespace-nowrap px-2.5 py-1 text-[10px] rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors shrink-0"
               >
-                {prompt}
+                {qp}
               </button>
             ))}
           </div>
 
-          {/* Input Box */}
-          <div className="p-3 border-t border-white/10 bg-slate-900/50">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSend();
-              }}
-              className="flex items-center gap-2"
+          {/* Input Form */}
+          <form onSubmit={handleSend} className="p-3 bg-white dark:bg-[#0B0B0D] border-t border-slate-200 dark:border-white/10 flex items-center gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask about services, projects, process..."
+              className="flex-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+            />
+            <button
+              type="submit"
+              className="p-2 rounded-lg bg-[#3B82F6] hover:bg-blue-600 text-white transition-colors"
+              aria-label="Send"
             >
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about our services, process, or projects..."
-                className="flex-1 bg-slate-950/80 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
-              />
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                className="p-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 disabled:hover:bg-cyan-500 text-slate-950 font-medium transition-colors"
-                aria-label="Send message"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
-          </div>
-        </section>
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </form>
+        </div>
       )}
     </>
   );

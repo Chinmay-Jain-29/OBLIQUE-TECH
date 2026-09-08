@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   obliqueStore, 
   INITIAL_SERVICES, 
@@ -10,1052 +11,637 @@ import {
   INITIAL_FAQS 
 } from '@/lib/store';
 import { 
-  ServiceItem, 
-  PortfolioProject, 
-  BlogPost, 
-  FAQItem 
-} from '@/types';
-import { 
   ArrowRight, 
   ArrowUpRight, 
-  CheckCircle2, 
-  Sparkles, 
-  Layers, 
-  Code, 
-  Cpu, 
-  Globe, 
-  Compass, 
-  Brain, 
-  Layout, 
-  Smartphone, 
-  TrendingUp, 
   ChevronDown, 
-  Shield, 
-  Clock, 
-  Target, 
-  Zap, 
-  MessageSquarePlus, 
-  Eye, 
-  ExternalLink,
-  Users,
-  Award,
-  Lightbulb,
-  Building,
-  GraduationCap
+  Globe, 
+  Cpu, 
+  Layout, 
+  Compass, 
+  Check, 
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
-import { FeedbackModal } from '@/components/ui/FeedbackModal';
 
 export default function HomePage() {
-  const [services, setServices] = useState<ServiceItem[]>(INITIAL_SERVICES);
-  const [portfolio, setPortfolio] = useState<PortfolioProject[]>(INITIAL_PORTFOLIO);
-  const [posts, setPosts] = useState<BlogPost[]>(INITIAL_POSTS);
-  const [faqs, setFaqs] = useState<FAQItem[]>(INITIAL_FAQS);
-  const [faqCategory, setFaqCategory] = useState<string>('All');
-  const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
-  const [techTab, setTechTab] = useState<'frontend' | 'backend' | 'database' | 'ai' | 'cloud'>('frontend');
-  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  useEffect(() => {
-    setServices(obliqueStore.getServices());
-    setPortfolio(obliqueStore.getPortfolio());
-    setPosts(obliqueStore.getPosts());
-    setFaqs(obliqueStore.getFAQs());
-  }, []);
-
-  // Signature Oblique Interactive Perspective Canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = canvas.parentElement?.clientWidth || 800);
-    let height = (canvas.height = canvas.parentElement?.clientHeight || 600);
-
-    const handleResize = () => {
-      if (!canvas.parentElement) return;
-      width = canvas.width = canvas.parentElement.clientWidth;
-      height = canvas.height = canvas.parentElement.clientHeight;
-    };
-    window.addEventListener('resize', handleResize);
-
-    let angleOffset = 0;
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      // Draw oblique perspective grid lines
-      angleOffset += 0.003;
-      const lines = 14;
-      ctx.lineWidth = 1;
-
-      for (let i = 0; i <= lines; i++) {
-        const progress = i / lines;
-        const xStart = progress * width;
-        const xEnd = (progress + Math.sin(angleOffset) * 0.15) * width;
-
-        // Gradient for lines
-        const grad = ctx.createLinearGradient(xStart, 0, xEnd, height);
-        grad.addColorStop(0, 'rgba(0, 210, 255, 0.03)');
-        grad.addColorStop(0.5, 'rgba(245, 158, 11, 0.15)');
-        grad.addColorStop(1, 'rgba(139, 92, 246, 0.05)');
-
-        ctx.strokeStyle = grad;
-        ctx.beginPath();
-        ctx.moveTo(xStart, 0);
-        ctx.lineTo(xEnd, height);
-        ctx.stroke();
-      }
-
-      // Horizontal perspective planes
-      for (let j = 1; j <= 8; j++) {
-        const y = Math.pow(j / 8, 1.8) * height;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-      }
-
-      // Glowing floating focal node
-      const focalX = width * 0.6 + Math.cos(angleOffset * 1.5) * 40;
-      const focalY = height * 0.45 + Math.sin(angleOffset * 1.2) * 30;
-
-      const radialGrad = ctx.createRadialGradient(focalX, focalY, 2, focalX, focalY, 140);
-      radialGrad.addColorStop(0, 'rgba(0, 210, 255, 0.25)');
-      radialGrad.addColorStop(0.5, 'rgba(245, 158, 11, 0.08)');
-      radialGrad.addColorStop(1, 'transparent');
-
-      ctx.fillStyle = radialGrad;
-      ctx.beginPath();
-      ctx.arc(focalX, focalY, 140, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Oblique diamond angle highlight
-      ctx.save();
-      ctx.translate(focalX, focalY);
-      ctx.rotate(Math.PI / 4 + Math.sin(angleOffset) * 0.2);
-      ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(-25, -25, 50, 50);
-      ctx.restore();
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  const getServiceIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Globe': return <Globe className="w-5 h-5 text-cyan-400" />;
-      case 'Compass': return <Compass className="w-5 h-5 text-amber-400" />;
-      case 'Brain': return <Brain className="w-5 h-5 text-violet-400" />;
-      case 'Layout': return <Layout className="w-5 h-5 text-amber-400" />;
-      case 'Smartphone': return <Smartphone className="w-5 h-5 text-cyan-400" />;
-      case 'Code': return <Code className="w-5 h-5 text-violet-400" />;
-      case 'TrendingUp': return <TrendingUp className="w-5 h-5 text-cyan-400" />;
-      default: return <Cpu className="w-5 h-5 text-amber-400" />;
+  // 4 Primary services as requested
+  const primaryServices = [
+    {
+      title: 'Web Development',
+      slug: 'web-development',
+      description: 'Websites and web applications built for performance and growth.',
+      icon: <Globe className="w-5 h-5 text-[#3B82F6]" />,
+      accent: 'border-l-[#3B82F6]'
+    },
+    {
+      title: 'AI & ML',
+      slug: 'ai-ml',
+      description: 'Practical AI solutions, automation, and intelligent systems.',
+      icon: <Cpu className="w-5 h-5 text-[#7C5CFC]" />,
+      accent: 'border-l-[#7C5CFC]'
+    },
+    {
+      title: 'UI/UX Design',
+      slug: 'ui-ux-design',
+      description: 'Clear digital experiences designed around people.',
+      icon: <Layout className="w-5 h-5 text-[#C7A45D]" />,
+      accent: 'border-l-[#C7A45D]'
+    },
+    {
+      title: 'IT Consulting',
+      slug: 'it-consulting',
+      description: 'Technology direction for better digital decisions.',
+      icon: <Compass className="w-5 h-5 text-[#20A779]" />,
+      accent: 'border-l-[#20A779]'
     }
-  };
+  ];
 
-  const filteredFaqs = faqCategory === 'All' 
-    ? faqs 
-    : faqs.filter(f => f.category === faqCategory);
+  // 3 completed featured projects
+  const featuredPortfolio = INITIAL_PORTFOLIO.filter(p => p.status === 'completed').slice(0, 3);
+
+  // 1 featured + 2 smaller insights
+  const featuredPost = INITIAL_POSTS[0];
+  const secondaryPosts = INITIAL_POSTS.slice(1, 3);
+
+  // 8 concise FAQ questions as specified
+  const homeFaqs = [
+    {
+      q: 'What services do you provide?',
+      a: 'We provide Web Development, AI & Machine Learning solutions, UI/UX Product Design, and IT Consulting as our primary services, alongside Custom Software, Mobile Apps, and Technical Digital Marketing.'
+    },
+    {
+      q: 'Can you work with startups?',
+      a: 'Yes. We frequently partner with founders to validate concepts, build rapid high-converting MVPs, and establish clean technical foundations designed for commercial scale.'
+    },
+    {
+      q: 'Do you work with international clients?',
+      a: 'Yes. We collaborate with clients across North America, Europe, and Asia with structured async updates, weekly sprint reviews, and direct communication channels.'
+    },
+    {
+      q: 'Can you improve an existing product?',
+      a: 'Yes. We audit legacy codebases, resolve performance bottlenecks, modernize user interfaces, and migrate monolithic applications without business interruption.'
+    },
+    {
+      q: 'How do we start a project?',
+      a: 'You can submit your requirements through our neutral 5-step Project Wizard, or book a direct 30–45 minute introductory consultation call.'
+    },
+    {
+      q: 'How long does development usually take?',
+      a: 'A typical MVP or focused web platform takes 4 to 8 weeks. Larger custom systems and enterprise software projects run in structured 2-week agile sprints over 2 to 4 months.'
+    },
+    {
+      q: 'Do you provide ongoing support?',
+      a: 'Yes. We provide clear maintenance arrangements, security updates, cloud optimization, and continuous feature expansion after launch.'
+    },
+    {
+      q: 'Can you integrate AI into existing systems?',
+      a: 'Yes. We build private retrieval pipelines (RAG), workflow automation, and predictive models that integrate safely with your existing databases and APIs.'
+    }
+  ];
 
   return (
-    <div className="relative overflow-hidden">
-      {/* ============================================================ */}
-      {/* 1. HERO SECTION */}
-      {/* ============================================================ */}
-      <section className="relative min-h-[90vh] flex items-center justify-center pt-8 pb-20 px-4 sm:px-6 lg:px-8">
-        {/* Background Canvas Visual */}
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-70">
-          <canvas ref={canvasRef} className="w-full h-full" />
-        </div>
+    <div className="flex flex-col">
+      {/* =========================================================================
+          01 — HERO (Surface: Oblique Black #0B0B0D)
+          ========================================================================= */}
+      <section className="surface-black pt-32 pb-20 md:pt-40 md:pb-28 px-4 sm:px-6 lg:px-8 border-b border-white/10 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Hero Content */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-300">
+              <span className="w-2 h-2 rounded-full bg-[#C7A45D]" />
+              <span>Different perspective. Better technology.</span>
+            </div>
 
-        {/* Ambient Top Glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-500/10 via-amber-500/10 to-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8">
-          {/* Oblique Motif Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-inner">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-xs font-semibold tracking-wider uppercase text-slate-300">
-              Technology From a Different Angle
-            </span>
-          </div>
-
-          {/* Primary Tagline */}
-          <div className="space-y-4">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.08]">
-              See Business{' '}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-cyan-300 to-violet-400">
-                Differently.
-              </span>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08]">
+              See Business <br className="hidden sm:inline" />
+              <span className="text-[#C7A45D]">Differently.</span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-slate-300 font-medium max-w-3xl mx-auto leading-relaxed">
-              Technology solutions built around your ambition.
-            </p>
-          </div>
 
-          {/* Supporting Copy */}
-          <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            ObliqueTech helps businesses turn ideas, challenges, and opportunities into scalable digital experiences through software, AI, design, and technology consulting.
-          </p>
-
-          {/* Hero CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link
-              href="/start-project"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.3)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
-            >
-              <span>Start a Project</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <Link
-              href="/portfolio"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-white border border-white/15 transition-all hover:border-cyan-400/50 flex items-center justify-center gap-2"
-            >
-              <span>Explore Our Work</span>
-              <ArrowUpRight className="w-4 h-4 text-cyan-400" />
-            </Link>
-
-            <Link
-              href="/schedule"
-              className="w-full sm:w-auto text-xs text-slate-400 hover:text-cyan-300 py-2 sm:px-3 transition-colors flex items-center justify-center gap-1.5"
-            >
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Schedule a Call (30m)</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 2. HERO TRUST STRIP (NO FAKE METRICS - HONEST PRINCIPLES) */}
-      {/* ============================================================ */}
-      <section className="relative z-10 border-y border-white/10 bg-slate-950/60 backdrop-blur-md py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-[11px] uppercase tracking-widest text-center text-slate-500 font-semibold mb-4">
-            Built on Core Engineering Principles
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
-            {[
-              { title: 'Client-Centric Approach', sub: 'Driven by your problem' },
-              { title: 'Quality-Driven Development', sub: 'Reliable engineering' },
-              { title: 'Transparent Communication', sub: 'Clear milestones' },
-              { title: 'Scalable Technology', sub: 'Built to evolve' },
-              { title: 'Global Collaboration', sub: 'Worldwide delivery' },
-            ].map((item, idx) => (
-              <div key={idx} className="space-y-1">
-                <div className="text-xs sm:text-sm font-bold text-slate-200 tracking-tight">
-                  {item.title}
-                </div>
-                <div className="text-[11px] text-slate-500">
-                  {item.sub}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 3. PROBLEM / SOLUTION SECTION */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Column: Problem Narrative */}
-          <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>The Market Reality</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
-              The Digital World Moves Fast.{' '}
-              <span className="text-cyan-400">Your Business Should Too.</span>
-            </h2>
-
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-              Modern businesses face unprecedented pressure. Off-the-shelf software is rigid, legacy systems are brittle, and AI promises often get lost in marketing buzz. To remain competitive, organizations require pragmatic technology partners who build systems that directly align with commercial reality.
+            <p className="text-base sm:text-xl text-slate-300 max-w-xl leading-relaxed font-normal">
+              We build practical digital solutions that help businesses grow, adapt, and compete in a changing market.
             </p>
 
-            <blockquote className="p-4 rounded-xl bg-white/[0.02] border-l-2 border-amber-400 text-slate-300 text-sm italic">
-              “We turn complex business challenges into practical technology solutions.”
-            </blockquote>
-          </div>
-
-          {/* Right Column: 4-Step Animated Flow (Problem -> Strategy -> Technology -> Growth) */}
-          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              {
-                step: '01',
-                phase: 'Problem',
-                desc: 'Identifying operational bottlenecks, broken user journeys, or unscalable systems.',
-                color: 'text-amber-400',
-                border: 'hover:border-amber-400/40',
-                badgeBg: 'bg-amber-400/10'
-              },
-              {
-                step: '02',
-                phase: 'Strategy',
-                desc: 'Scoping realistic architectural blueprints and clear milestone roadmaps.',
-                color: 'text-cyan-400',
-                border: 'hover:border-cyan-400/40',
-                badgeBg: 'bg-cyan-400/10'
-              },
-              {
-                step: '03',
-                phase: 'Technology',
-                desc: 'Engineering with type-safe, scalable codebases and zero unnecessary dependencies.',
-                color: 'text-violet-400',
-                border: 'hover:border-violet-400/40',
-                badgeBg: 'bg-violet-400/10'
-              },
-              {
-                step: '04',
-                phase: 'Growth',
-                desc: 'Deploying reliable platforms that scale transaction volume and customer adoption.',
-                color: 'text-emerald-400',
-                border: 'hover:border-emerald-400/40',
-                badgeBg: 'bg-emerald-400/10'
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className={`p-6 rounded-2xl bg-slate-900/60 border border-white/10 transition-all duration-300 ${item.border} hover:-translate-y-1`}
+            <div className="pt-2 flex flex-wrap items-center gap-4">
+              <Link
+                href="/start-project"
+                className="btn-gold"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${item.badgeBg} ${item.color}`}>
-                    {item.phase}
-                  </span>
-                  <span className="text-xs font-mono text-slate-600 font-bold">{item.step}</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 4. SERVICES SHOWCASE */}
-      {/* ============================================================ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">
-            <Layers className="w-3.5 h-3.5" />
-            <span>Comprehensive Solutions</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-            Engineered For Impact.
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            From modern web platforms and distributed backend architectures to applied AI integrations and intuitive design systems.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service) => (
-            <div
-              key={service.id}
-              className="group relative flex flex-col justify-between p-6 sm:p-8 rounded-2xl bg-slate-900/50 border border-white/10 hover:border-cyan-500/40 hover:bg-slate-900/80 transition-all duration-300 shadow-lg hover:shadow-[0_0_30px_rgba(0,210,255,0.1)] hover:-translate-y-1"
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    {getServiceIcon(service.iconName)}
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 text-slate-400 border border-white/5">
-                    {service.badge}
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
-                  {service.title}
-                </h3>
-
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {service.shortDescription}
-                </p>
-
-                <div className="pt-2">
-                  <p className="text-[11px] font-semibold text-slate-300 mb-2">Business Value:</p>
-                  <p className="text-xs text-slate-400 bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
-                    {service.businessValue}
-                  </p>
-                </div>
-
-                <div className="pt-2 flex flex-wrap gap-1.5">
-                  {service.technologies.slice(0, 4).map((tech, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400 border border-white/5"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-white/10 mt-6">
-                <Link
-                  href={`/services/${service.slug}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 group-hover:text-cyan-300 transition-colors"
-                >
-                  <span>Explore Capabilities</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/15 text-xs font-semibold transition-all hover:scale-105"
-          >
-            <span>Explore All 7 Services In Detail</span>
-            <ArrowRight className="w-4 h-4 text-amber-400" />
-          </Link>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 5. WHY CHOOSE OBLIQUETECH */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950/80 border-y border-white/10 relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20 text-xs font-semibold">
-              <Shield className="w-3.5 h-3.5" />
-              <span>Why ObliqueTech</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-              A Relationship Built on Clarity.
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base">
-              We approach engineering not as a transactional ticket queue, but as long-term strategic stewards of your product architecture.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                title: 'Customer-Centric',
-                desc: 'Technology begins with understanding your actual operational bottleneck, not pushing unnecessary tools.',
-                icon: <Target className="w-6 h-6 text-amber-400" />,
-                accent: 'border-amber-400/20 hover:border-amber-400/40'
-              },
-              {
-                title: 'Commitment',
-                desc: 'If we commit to an architecture, scope, or delivery milestone, we take that commitment seriously.',
-                icon: <CheckCircle2 className="w-6 h-6 text-cyan-400" />,
-                accent: 'border-cyan-400/20 hover:border-cyan-400/40'
-              },
-              {
-                title: 'Quality',
-                desc: 'Focus on delivering reliable, type-safe, and thoroughly tested engineering rather than fragile MVPs.',
-                icon: <Award className="w-6 h-6 text-violet-400" />,
-                accent: 'border-violet-400/20 hover:border-violet-400/40'
-              },
-              {
-                title: 'Affordable Technology',
-                desc: 'Professional enterprise-grade solutions without bloated agency markups or synthetic complexity.',
-                icon: <Zap className="w-6 h-6 text-amber-400" />,
-                accent: 'border-amber-400/20 hover:border-amber-400/40'
-              },
-              {
-                title: 'Transparency',
-                desc: 'Clear communication, weekly working demos, and direct access to the engineers writing your code.',
-                icon: <Eye className="w-6 h-6 text-cyan-400" />,
-                accent: 'border-cyan-400/20 hover:border-cyan-400/40'
-              },
-              {
-                title: 'Long-Term Thinking',
-                desc: 'Architectures engineered to adapt gracefully as your users, transactions, and business scale.',
-                icon: <Building className="w-6 h-6 text-violet-400" />,
-                accent: 'border-violet-400/20 hover:border-violet-400/40'
-              },
-            ].map((card, idx) => (
-              <div
-                key={idx}
-                className={`p-6 sm:p-8 rounded-2xl bg-slate-900/60 border ${card.accent} transition-all duration-300 hover:-translate-y-1 space-y-4`}
+                <span>Start a Project</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/portfolio"
+                className="btn-secondary text-white border-white/30 hover:border-white"
               >
-                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  {card.icon}
-                </div>
-                <h3 className="text-base font-bold text-white tracking-wide">
-                  {card.title}
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {card.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 6. TECHNOLOGY ECOSYSTEM */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-semibold">
-            <Cpu className="w-3.5 h-3.5" />
-            <span>Modern Technology Stack</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-            Pragmatic Engineering Tools.
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            We work only with proven, battle-tested technologies that deliver speed, developer velocity, and long-term security.
-          </p>
-        </div>
-
-        {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10">
-          {[
-            { key: 'frontend', label: 'Frontend' },
-            { key: 'backend', label: 'Backend & APIs' },
-            { key: 'database', label: 'Database & Storage' },
-            { key: 'ai', label: 'AI & Machine Learning' },
-            { key: 'cloud', label: 'Cloud & Infrastructure' },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setTechTab(tab.key as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                techTab === tab.key
-                  ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,210,255,0.3)]'
-                  : 'bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/5'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Tech Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
-          {techTab === 'frontend' && [
-            'Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'HTML5 / CSS3', 'Figma'
-          ].map((item, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/10 text-center space-y-1">
-              <span className="text-xs font-bold text-white block">{item}</span>
-              <span className="text-[10px] text-cyan-400">High-Performance UI</span>
-            </div>
-          ))}
-
-          {techTab === 'backend' && [
-            'Node.js', 'Python', 'FastAPI', 'Go', 'GraphQL', 'REST APIs'
-          ].map((item, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/10 text-center space-y-1">
-              <span className="text-xs font-bold text-white block">{item}</span>
-              <span className="text-[10px] text-amber-400">Scalable Microservices</span>
-            </div>
-          ))}
-
-          {techTab === 'database' && [
-            'PostgreSQL', 'Supabase', 'Redis', 'TimescaleDB', 'pgvector', 'Neo4j'
-          ].map((item, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/10 text-center space-y-1">
-              <span className="text-xs font-bold text-white block">{item}</span>
-              <span className="text-[10px] text-violet-400">ACID & Scalability</span>
-            </div>
-          ))}
-
-          {techTab === 'ai' && [
-            'PyTorch', 'LangChain', 'LlamaIndex', 'Hugging Face', 'FastAPI', 'Claude / OpenAI APIs'
-          ].map((item, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/10 text-center space-y-1">
-              <span className="text-xs font-bold text-white block">{item}</span>
-              <span className="text-[10px] text-cyan-400">Applied Intelligence</span>
-            </div>
-          ))}
-
-          {techTab === 'cloud' && [
-            'Docker', 'AWS', 'Google Cloud', 'GitHub Actions', 'Terraform', 'Vercel'
-          ].map((item, idx) => (
-            <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-white/10 text-center space-y-1">
-              <span className="text-xs font-bold text-white block">{item}</span>
-              <span className="text-[10px] text-emerald-400">CI/CD & DevOps</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 7. SELECTED PORTFOLIO (3 COMPLETED, 2 ONGOING) */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10" id="portfolio">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">
-              <Award className="w-3.5 h-3.5" />
-              <span>Demonstrated Capability</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-              Selected Projects.
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base max-w-xl">
-              Authentic engineering across web, mobile, SaaS, and AI systems. 3 completed solutions and 2 currently in active sprint milestones.
-            </p>
-          </div>
-
-          <Link
-            href="/portfolio"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-cyan-400 hover:text-cyan-300"
-          >
-            <span>View Full Portfolio Index</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolio.map((item) => (
-            <div
-              key={item.id}
-              className="group flex flex-col justify-between rounded-2xl bg-slate-900/50 border border-white/10 overflow-hidden hover:border-amber-400/40 transition-all duration-300 shadow-xl hover:-translate-y-1"
-            >
-              {/* Card Header & Status Banner */}
-              <div className="p-6 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/5 text-slate-300 border border-white/10">
-                    {item.category}
-                  </span>
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      item.status === 'completed'
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    }`}
-                  >
-                    {item.status === 'completed' ? '✓ Completed' : '● Ongoing Sprint'}
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {item.shortDescription}
-                </p>
-
-                <div className="pt-2">
-                  <span className="text-[11px] font-semibold text-slate-300">Industry: </span>
-                  <span className="text-xs text-slate-400">{item.clientIndustry}</span>
-                </div>
-
-                <div className="pt-2">
-                  <p className="text-[11px] font-semibold text-slate-300 mb-1.5">Key Highlights:</p>
-                  <ul className="space-y-1 text-xs text-slate-400">
-                    {item.metricsOrHighlights.slice(0, 2).map((metric, idx) => (
-                      <li key={idx} className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                        <span>{metric}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Technologies & Case Study Link */}
-              <div className="p-6 pt-0 space-y-4">
-                <div className="flex flex-wrap gap-1.5">
-                  {item.technologies.slice(0, 4).map((tech, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400 border border-white/5"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="pt-4 border-t border-white/10">
-                  <Link
-                    href={`/portfolio/${item.slug}`}
-                    className="inline-flex items-center justify-between w-full text-xs font-semibold text-slate-300 hover:text-white transition-colors"
-                  >
-                    <span>Read Full Case Study</span>
-                    <ArrowUpRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 8. OUR PROCESS (01 - 07 TIMELINE) */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950/90 border-y border-white/10 relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Disciplined Execution</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-              Our Development Process.
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base">
-              A structured, transparent engineering lifecycle designed to eliminate surprises and guarantee production stability.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { step: '01', title: 'Discover', desc: 'Deep dive into your business logic, audience, constraints, and success criteria.' },
-              { step: '02', title: 'Strategize', desc: 'Define system blueprints, data models, technical stacks, and risk mitigations.' },
-              { step: '03', title: 'Design', desc: 'Craft Figma wireframes, interactive prototypes, and accessible design systems.' },
-              { step: '04', title: 'Build', desc: 'Develop with type-safe, modular code in transparent weekly sprint iterations.' },
-              { step: '05', title: 'Test', desc: 'Rigorous automated unit, integration, performance, and security testing.' },
-              { step: '06', title: 'Launch', desc: 'Zero-downtime deployment, DNS provisioning, and live telemetry setup.' },
-              { step: '07', title: 'Grow', desc: 'Continuous SLA monitoring, security patching, and strategic scaling.' },
-            ].map((proc, idx) => (
-              <div
-                key={idx}
-                className="p-6 rounded-2xl bg-slate-900/50 border border-white/10 hover:border-cyan-400/40 transition-all duration-300 relative group"
-              >
-                <div className="text-2xl font-black font-mono text-cyan-400/60 group-hover:text-cyan-400 transition-colors mb-2">
-                  {proc.step}
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">{proc.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{proc.desc}</p>
-              </div>
-            ))}
-
-            {/* Final CTA Card in Grid */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 via-slate-900 to-cyan-500/10 border border-amber-500/30 flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2">Next Step</span>
-                <h3 className="text-base font-bold text-white mb-2">Ready to kick off your sprint?</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Book a free introductory scoping call with an engineering lead.
-                </p>
-              </div>
+                <span>View Our Work</span>
+              </Link>
               <Link
                 href="/schedule"
-                className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all shadow-md"
+                className="text-xs font-semibold text-slate-400 hover:text-white transition-colors underline-offset-4 hover:underline ml-2"
               >
-                Schedule Scoping Call
+                Schedule a Call →
               </Link>
             </div>
           </div>
+
+          {/* Right Hero Graphic: Restrained Oblique Geometric Mark & Perspective */}
+          <div className="lg:col-span-5 relative flex items-center justify-center">
+            <div className="w-full max-w-md aspect-square rounded-2xl bg-[#17181C] border border-white/10 p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+              {/* Subtle angled geometry overlay */}
+              <div className="absolute inset-0 opacity-15 pointer-events-none">
+                <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none">
+                  <line x1="0" y1="400" x2="400" y2="0" stroke="white" strokeWidth="1" />
+                  <line x1="100" y1="400" x2="400" y2="100" stroke="white" strokeWidth="0.5" strokeDasharray="4 4" />
+                  <line x1="0" y1="300" x2="300" y2="0" stroke="white" strokeWidth="0.5" strokeDasharray="4 4" />
+                </svg>
+              </div>
+
+              {/* Minimal technical telemetry bar */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#20A779]" />
+                  <span className="text-xs font-mono uppercase tracking-wider text-slate-300">Engineering Studio</span>
+                </div>
+                <span className="text-xs font-mono text-[#C7A45D]">ObliqueTech</span>
+              </div>
+
+              {/* Central Geometric Statement */}
+              <div className="space-y-4 py-6">
+                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-[#C7A45D]">
+                    <path
+                      d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white tracking-tight">
+                  Angle of Departure
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Most organizations take the crowded, linear route. We assess architectural problems from an intentional angle to eliminate unnecessary complexity.
+                </p>
+              </div>
+
+              {/* Metric indicators */}
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                <div>
+                  <div className="text-lg font-bold text-white font-mono">3 Live</div>
+                  <div className="text-[11px] text-slate-400">Production Deployments</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-[#3B82F6] font-mono">2 Active</div>
+                  <div className="text-[11px] text-slate-400">Engineering Bench</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/* 9. OBLIQUE ORIGIN STORY & PHILOSOPHY */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
-        <div className="max-w-4xl mx-auto bg-gradient-to-br from-slate-900/90 via-slate-950 to-slate-900/90 border border-white/10 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="space-y-6 relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">
-              <GraduationCap className="w-3.5 h-3.5" />
-              <span>Where Oblique Began</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Bridging The Experience Gap.
-            </h2>
-
-            <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
-              <p>
-                The word <strong className="text-amber-400 font-semibold">Oblique</strong> means looking at something from an angle—choosing a path that departs from conventional convention.
-              </p>
-              <p>
-                ObliqueTech originally emerged from observing a glaring contradiction in the technology sector: <em className="text-slate-200">companies consistently demand production experience, while fresh engineering graduates are afforded few real opportunities to obtain it.</em>
-              </p>
-              <p>
-                To address this gap, Oblique created an ecosystem centered on real-world projects, practical mentorship, hackathons, and direct collaboration with veteran practitioners.
-              </p>
-              <p className="text-slate-400">
-                Today, that same founding conviction drives our entire engineering firm: we don’t blindly follow traditional, bloated agency models. We think differently, engineer pragmatically, and build scalable technology solutions that create lasting opportunities globally.
+      {/* =========================================================================
+          02 — WHAT WE DO (Surface: Warm White #F7F6F2)
+          ========================================================================= */}
+      <section className="surface-warm py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-3 max-w-2xl">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#3B82F6]">Capabilities</span>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                Technology that solves real business problems.
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+                From websites and software to AI and consulting, we build solutions around what your business actually needs.
               </p>
             </div>
-
-            <div className="pt-4 flex flex-wrap gap-4 items-center">
+            <div>
               <Link
-                href="/about"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold border border-white/15 transition-colors"
+                href="/services"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
               >
-                <span>Read Full Company Story & Roadmap</span>
+                <span>View All Services</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* ============================================================ */}
-      {/* 10. LATEST INSIGHTS / BLOG PREVIEW */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-semibold">
-              <Lightbulb className="w-3.5 h-3.5" />
-              <span>Thought Leadership</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-              Oblique Insights.
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base max-w-xl">
-              Architectural deep-dives, applied AI analysis, and pragmatic engineering strategy from our core technical team.
-            </p>
-          </div>
-
-          <Link
-            href="/insights"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-cyan-400 hover:text-cyan-300"
-          >
-            <span>Browse All Articles</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {posts.slice(0, 3).map((post) => (
-            <div
-              key={post.id}
-              className="group flex flex-col justify-between rounded-2xl bg-slate-900/50 border border-white/10 overflow-hidden hover:border-cyan-400/40 transition-all duration-300 shadow-xl hover:-translate-y-1 p-6"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-[11px] text-slate-500">
-                  <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 font-semibold">
-                    {post.category}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {post.readingTimeMinutes} min read
-                  </span>
+          {/* 4 Primary Services Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {primaryServices.map((svc) => (
+              <Link
+                key={svc.slug}
+                href={`/services/${svc.slug}`}
+                className={`clean-card p-6 rounded-xl border-l-4 ${svc.accent} flex flex-col justify-between group`}
+              >
+                <div className="space-y-4">
+                  <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    {svc.icon}
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors">
+                    {svc.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {svc.description}
+                  </p>
                 </div>
-
-                <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-2">
-                  {post.title}
-                </h3>
-
-                <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">
-                  {post.excerpt}
-                </p>
-              </div>
-
-              <div className="pt-6 border-t border-white/10 mt-6 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500 font-medium">
-                  {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </span>
-                <Link
-                  href={`/insights/${post.slug}`}
-                  className="text-xs font-semibold text-cyan-400 group-hover:text-cyan-300 inline-flex items-center gap-1"
-                >
-                  <span>Read Article</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 11. TESTIMONIALS / REVIEWS SYSTEM */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950/80 border-y border-white/10 relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">
-              <Users className="w-3.5 h-3.5" />
-              <span>Client Feedback</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-              Verified Client Impressions.
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base">
-              We adhere strictly to factual transparency. All client reviews undergo verification before publication.
-            </p>
-          </div>
-
-          {/* Clean State with Active Feedback Invitation */}
-          <div className="max-w-2xl mx-auto text-center p-8 rounded-2xl bg-slate-900/60 border border-white/10 space-y-6">
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
-              <MessageSquarePlus className="w-6 h-6" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-base font-bold text-white">Have You Collaborated with ObliqueTech?</h3>
-              <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">
-                We value honest partner and client feedback. Share your experience regarding our technical delivery, speed, and architectural clarity.
-              </p>
-            </div>
-            <div>
-              <button
-                onClick={() => setFeedbackModalOpen(true)}
-                className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-lg shadow-amber-500/20 transition-all hover:scale-105"
-              >
-                Submit Client Feedback
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 12. FAQ ACCORDION */}
-      {/* ============================================================ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <div className="text-center space-y-4 mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-semibold">
-            <Lightbulb className="w-3.5 h-3.5" />
-            <span>Got Questions?</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-            Frequently Asked Questions.
-          </h2>
-          <p className="text-slate-400 text-sm">
-            Everything you need to know about our engagement models, tech stack, and workflow.
-          </p>
-
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap justify-center gap-2 pt-4">
-            {['All', 'General', 'Services', 'Process', 'Security & Tech', 'Pricing & Engagement'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFaqCategory(cat)}
-                className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                  faqCategory === cat
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
-                    : 'bg-white/5 text-slate-400 hover:text-white border border-white/5'
-                }`}
-              >
-                {cat}
-              </button>
+                <div className="pt-6 flex items-center text-xs font-semibold text-[#3B82F6] group-hover:translate-x-1 transition-transform">
+                  <span>Learn more</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                </div>
+              </Link>
             ))}
           </div>
         </div>
+      </section>
 
-        <div className="space-y-3">
-          {filteredFaqs.slice(0, 8).map((faq) => {
-            const isOpen = openFaqId === faq.id;
-            return (
-              <div
-                key={faq.id}
-                className="rounded-xl bg-slate-900/60 border border-white/10 overflow-hidden transition-colors"
+      {/* =========================================================================
+          03 — SELECTED WORK (Surface: Pure White #FFFFFF)
+          ========================================================================= */}
+      <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#C7A45D]">Work</span>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                Selected work
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                A look at what we’ve built.
+              </p>
+            </div>
+            <div>
+              <Link
+                href="/portfolio"
+                className="btn-primary text-xs"
               >
-                <button
-                  onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-                  className="w-full text-left p-5 flex items-center justify-between gap-4 focus:outline-none"
-                  aria-expanded={isOpen}
-                >
-                  <span className="text-sm font-bold text-white tracking-wide">
-                    {faq.question}
-                  </span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-cyan-400 shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180' : ''
-                    }`}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-xs text-slate-300 leading-relaxed border-t border-white/5 pt-3 animate-in fade-in duration-200">
-                    {faq.answer}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="text-center mt-8">
-          <Link
-            href="/faq"
-            className="text-xs font-semibold text-cyan-400 hover:underline"
-          >
-            View All Frequently Asked Questions →
-          </Link>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 13. SIGNATURE BRAND PERSPECTIVE MOMENT */}
-      {/* ============================================================ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-y border-white/10 relative overflow-hidden">
-        <div className="max-w-5xl mx-auto text-center space-y-6">
-          <span className="text-xs font-mono font-bold tracking-widest text-amber-400 uppercase">
-            The Oblique Philosophy
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm font-bold text-slate-300">
-            <span>Straight Path</span>
-            <span className="text-slate-600">→</span>
-            <span className="text-rose-400">Market Bottleneck</span>
-            <span className="text-slate-600">→</span>
-            <span className="text-amber-400 underline decoration-amber-400/50 decoration-2">Shift Perspective</span>
-            <span className="text-slate-600">→</span>
-            <span className="text-cyan-400 font-extrabold uppercase tracking-wider">OBLIQUE</span>
-            <span className="text-slate-600">→</span>
-            <span className="text-emerald-400 font-black">Scalable Solution</span>
+                <span>View Portfolio</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
-          <p className="text-xs text-slate-400 max-w-xl mx-auto leading-relaxed">
-            When you view a problem from an angle that others overlook, the solution becomes obvious. We bring this perspective to every line of code we write.
-          </p>
+
+          {/* Visual-First 3 Project Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {featuredPortfolio.map((project) => (
+              <Link
+                key={project.id}
+                href={`/portfolio/${project.slug}`}
+                className="group flex flex-col space-y-4 rounded-xl overflow-hidden"
+              >
+                {/* Large visual screenshot */}
+                <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 shadow-xs transition-transform duration-300 group-hover:scale-[1.02]">
+                  <img
+                    src={project.coverImage}
+                    alt={project.title}
+                    className="w-full h-full object-cover object-top"
+                  />
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-xs text-[10px] font-semibold text-white">
+                    {project.category}
+                  </div>
+                </div>
+
+                {/* Minimal Metadata */}
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                    {project.shortDescription}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/* 14. FINAL CALL TO ACTION (CTA) */}
-      {/* ============================================================ */}
-      <section className="py-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-8 relative">
-        <div className="space-y-4">
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-tight">
-            Your next move starts from a{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-cyan-300 to-violet-400">
-              different angle.
-            </span>
+      {/* =========================================================================
+          04 — WHY US (Surface: Soft Grey #F1F2F5)
+          ========================================================================= */}
+      <section className="surface-light py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="max-w-2xl space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#20A779]">Reliability</span>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              Why work with us?
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+              Technology is only as good as the understanding behind it.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="clean-card p-6 rounded-xl space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-[#20A779] flex items-center justify-center font-bold text-sm">
+                01
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Listen</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                We understand the problem thoroughly before choosing or writing any technology.
+              </p>
+            </div>
+
+            <div className="clean-card p-6 rounded-xl space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-[#3B82F6] flex items-center justify-center font-bold text-sm">
+                02
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Keep It Clear</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                You always know exactly what is being built, why it matters, and how it performs.
+              </p>
+            </div>
+
+            <div className="clean-card p-6 rounded-xl space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-500/10 text-[#C7A45D] flex items-center justify-center font-bold text-sm">
+                03
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Build for Real Use</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                We focus on useful, maintainable solutions rather than disposable technical hype.
+              </p>
+            </div>
+
+            <div className="clean-card p-6 rounded-xl space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/10 text-[#7C5CFC] flex items-center justify-center font-bold text-sm">
+                04
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Stay Committed</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                We take direct responsibility for what we agree to deliver from kickoff to post-launch.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          05 — HOW WE WORK (Surface: Soft Grey #F1F2F5 / Process)
+          ========================================================================= */}
+      <section className="surface-light py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Methodology</span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              A simple, disciplined process.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {[
+              { step: '01', name: 'Discover', desc: 'Understand the problem.' },
+              { step: '02', name: 'Plan', desc: 'Define the right approach.' },
+              { step: '03', name: 'Build', desc: 'Design and develop the solution.' },
+              { step: '04', name: 'Test', desc: 'Make sure it works properly.' },
+              { step: '05', name: 'Launch', desc: 'Deliver and support.' },
+            ].map((st) => (
+              <div key={st.step} className="p-4 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
+                <span className="text-[11px] font-mono font-bold text-[#C7A45D]">{st.step}</span>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">{st.name}</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{st.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          06 — ABOUT OBLIQUE (Surface: Warm White #F7F6F2)
+          ========================================================================= */}
+      <section className="surface-warm py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#C7A45D]">Our Origin</span>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              Where Oblique began.
+            </h2>
+            <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              Oblique started after seeing a common challenge among engineering students: companies wanted experience, but students were struggling to find opportunities to gain it.
+            </p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              We began by connecting developers with seasoned architects through real commercial prototypes, technical mentorship, and high-velocity sprints. That relentless culture of execution evolved into an enterprise technology company building mission-critical software globally.
+            </p>
+
+            {/* Strategic Ambition Progression */}
+            <div className="pt-2">
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Our Trajectory</div>
+              <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                <span className="px-3 py-1 rounded bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white">Solutions</span>
+                <span className="text-slate-400">→</span>
+                <span className="px-3 py-1 rounded bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white">Products</span>
+                <span className="text-slate-400">→</span>
+                <span className="px-3 py-1 rounded bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white">Platforms</span>
+                <span className="text-slate-400">→</span>
+                <span className="px-3 py-1 rounded bg-[#C7A45D] text-[#0B0B0D] font-bold">Global Impact</span>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Link
+                href="/about"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+              >
+                <span>Read Our Full Story</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="p-8 rounded-2xl bg-white dark:bg-[#17181C] border border-slate-200 dark:border-white/10 space-y-6 shadow-sm">
+              <div className="space-y-2 border-b border-slate-100 dark:border-white/10 pb-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Mission</h4>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Build useful technology, solve real problems, and create opportunities that matter.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Vision</h4>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Become a trusted technology company that builds products with global relevance.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          07 — OBLIQUE INSIGHTS (Surface: Pure White #FFFFFF)
+          ========================================================================= */}
+      <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#7C5CFC]">Thinking</span>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                Oblique Insights
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                Ideas, technology, and practical thinking.
+              </p>
+            </div>
+            <div>
+              <Link
+                href="/insights"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+              >
+                <span>View All Insights</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* 1 Featured + 2 Smaller Articles */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Featured Article (7 cols) */}
+            {featuredPost && (
+              <Link
+                href={`/insights/${featuredPost.slug}`}
+                className="lg:col-span-7 clean-card p-6 sm:p-8 rounded-xl flex flex-col justify-between group"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
+                    <span className="text-[#3B82F6] font-semibold">{featuredPost.category}</span>
+                    <span>•</span>
+                    <span>{featuredPost.readingTimeMinutes} min read</span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug">
+                    {featuredPost.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {featuredPost.excerpt}
+                  </p>
+                </div>
+                <div className="pt-6 flex items-center text-xs font-semibold text-[#3B82F6]">
+                  <span>Read Article</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                </div>
+              </Link>
+            )}
+
+            {/* 2 Smaller Articles (5 cols) */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+              {secondaryPosts.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/insights/${post.slug}`}
+                  className="clean-card p-6 rounded-xl flex-1 flex flex-col justify-between group"
+                >
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-mono text-slate-500">
+                      <span className="text-[#C7A45D] font-semibold">{post.category}</span> • {post.readingTimeMinutes} min read
+                    </div>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors">
+                      {post.title}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                  </div>
+                  <div className="pt-4 text-xs font-semibold text-[#3B82F6] flex items-center">
+                    <span>Read Article</span>
+                    <ArrowRight className="w-3 h-3 ml-1" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          08 — FAQ (Surface: Warm White #F7F6F2)
+          ========================================================================= */}
+      <section className="surface-warm py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <div className="text-center space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Answers</span>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Concise answers to what businesses ask us most often.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {homeFaqs.map((faq, idx) => {
+              const isOpen = openFaqIndex === idx;
+              return (
+                <div
+                  key={idx}
+                  className="clean-card rounded-xl overflow-hidden"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 focus:outline-none"
+                  >
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {faq.q}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-500 transition-transform duration-200 shrink-0 ${
+                        isOpen ? 'rotate-180 text-[#3B82F6]' : ''
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/5">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="text-center pt-4">
+            <Link
+              href="/faq"
+              className="text-xs font-semibold text-[#3B82F6] hover:underline"
+            >
+              View Full FAQ Directory →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          09 — FINAL CTA (Surface: Charcoal #17181C)
+          ========================================================================= */}
+      <section className="surface-charcoal py-24 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+        <div className="max-w-3xl mx-auto space-y-6 relative z-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#C7A45D]">Next Step</span>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+            Have a challenge worth solving?
           </h2>
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Whether you are launching something new, transforming an existing business, or solving a challenge you have not been able to solve alone — let’s explore what’s possible.
+          <p className="text-base sm:text-xl text-slate-300 max-w-xl mx-auto leading-relaxed">
+            Let’s look at it from a different angle.
           </p>
-        </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Link
-            href="/start-project"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.3)] transition-all hover:scale-105 active:scale-95"
-          >
-            Start a Project
-          </Link>
-
-          <Link
-            href="/schedule"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-sm bg-white/10 hover:bg-white/15 text-white border border-white/20 transition-all hover:scale-105"
-          >
-            Talk to ObliqueTech
-          </Link>
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/start-project"
+              className="btn-gold w-full sm:w-auto"
+            >
+              <span>Start a Project</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/schedule"
+              className="btn-secondary text-white border-white/30 hover:border-white w-full sm:w-auto"
+            >
+              <span>Schedule a Call</span>
+            </Link>
+          </div>
         </div>
       </section>
-
-      {/* Public Feedback Modal */}
-      <FeedbackModal
-        isOpen={feedbackModalOpen}
-        onClose={() => setFeedbackModalOpen(false)}
-      />
     </div>
   );
 }

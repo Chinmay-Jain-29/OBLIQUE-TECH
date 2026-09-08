@@ -3,7 +3,6 @@ import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { CustomCursor } from '@/components/ui/CustomCursor';
 import { WhatsAppButton } from '@/components/ui/WhatsAppButton';
 import { ObliqueAIChatbot } from '@/components/ai/ObliqueAIChatbot';
 
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
     default: 'ObliqueTech — See Business Differently | Custom Software, AI & Engineering',
     template: '%s | ObliqueTech'
   },
-  description: 'Technology solutions designed around your goals, built for the future, and delivered with clarity, quality, and commitment. Software, AI/ML, Web, Mobile, and IT Consulting.',
+  description: 'Different perspective. Better technology. Practical technology solutions for businesses ready to move forward. Web Development, AI/ML, UI/UX, and IT Consulting.',
   keywords: [
     'software development company',
     'web development company',
@@ -33,13 +32,13 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://obliquetech.com',
     title: 'ObliqueTech — See Business Differently',
-    description: 'We design, engineer, and scale digital solutions that help businesses adapt to a technology-first world.',
+    description: 'We build practical digital solutions that help businesses grow, adapt, and compete in a changing market.',
     siteName: 'ObliqueTech',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ObliqueTech — See Business Differently',
-    description: 'Technology solutions designed around your goals, built for the future.',
+    description: 'Practical technology solutions for businesses ready to move forward.',
     creator: '@obliquetech'
   },
   robots: {
@@ -49,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#07080b',
+  themeColor: '#0B0B0D',
   width: 'device-width',
   initialScale: 1,
 };
@@ -61,11 +60,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-cyan-400 selection:text-slate-950">
+      <body className="min-h-screen flex flex-col antialiased selection:bg-[#C7A45D] selection:text-[#0B0B0D]">
         <ThemeProvider>
-          <CustomCursor />
           <Navbar />
-          <main className="flex-1 pt-20">
+          <main className="flex-1">
             {children}
           </main>
           <Footer />

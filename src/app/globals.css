@@ -1,171 +1,195 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #07080b;
-  --bg-secondary: #0d1117;
-  --bg-surface: #141923;
-  --bg-surface-elevated: #1a2230;
-  --bg-card: rgba(20, 25, 35, 0.7);
-  
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(0, 210, 255, 0.4);
-  --border-gold: rgba(245, 158, 11, 0.3);
-  
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  
-  --accent-gold: #f59e0b;
-  --accent-gold-light: #fbbf24;
-  --accent-blue: #00d2ff;
-  --accent-blue-core: #3b82f6;
-  --accent-violet: #8b5cf6;
-  --accent-violet-glow: #a855f7;
-  --accent-cyan: #06b6d4;
+  /* BASE BRAND PALETTE */
+  --oblique-black: #0B0B0D;
+  --oblique-graphite: #17181C;
+  --oblique-warm-white: #F7F6F2;
+  --oblique-pure-white: #FFFFFF;
+  --oblique-soft-grey: #F1F2F5;
+  --oblique-border-light: rgba(15, 23, 42, 0.09);
+  --oblique-border-dark: rgba(255, 255, 255, 0.09);
 
-  --nav-bg: rgba(7, 8, 11, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  /* CALIBRATED ACCENTS */
+  --accent-gold: #C7A45D;
+  --accent-gold-hover: #b5924d;
+  --accent-blue: #3B82F6;
+  --accent-emerald: #20A779;
+  --accent-violet: #7C5CFC;
+
+  /* DEFAULT / LIGHT SURFACES */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F6F2;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-card: rgba(15, 23, 42, 0.1);
+  --text-primary: #0B0B0D;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --nav-bg: rgba(255, 255, 255, 0.9);
 }
 
-.light {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #f1f5f9;
-  --bg-surface: #ffffff;
-  --bg-surface-elevated: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  
-  --border-subtle: rgba(15, 23, 42, 0.1);
-  --border-focus: rgba(2, 132, 199, 0.4);
-  --border-gold: rgba(217, 119, 6, 0.3);
-  
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  
-  --accent-gold: #d97706;
-  --accent-gold-light: #b45309;
-  --accent-blue: #0284c7;
-  --accent-blue-core: #2563eb;
-  --accent-violet: #7c3aed;
-  --accent-violet-glow: #9333ea;
-  --accent-cyan: #0891b2;
-
-  --nav-bg: rgba(248, 250, 252, 0.9);
-  --glass-border: rgba(15, 23, 42, 0.08);
+.dark {
+  --bg-primary: #0B0B0D;
+  --bg-secondary: #17181C;
+  --bg-surface: #17181C;
+  --bg-card: #17181C;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(255, 255, 255, 0.12);
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --nav-bg: rgba(11, 11, 13, 0.9);
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Oblique Signature Perspective & Cut Geometry */
-.oblique-cut {
-  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+/* -------------------------------------------------------------
+   ART-DIRECTED ALTERNATING SURFACES
+   ------------------------------------------------------------- */
+.surface-black {
+  background-color: #0B0B0D;
+  color: #F8FAFC;
+}
+.surface-black .text-muted-custom {
+  color: #94A3B8;
 }
 
-.oblique-cut-lg {
-  clip-path: polygon(0 0, calc(100% - 32px) 0, 100% 32px, 100% 100%, 32px 100%, 0 calc(100% - 32px));
+.surface-warm {
+  background-color: #F7F6F2;
+  color: #0B0B0D;
+}
+.dark .surface-warm {
+  background-color: #121317;
+  color: #F8FAFC;
 }
 
-.oblique-angle-badge {
-  transform: skewX(-12deg);
+.surface-white {
+  background-color: #FFFFFF;
+  color: #0B0B0D;
 }
-.oblique-angle-badge > * {
-  transform: skewX(12deg);
+.dark .surface-white {
+  background-color: #16181E;
+  color: #F8FAFC;
 }
 
-/* Oblique Signature Diagonal Line */
-.oblique-divider {
+.surface-light {
+  background-color: #F1F2F5;
+  color: #0B0B0D;
+}
+.dark .surface-light {
+  background-color: #1A1C24;
+  color: #F8FAFC;
+}
+
+.surface-charcoal {
+  background-color: #17181C;
+  color: #F8FAFC;
+}
+
+/* -------------------------------------------------------------
+   SIGNATURE OBLIQUE BRAND METAPHOR
+   ------------------------------------------------------------- */
+.oblique-line {
   position: relative;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.6), rgba(0, 210, 255, 0.8), rgba(139, 92, 246, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(199, 164, 93, 0.8), rgba(59, 130, 246, 0.8), transparent);
   transform: rotate(-0.5deg);
 }
 
-/* Glass Panels */
-.glass-panel {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* Minimal geometric angle motif */
+.oblique-angle-mark {
+  transform: skewX(-12deg);
+}
+.oblique-angle-mark > * {
+  transform: skewX(12deg);
+}
+
+/* Clean cards without excessive glow */
+.clean-card {
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  background-color: var(--bg-card);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.clean-card:hover {
+  border-color: rgba(199, 164, 93, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
+}
+.dark .clean-card:hover {
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
 }
 
-.glass-panel-gold {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(20, 25, 35, 0.8) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+/* Standardized Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #3B82F6;
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+.btn-primary:hover {
+  background-color: #2563EB;
 }
 
-.glass-panel-blue {
-  background: linear-gradient(135deg, rgba(0, 210, 255, 0.05) 0%, rgba(20, 25, 35, 0.8) 100%);
-  border: 1px solid rgba(0, 210, 255, 0.25);
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #C7A45D;
+  color: #0B0B0D;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+.btn-gold:hover {
+  background-color: #B5924D;
 }
 
-.glass-panel-violet {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(20, 25, 35, 0.8) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid currentColor;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+  opacity: 0.8;
 }
 
-/* Background Grids & Ambient Effects */
-.bg-oblique-grid {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-}
-
-.light .bg-oblique-grid {
-  background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
-}
-
-/* Radial Glow Highlights */
-.radial-glow-gold {
-  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.15), transparent 70%);
-}
-
-.radial-glow-blue {
-  background: radial-gradient(circle at 50% 50%, rgba(0, 210, 255, 0.15), transparent 70%);
-}
-
-.radial-glow-violet {
-  background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 70%);
-}
-
-/* Custom Selection */
-::selection {
-  background-color: #00d2ff;
-  color: #07080b;
-}
-
-/* Custom Scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #232b3b;
-  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
-}
-
-/* Reduced Motion Support */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  background: rgba(148, 163, 184, 0.45);
 }

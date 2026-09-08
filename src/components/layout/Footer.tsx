@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { obliqueStore, INITIAL_SERVICES } from '@/lib/store';
 import { SiteSettings, ServiceItem } from '@/types';
-import { ArrowUpRight, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
 import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon } from '@/components/ui/Icons';
 
 export function Footer() {
@@ -17,60 +17,43 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="relative bg-slate-950 text-slate-400 border-t border-white/10 pt-16 pb-12 overflow-hidden">
-      {/* Background Decorative Diagonal Glow */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <footer className="bg-[#0B0B0D] text-slate-400 border-t border-white/10 pt-16 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
-          {/* Brand Col */}
+          {/* Brand & Purpose */}
           <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 via-cyan-400 to-violet-500 p-[1.5px]">
-                <div className="w-full h-full bg-slate-950 rounded-[6px] flex items-center justify-center">
-                  <div className="w-3.5 h-3.5 border-2 border-amber-400 transform -skew-x-12" />
-                </div>
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded bg-white flex items-center justify-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-[#0B0B0D]">
+                  <path
+                    d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="9" cy="15" r="2.5" fill="#C7A45D" />
+                </svg>
               </div>
-              <span className="text-xl font-black tracking-tight text-white">
-                OBLIQUE<span className="text-amber-400 font-light">TECH</span>
+              <span className="text-lg font-bold tracking-tight text-white">
+                Oblique<span className="text-[#C7A45D]">Tech</span>
               </span>
             </Link>
 
-            <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
-              Technology solutions from a different angle. We design, engineer, and scale digital systems for ambitious organizations worldwide.
+            <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
+              Technology from a different perspective. Practical technology solutions for businesses ready to move forward.
             </p>
 
-            <div className="pt-2 space-y-2 text-xs">
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
-                <a href={`mailto:${settings.email}`} className="hover:text-white transition-colors">
-                  {settings.email}
-                </a>
-              </div>
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <Phone className="w-4 h-4 text-amber-400 shrink-0" />
-                <a href={`tel:${settings.phone}`} className="hover:text-white transition-colors">
-                  {settings.phone}
-                </a>
-              </div>
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <MapPin className="w-4 h-4 text-violet-400 shrink-0" />
-                <span>{settings.officeAddress}</span>
-              </div>
-            </div>
-
-            {/* Social Media Links */}
-            <div className="flex items-center gap-3 pt-3">
+            <div className="pt-2 flex items-center gap-3">
               {settings.linkedinUrl && (
                 <a
                   href={settings.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn"
-                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center justify-center transition-all hover:scale-105"
+                  className="w-8 h-8 rounded-md bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 flex items-center justify-center transition-colors"
                 >
-                  <LinkedInIcon className="w-4 h-4" />
+                  <LinkedInIcon className="w-3.5 h-3.5" />
                 </a>
               )}
               {settings.twitterUrl && (
@@ -79,9 +62,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Twitter / X"
-                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center justify-center transition-all hover:scale-105"
+                  className="w-8 h-8 rounded-md bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 flex items-center justify-center transition-colors"
                 >
-                  <TwitterXIcon className="w-4 h-4" />
+                  <TwitterXIcon className="w-3.5 h-3.5" />
                 </a>
               )}
               {settings.githubUrl && (
@@ -90,9 +73,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub"
-                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center justify-center transition-all hover:scale-105"
+                  className="w-8 h-8 rounded-md bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 flex items-center justify-center transition-colors"
                 >
-                  <GitHubIcon className="w-4 h-4" />
+                  <GitHubIcon className="w-3.5 h-3.5" />
                 </a>
               )}
               {settings.instagramUrl && (
@@ -101,111 +84,83 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center justify-center transition-all hover:scale-105"
+                  className="w-8 h-8 rounded-md bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 flex items-center justify-center transition-colors"
                 >
-                  <InstagramIcon className="w-4 h-4" />
+                  <InstagramIcon className="w-3.5 h-3.5" />
                 </a>
               )}
             </div>
           </div>
 
-          {/* Services Col */}
+          {/* Navigation */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Services</h4>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Navigation</h3>
             <ul className="space-y-2 text-xs">
-              {services.slice(0, 6).map((service) => (
-                <li key={service.id}>
-                  <Link
-                    href={`/services/${service.slug}`}
-                    className="hover:text-cyan-400 transition-colors inline-flex items-center gap-1 group"
-                  >
-                    <span>{service.title}</span>
-                    <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link href="/services" className="text-cyan-400 hover:underline font-medium">
-                  View All Services →
-                </Link>
-              </li>
+              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link href="/services" className="hover:text-white transition-colors">Services</Link></li>
+              <li><Link href="/portfolio" className="hover:text-white transition-colors">Portfolio</Link></li>
+              <li><Link href="/about" className="hover:text-white transition-colors">About Story</Link></li>
+              <li><Link href="/insights" className="hover:text-white transition-colors">Insights</Link></li>
+              <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
             </ul>
           </div>
 
-          {/* Quick Navigation Col */}
+          {/* Core Services */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Navigation</h4>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Services</h3>
             <ul className="space-y-2 text-xs">
-              <li>
-                <Link href="/portfolio" className="hover:text-white transition-colors">
-                  Portfolio & Case Studies
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:text-white transition-colors">
-                  About Us & Origin Story
-                </Link>
-              </li>
-              <li>
-                <Link href="/insights" className="hover:text-white transition-colors">
-                  Oblique Insights (Blog)
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="hover:text-white transition-colors">
-                  Frequently Asked Questions
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/schedule" className="text-amber-400 font-medium hover:underline">
-                  Schedule a Consultation
-                </Link>
-              </li>
+              <li><Link href="/services/web-development" className="hover:text-white transition-colors">Web Development</Link></li>
+              <li><Link href="/services/ai-ml" className="hover:text-white transition-colors">AI & ML</Link></li>
+              <li><Link href="/services/ui-ux-design" className="hover:text-white transition-colors">UI/UX Design</Link></li>
+              <li><Link href="/services/it-consulting" className="hover:text-white transition-colors">IT Consulting</Link></li>
+              <li><Link href="/services/mobile-app-development" className="hover:text-white transition-colors">Mobile Apps</Link></li>
+              <li><Link href="/services/software-development" className="hover:text-white transition-colors">Custom Software</Link></li>
             </ul>
           </div>
 
-          {/* Action & Wizard Col */}
+          {/* Direct Contact */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Start Building</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Have an idea or operational bottleneck? Discover practical solutions with our project wizard.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/start-project"
-                className="inline-flex items-center justify-center w-full px-4 py-2.5 text-xs font-semibold rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 transition-all hover:scale-102"
-              >
-                Launch Project Wizard →
-              </Link>
-            </div>
-            <div className="pt-2">
-              <Link
-                href="/admin"
-                className="text-[11px] text-slate-500 hover:text-slate-300 block"
-              >
-                Admin Management Portal
-              </Link>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Direct Contact</h3>
+            <div className="space-y-2 text-xs text-slate-400">
+              <div>
+                <a href={`mailto:${settings.email}`} className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-[#C7A45D]" />
+                  <span>{settings.email}</span>
+                </a>
+              </div>
+              <div>
+                <a href={`tel:${settings.phone}`} className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-[#3B82F6]" />
+                  <span>{settings.phone}</span>
+                </a>
+              </div>
+              <div className="pt-2 flex flex-col gap-2">
+                <Link
+                  href="/start-project"
+                  className="inline-flex items-center justify-between text-xs font-semibold px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition-colors"
+                >
+                  <span>Start a Project</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#C7A45D]" />
+                </Link>
+                <Link
+                  href="/schedule"
+                  className="inline-flex items-center justify-between text-xs font-semibold px-3 py-2 rounded-md bg-[#3B82F6] hover:bg-blue-600 text-white transition-colors"
+                >
+                  <span>Schedule a Call</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        {/* Bottom Legal & Copyright */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} ObliqueTech. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy-policy" className="hover:text-slate-300 transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-slate-300 transition-colors">
-              Terms & Conditions
-            </Link>
-            <span className="text-slate-600">|</span>
-            <span className="text-slate-400 font-mono text-[11px]">v1.0.0 Production</span>
+            <Link href="/privacy-policy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
+            <Link href="/admin" className="hover:text-slate-400 transition-colors">Admin Portal</Link>
           </div>
         </div>
       </div>
