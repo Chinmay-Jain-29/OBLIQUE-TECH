@@ -6,14 +6,16 @@ import { obliqueStore } from '@/lib/store';
 import { SiteSettings } from '@/types';
 import { Mail, Phone, MessageCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon } from '@/components/ui/Icons';
+import { PhoneInput, PhoneInputValue } from '@/components/ui/PhoneInput';
 
 export default function ContactPage() {
   const [settings, setSettings] = useState<SiteSettings>(obliqueStore.getSettings());
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneE164, setPhoneE164] = useState('');
   const [company, setCompany] = useState('');
-  const [service, setService] = useState('Web Development');
+  const [service, setService] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -30,9 +32,9 @@ export default function ContactPage() {
     await obliqueStore.submitContact({
       name,
       email,
-      phone,
+      phone: phoneE164 || phone,
       company,
-      service,
+      service: service || 'General Inquiry',
       message,
     });
     setLoading(false);
@@ -205,15 +207,16 @@ export default function ContactPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                        Phone
+                      <label htmlFor="contact-phone" className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        Phone Number
                       </label>
-                      <input
-                        type="tel"
+                      <PhoneInput
+                        id="contact-phone"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+1 (555) 000-0000"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        onChange={(val: PhoneInputValue) => {
+                          setPhone(val.phoneNumber);
+                          setPhoneE164(val.phoneE164);
+                        }}
                       />
                     </div>
 
@@ -226,7 +229,7 @@ export default function ContactPage() {
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         placeholder="Organization or project"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
                   </div>
@@ -238,8 +241,9 @@ export default function ContactPage() {
                     <select
                       value={service}
                       onChange={(e) => setService(e.target.value)}
-                      className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
+                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
                     >
+                      <option value="">Select a service category (optional)</option>
                       <option value="Web Development">Web Development</option>
                       <option value="AI/ML">AI & Machine Learning</option>
                       <option value="UI/UX Design">UI/UX Design</option>

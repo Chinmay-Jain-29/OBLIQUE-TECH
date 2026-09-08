@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { obliqueStore } from '@/lib/store';
+import { PhoneInput, PhoneInputValue } from '@/components/ui/PhoneInput';
 import { 
   ArrowRight, 
   ArrowLeft, 
@@ -61,6 +62,8 @@ export default function StartProjectPage() {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+  const [phoneE164, setPhoneE164] = useState<string>('');
+  const [isPhoneValid, setIsPhoneValid] = useState<boolean>(false);
   const [company, setCompany] = useState<string>('');
   const [website, setWebsite] = useState<string>('');
 
@@ -96,7 +99,7 @@ export default function StartProjectPage() {
       timeline: timeline || 'Not decided yet',
       name,
       email,
-      phone,
+      phone: phoneE164 || phone,
       company: company || 'Not specified'
     });
     setLoading(false);
@@ -448,17 +451,24 @@ export default function StartProjectPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="phone-wizard" className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="tel"
+                <PhoneInput
+                  id="phone-wizard"
                   required
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+1 (555) 019-2834"
-                  className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                  onChange={(val: PhoneInputValue) => {
+                    setPhone(val.phoneNumber);
+                    setPhoneE164(val.phoneE164);
+                    setIsPhoneValid(val.isValid);
+                  }}
                 />
+                {phone && !isPhoneValid && (
+                  <p className="text-[11px] text-amber-500 mt-1">
+                    Please enter a valid phone number for the selected country.
+                  </p>
+                )}
               </div>
 
               <div>

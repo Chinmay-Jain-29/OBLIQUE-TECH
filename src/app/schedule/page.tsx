@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { obliqueStore } from '@/lib/store';
 import { Clock, CheckCircle2, MessageCircle, Mail, ArrowRight } from 'lucide-react';
+import { PhoneInput, PhoneInputValue } from '@/components/ui/PhoneInput';
 
 const TOPICS = [
   'Start a Project',
@@ -26,10 +27,11 @@ const TIME_SLOTS = [
 ];
 
 export default function SchedulePage() {
-  const [topic, setTopic] = useState(TOPICS[0]);
+  const [topic, setTopic] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneE164, setPhoneE164] = useState('');
   const [company, setCompany] = useState('');
   const [requirements, setRequirements] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
@@ -45,7 +47,7 @@ export default function SchedulePage() {
     await obliqueStore.submitCallRequest({
       name,
       email,
-      phone,
+      phone: phoneE164 || phone,
       businessName: company,
       reason: topic,
       serviceRequired: topic,
@@ -168,15 +170,16 @@ export default function SchedulePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                        Phone
+                      <label htmlFor="schedule-phone" className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        Phone Number
                       </label>
-                      <input
-                        type="tel"
+                      <PhoneInput
+                        id="schedule-phone"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+1 (555) 000-0000"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        onChange={(val: PhoneInputValue) => {
+                          setPhone(val.phoneNumber);
+                          setPhoneE164(val.phoneE164);
+                        }}
                       />
                     </div>
                     <div>

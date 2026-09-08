@@ -22,6 +22,7 @@ import {
   Sparkles,
   MessageSquare
 } from 'lucide-react';
+import { IntroAnimation } from '@/components/ui/IntroAnimation';
 
 export default function HomePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -103,6 +104,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
+      <IntroAnimation />
       {/* =========================================================================
           01 — HERO (Surface: Oblique Black #0B0B0D)
           ========================================================================= */}
@@ -414,58 +416,74 @@ export default function HomePage() {
           06 — ABOUT OBLIQUE (Surface: Warm White #F7F6F2)
           ========================================================================= */}
       <section className="surface-warm py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#C7A45D]">Our Origin</span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Where Oblique began.
-            </h2>
-            <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
-              Oblique started after seeing a common challenge among engineering students: companies wanted experience, but students were struggling to find opportunities to gain it.
-            </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              We began by connecting developers with seasoned architects through real commercial prototypes, technical mentorship, and high-velocity sprints. That relentless culture of execution evolved into an enterprise technology company building mission-critical software globally.
-            </p>
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-7 space-y-6">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#C7A45D]">Our Origin</span>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Where Oblique began.
+              </h2>
+              <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+                Oblique started after seeing a common challenge among engineering students: companies wanted experience, but students were struggling to find opportunities to gain it.
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                We began by connecting developers with seasoned architects through real commercial prototypes, technical mentorship, and high-velocity sprints. That relentless culture of execution evolved into an enterprise technology company building mission-critical software globally.
+              </p>
 
-            {/* Strategic Ambition Progression */}
-            <div className="pt-2">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Our Trajectory</div>
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                <span className="px-3 py-1 rounded bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white">Solutions</span>
-                <span className="text-slate-400">→</span>
-                <span className="px-3 py-1 rounded bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white">Products</span>
-                <span className="text-slate-400">→</span>
-                <span className="px-3 py-1 rounded bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white">Platforms</span>
-                <span className="text-slate-400">→</span>
-                <span className="px-3 py-1 rounded bg-[#C7A45D] text-[#0B0B0D] font-bold">Global Impact</span>
+              <div className="pt-2">
+                <Link
+                  href="/about"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                >
+                  <span>Read Our Full Story</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
 
-            <div className="pt-2">
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-              >
-                <span>Read Our Full Story</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+            <div className="lg:col-span-5">
+              <div className="p-8 rounded-2xl bg-white dark:bg-[#17181C] border border-slate-200 dark:border-white/10 space-y-6 shadow-sm">
+                <div className="space-y-2 border-b border-slate-100 dark:border-white/10 pb-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Mission</h4>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    Build useful technology, solve real problems, and create opportunities that matter.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Vision</h4>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    Become a trusted technology company that builds products with global relevance.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-5">
-            <div className="p-8 rounded-2xl bg-white dark:bg-[#17181C] border border-slate-200 dark:border-white/10 space-y-6 shadow-sm">
-              <div className="space-y-2 border-b border-slate-100 dark:border-white/10 pb-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Mission</h4>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                  Build useful technology, solve real problems, and create opportunities that matter.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Vision</h4>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                  Become a trusted technology company that builds products with global relevance.
-                </p>
-              </div>
+          {/* Signature Storytelling Progression: Problem -> Different Perspective -> Oblique -> Technology -> Impact */}
+          <div className="pt-8 border-t border-slate-200 dark:border-white/10">
+            <div className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-4">
+              The Evolution Path
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+              {[
+                { step: '01', title: 'The Problem', desc: 'The academic experience paradox.', accent: 'text-rose-500 border-rose-500/30' },
+                { step: '02', title: 'Perspective', desc: 'Practical execution over theory.', accent: 'text-[#C7A45D] border-[#C7A45D]/30' },
+                { step: '03', title: 'ObliqueTech', desc: 'Engineering from a different angle.', accent: 'text-[#3B82F6] border-[#3B82F6]/30' },
+                { step: '04', title: 'Technology', desc: 'Clean, type-safe robust systems.', accent: 'text-[#7C5CFC] border-[#7C5CFC]/30' },
+                { step: '05', title: 'Impact', desc: 'Global commercial relevance.', accent: 'text-[#20A779] border-[#20A779]/30' },
+              ].map((stage, sIdx) => (
+                <div
+                  key={sIdx}
+                  className={`p-4 rounded-xl bg-white dark:bg-[#121317] border border-slate-200 dark:border-white/10 space-y-1.5 shadow-2xs hover:border-slate-300 dark:hover:border-white/20 transition-all`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-slate-400">{stage.step}</span>
+                    <span className={`w-2 h-2 rounded-full border ${stage.accent}`} />
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">{stage.title}</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">{stage.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -479,11 +497,11 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-[#7C5CFC]">Thinking</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
                 Oblique Insights
               </h2>
               <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-                Ideas, technology, and practical thinking.
+                Technology, ideas, and practical thinking.
               </p>
             </div>
             <div>
@@ -497,59 +515,96 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 1 Featured + 2 Smaller Articles */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Editorial Publication Layout: 1 Featured with Large Cover + 2 Visual Supporting Articles */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             {/* Featured Article (7 cols) */}
             {featuredPost && (
               <Link
                 href={`/insights/${featuredPost.slug}`}
-                className="lg:col-span-7 clean-card p-6 sm:p-8 rounded-xl flex flex-col justify-between group"
+                className="lg:col-span-7 clean-card rounded-2xl overflow-hidden flex flex-col justify-between group border border-slate-200 dark:border-white/10 shadow-xs hover:shadow-lg transition-all"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
-                    <span className="text-[#3B82F6] font-semibold">{featuredPost.category}</span>
-                    <span>•</span>
-                    <span>{featuredPost.readingTimeMinutes} min read</span>
+                {/* Large visual cover image */}
+                <div className="aspect-16/9 w-full overflow-hidden bg-slate-950 relative">
+                  <img
+                    src={featuredPost.coverImage}
+                    alt={featuredPost.title}
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-[#0B0B0D]/80 backdrop-blur-md text-[#C7A45D] border border-white/10">
+                      Featured • {featuredPost.category}
+                    </span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug">
-                    {featuredPost.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {featuredPost.excerpt}
-                  </p>
                 </div>
-                <div className="pt-6 flex items-center text-xs font-semibold text-[#3B82F6]">
-                  <span>Read Article</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
+
+                <div className="p-6 sm:p-8 space-y-4 flex-1 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="text-xs font-mono text-slate-400">
+                      {featuredPost.readingTimeMinutes} min read • {new Date(featuredPost.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug">
+                      {featuredPost.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {featuredPost.excerpt}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs font-semibold text-[#3B82F6]">
+                    <span>Read Article</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
               </Link>
             )}
 
-            {/* 2 Smaller Articles (5 cols) */}
+            {/* 2 Smaller Articles with Visual Covers (5 cols) */}
             <div className="lg:col-span-5 flex flex-col gap-6">
-              {secondaryPosts.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/insights/${post.slug}`}
-                  className="clean-card p-6 rounded-xl flex-1 flex flex-col justify-between group"
-                >
-                  <div className="space-y-2">
-                    <div className="text-[11px] font-mono text-slate-500">
-                      <span className="text-[#C7A45D] font-semibold">{post.category}</span> • {post.readingTimeMinutes} min read
+              {secondaryPosts.map((post) => {
+                const categoryColor = post.category.includes('AI')
+                  ? 'text-purple-400 bg-purple-500/10 border-purple-500/20'
+                  : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+
+                return (
+                  <Link
+                    key={post.id}
+                    href={`/insights/${post.slug}`}
+                    className="clean-card rounded-2xl overflow-hidden flex-1 flex flex-col sm:flex-row group border border-slate-200 dark:border-white/10 shadow-xs hover:shadow-lg transition-all"
+                  >
+                    {/* Visual Cover Thumbnail */}
+                    <div className="sm:w-44 aspect-video sm:aspect-auto overflow-hidden bg-slate-950 shrink-0 relative">
+                      <img
+                        src={post.coverImage}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                      />
                     </div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors">
-                      {post.title}
-                    </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                      {post.excerpt}
-                    </p>
-                  </div>
-                  <div className="pt-4 text-xs font-semibold text-[#3B82F6] flex items-center">
-                    <span>Read Article</span>
-                    <ArrowRight className="w-3 h-3 ml-1" />
-                  </div>
-                </Link>
-              ))}
+
+                    <div className="p-5 flex-1 flex flex-col justify-between space-y-2">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-mono border ${categoryColor}`}>
+                            {post.category}
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-400">
+                            {post.readingTimeMinutes}m read
+                          </span>
+                        </div>
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug line-clamp-2">
+                          {post.title}
+                        </h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      </div>
+                      <div className="pt-2 text-xs font-semibold text-[#3B82F6] flex items-center justify-between">
+                        <span>Read Article</span>
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>

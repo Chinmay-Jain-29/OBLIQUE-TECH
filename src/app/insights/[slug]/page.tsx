@@ -74,7 +74,22 @@ export default async function InsightDetailPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 2. Article Content (Surface: Pure White) */}
+      {/* 2. Visual Cover Image Showcase */}
+      {post.coverImage && (
+        <section className="surface-warm py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+          <div className="max-w-4xl mx-auto">
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-950 aspect-16/9">
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 3. Article Content (Surface: Pure White) */}
       <section className="surface-white py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
         <div className="max-w-3xl mx-auto space-y-10">
           {/* Author Box */}
@@ -88,7 +103,17 @@ export default async function InsightDetailPage({ params }: Props) {
                 <div className="text-[11px] text-slate-500 dark:text-slate-400">{author.title}</div>
               </div>
             </div>
-            <span className="text-[10px] font-mono text-slate-400">ObliqueTech Insights</span>
+            <span className="text-[10px] font-mono text-slate-400">ObliqueTech Editorial</span>
+          </div>
+
+          {/* Key Perspective Highlight Box */}
+          <div className="p-6 rounded-2xl bg-blue-50/60 dark:bg-blue-500/10 border border-blue-200/80 dark:border-blue-500/20 space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#3B82F6] font-semibold">
+              The Oblique Takeaway
+            </span>
+            <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed italic">
+              &ldquo;{post.excerpt}&rdquo;
+            </p>
           </div>
 
           {/* Article Text Content */}

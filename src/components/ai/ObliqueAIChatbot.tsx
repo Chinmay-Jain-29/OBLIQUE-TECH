@@ -186,21 +186,21 @@ export function ObliqueAIChatbot() {
 
   return (
     <>
-      {/* Floating Trigger Button */}
-      <div className="fixed bottom-6 right-6 z-40">
+      {/* Floating Trigger Button (LEFT BOTTOM CORNER) */}
+      <div className="fixed bottom-6 left-6 z-40 select-none">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#0B0B0D] dark:bg-white text-white dark:text-[#0B0B0D] text-xs font-semibold shadow-lg hover:scale-105 transition-all border border-white/20 dark:border-slate-300"
-          aria-label="Open Ask Oblique"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#0B0B0D] dark:bg-white text-white dark:text-[#0B0B0D] text-xs font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 dark:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C7A45D]"
+          aria-label="Open Ask Oblique assistant"
         >
           <div className="w-2 h-2 rounded-full bg-[#20A779] animate-pulse" />
-          <span>Ask Oblique</span>
+          <span className="tracking-tight">Ask Oblique</span>
         </button>
       </div>
 
-      {/* Floating Chat Window */}
+      {/* Floating Chat Window (BOTTOM LEFT) */}
       {isOpen && (
-        <div className="fixed bottom-20 right-6 z-50 w-[92vw] sm:w-96 max-h-[560px] bg-white dark:bg-[#121317] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200">
+        <div className="fixed bottom-20 left-6 z-50 w-[calc(100vw-3rem)] sm:w-96 max-h-[560px] bg-white dark:bg-[#121317] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200">
           {/* Header */}
           <div className="p-4 bg-[#0B0B0D] text-white flex items-center justify-between">
             <div className="flex items-center gap-2.5">

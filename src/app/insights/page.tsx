@@ -86,31 +86,43 @@ export default function InsightsPage() {
 
           {/* Featured Article Banner if 'All' and no search */}
           {featured && selectedCategory === 'All' && !searchQuery && (
-            <div className="clean-card p-8 sm:p-10 rounded-2xl">
-              <div className="max-w-3xl space-y-4">
-                <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
-                  <span className="px-2.5 py-0.5 rounded bg-blue-100 dark:bg-blue-500/10 text-[#3B82F6] font-semibold">
-                    Featured
-                  </span>
-                  <span>{featured.category}</span>
-                  <span>•</span>
-                  <span>{featured.readingTimeMinutes} min read</span>
+            <div className="clean-card rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-0 group">
+              <div className="lg:col-span-7 aspect-16/10 lg:aspect-auto overflow-hidden bg-slate-950">
+                <img
+                  src={featured.coverImage}
+                  alt={featured.title}
+                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                />
+              </div>
+
+              <div className="lg:col-span-5 p-8 sm:p-10 flex flex-col justify-between space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
+                    <span className="px-2.5 py-0.5 rounded bg-blue-100 dark:bg-blue-500/10 text-[#3B82F6] font-semibold border border-blue-200 dark:border-blue-500/20">
+                      Featured • {featured.category}
+                    </span>
+                    <span>•</span>
+                    <span>{featured.readingTimeMinutes} min read</span>
+                  </div>
+
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-tight">
+                    <Link href={`/insights/${featured.slug}`}>
+                      {featured.title}
+                    </Link>
+                  </h2>
+
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {featured.excerpt}
+                  </p>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white hover:text-[#3B82F6] transition-colors">
-                  <Link href={`/insights/${featured.slug}`}>
-                    {featured.title}
-                  </Link>
-                </h2>
-
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {featured.excerpt}
-                </p>
-
-                <div className="pt-2">
+                <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                  <span className="text-xs font-mono text-slate-400">
+                    {new Date(featured.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
                   <Link
                     href={`/insights/${featured.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:underline"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] group-hover:translate-x-1 transition-transform"
                   >
                     <span>Read Article</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -120,38 +132,59 @@ export default function InsightsPage() {
             </div>
           )}
 
-          {/* Articles Grid */}
+          {/* Articles Grid (Visual Cards) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filtered.map((post) => (
-              <Link
-                key={post.id}
-                href={`/insights/${post.slug}`}
-                className="clean-card p-6 rounded-xl flex flex-col justify-between group"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
-                    <span className="text-[#3B82F6] font-semibold">{post.category}</span>
-                    <span>{post.readingTimeMinutes}m read</span>
+            {filtered.map((post) => {
+              const catColor = post.category.includes('AI')
+                ? 'text-purple-400 bg-purple-500/10 border-purple-500/20'
+                : post.category.includes('Business')
+                ? 'text-amber-500 bg-amber-500/10 border-amber-500/20'
+                : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+
+              return (
+                <Link
+                  key={post.id}
+                  href={`/insights/${post.slug}`}
+                  className="clean-card rounded-2xl overflow-hidden flex flex-col justify-between group border border-slate-200 dark:border-white/10 shadow-2xs hover:shadow-lg transition-all"
+                >
+                  {/* Article Visual Cover Image */}
+                  <div className="aspect-16/10 w-full overflow-hidden bg-slate-950">
+                    <img
+                      src={post.coverImage}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                    />
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug">
-                    {post.title}
-                  </h3>
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                        <span className={`px-2 py-0.5 rounded border ${catColor}`}>
+                          {post.category}
+                        </span>
+                        <span>{post.readingTimeMinutes}m read</span>
+                      </div>
 
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
-                    {post.excerpt}
-                  </p>
-                </div>
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug line-clamp-2">
+                        {post.title}
+                      </h3>
 
-                <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-400">
-                  <span>{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                  <span className="text-[#3B82F6] font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    <span>Read</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </Link>
-            ))}
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">
+                        {post.excerpt}
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-400">
+                      <span>{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      <span className="text-[#3B82F6] font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        <span>Read</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
