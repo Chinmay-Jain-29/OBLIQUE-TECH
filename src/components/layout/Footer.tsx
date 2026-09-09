@@ -6,6 +6,7 @@ import { obliqueStore, INITIAL_SERVICES } from '@/lib/store';
 import { SiteSettings, ServiceItem } from '@/types';
 import { Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
 import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon } from '@/components/ui/Icons';
+import { ObliqueLogo } from '@/components/ui/ObliqueLogo';
 
 export function Footer() {
   const [settings, setSettings] = useState<SiteSettings>(obliqueStore.getSettings());
@@ -22,22 +23,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
           {/* Brand & Purpose */}
           <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded bg-white flex items-center justify-center">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-[#0B0B0D]">
-                  <path
-                    d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="9" cy="15" r="2.5" fill="#C7A45D" />
-                </svg>
-              </div>
-              <span className="text-lg font-bold tracking-tight text-white">
-                Oblique<span className="text-[#C7A45D]">Tech</span>
-              </span>
+            <Link href="/" className="inline-block group focus:outline-none">
+              <ObliqueLogo size="md" />
             </Link>
 
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">

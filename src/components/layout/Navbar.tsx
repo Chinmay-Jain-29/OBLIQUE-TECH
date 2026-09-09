@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Menu, X, ShieldCheck } from 'lucide-react';
+import { ObliqueLogo } from '@/components/ui/ObliqueLogo';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -42,29 +43,9 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Official ObliqueTech Wordmark & Angled Geometric Mark */}
-          <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
-            <div className="w-8 h-8 rounded bg-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
-              {/* Minimal geometric angled O-mark */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-[#08090B]">
-                <path
-                  d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle cx="9" cy="15" r="2.5" fill="#C7A45D" />
-              </svg>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base font-bold tracking-tight text-white transition-colors">
-                Oblique<span className="text-[#C7A45D]">Tech</span>
-              </span>
-              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-medium -mt-0.5">
-                See Business Differently
-              </span>
-            </div>
+          {/* Official ObliqueTech Logo */}
+          <Link href="/" className="group focus:outline-none py-1">
+            <ObliqueLogo size="md" showTagline />
           </Link>
 
           {/* Desktop Navigation */}

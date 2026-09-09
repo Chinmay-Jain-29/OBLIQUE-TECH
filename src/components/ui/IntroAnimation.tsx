@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import gsap from 'gsap';
 
 interface IntroAnimationProps {
@@ -98,28 +99,29 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#08090B] text-white select-none pointer-events-auto"
     >
       <div className="relative flex flex-col items-center space-y-4 px-6 text-center">
-        {/* 02: Logo mark */}
-        <div className="intro-logo w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-[0_0_40px_rgba(212,175,90,0.3)]">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" className="text-[#08090B]">
-            <path
-              d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="9" cy="15" r="2.5" fill="#D4AF5A" />
-          </svg>
+        {/* 02: Official Logo mark */}
+        <div className="intro-logo relative flex items-center justify-center filter drop-shadow-[0_0_35px_rgba(0,194,255,0.4)]">
+          <Image
+            src="/oblique-mark.png"
+            alt="ObliqueTech"
+            width={160}
+            height={104}
+            style={{ width: '88px', height: 'auto' }}
+            priority
+          />
         </div>
 
-        {/* 05: Wordmark */}
-        <div className="intro-wordmark flex items-center gap-1.5 text-2xl sm:text-4xl font-bold tracking-tight">
+        {/* 05: Official Wordmark */}
+        <div className="intro-wordmark flex items-center text-3xl sm:text-5xl font-bold tracking-tight text-white">
           <span>Oblique</span>
-          <span className="text-[#D4AF5A]">Tech</span>
+          <span className="bg-gradient-to-r from-[#00D2FF] via-[#7C3AED] to-[#EC4899] bg-clip-text text-transparent font-extrabold">
+            T
+          </span>
+          <span>ech</span>
         </div>
 
         {/* 03 & 04: Thin angled line travels across the screen */}
-        <div className="w-48 sm:w-64 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF5A] to-transparent intro-line origin-center" />
+        <div className="w-48 sm:w-64 h-[2px] bg-gradient-to-r from-transparent via-[#00D2FF] to-transparent intro-line origin-center" />
 
         {/* Tag */}
         <p className="intro-tag text-xs font-mono uppercase tracking-widest text-slate-400">
