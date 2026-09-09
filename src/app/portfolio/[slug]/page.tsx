@@ -129,13 +129,15 @@ export default async function PortfolioDetailPage({ params }: Props) {
       {/* ------------------------------------------------------------- */}
       {/* SECTION 02 — PROJECT SNAPSHOT (Attractive colored accent strip) */}
       {/* ------------------------------------------------------------- */}
-      <section className="surface-warm py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      {/* SECTION 02 — PROJECT SNAPSHOT (Attractive colored accent strip) */}
+      {/* ------------------------------------------------------------- */}
+      <section className="surface-warm py-8 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-white dark:bg-[#121317] border border-slate-200 dark:border-white/10 shadow-xs">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-[#121317] border border-white/10 shadow-xs">
             {/* Industry */}
             <div className="space-y-1">
               <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">Industry</span>
-              <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+              <p className="text-xs sm:text-sm font-semibold text-white">
                 {project.clientIndustry}
               </p>
             </div>
@@ -144,7 +146,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
             <div className="space-y-1">
               <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">Project Type</span>
               <div className="pt-0.5">
-                <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-blue-50 dark:bg-blue-500/10 text-[#3B82F6] border border-blue-200 dark:border-blue-500/30">
+                <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-blue-500/10 text-[#3B82F6] border border-blue-500/30">
                   {project.category} System
                 </span>
               </div>
@@ -153,7 +155,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
             {/* Core Stack */}
             <div className="space-y-1">
               <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">Key Technology</span>
-              <p className="text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-200 truncate">
+              <p className="text-xs sm:text-sm font-mono text-slate-200 truncate">
                 {project.technologies.slice(0, 3).join(', ')}
               </p>
             </div>
@@ -163,12 +165,12 @@ export default async function PortfolioDetailPage({ params }: Props) {
               <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">Status</span>
               <div className="pt-0.5">
                 {project.status === 'completed' ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-[#20A779] border border-emerald-200 dark:border-emerald-500/30">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-emerald-500/10 text-[#20A779] border border-emerald-500/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#20A779]" />
                     Production Ready
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-amber-50 dark:bg-amber-500/10 text-amber-500 border border-amber-200 dark:border-amber-500/30">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                     Active Initiative
                   </span>
@@ -182,7 +184,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
       {/* ------------------------------------------------------------- */}
       {/* SECTION 03 & 04 — THE CHALLENGE & THE SOLUTION (Visual flow)   */}
       {/* ------------------------------------------------------------- */}
-      <section className="surface-white py-16 md:py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-white py-16 md:py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-6xl mx-auto space-y-16">
           {/* Section 03: The Challenge */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -192,31 +194,31 @@ export default async function PortfolioDetailPage({ params }: Props) {
                 <span>•</span>
                 <span>The Challenge</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
                 What needed fixing
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
                 {project.problem}
               </p>
             </div>
 
             {/* Visual Problem Representation */}
             <div className="lg:col-span-7">
-              <div className="p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
-                  <span className="text-xs font-mono text-slate-500">SYSTEM BOTTLENECK DIAGNOSIS</span>
+              <div className="p-6 rounded-2xl border border-white/10 bg-white/5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                  <span className="text-xs font-mono text-slate-400">SYSTEM BOTTLENECK DIAGNOSIS</span>
                   <span className="text-xs font-mono text-rose-500">Critical Friction</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-4 rounded-xl bg-white dark:bg-[#17181C] border border-slate-200 dark:border-white/10 space-y-1.5">
+                  <div className="p-4 rounded-xl bg-[#17181C] border border-white/10 space-y-1.5">
                     <span className="text-[10px] font-mono text-rose-500 uppercase">Friction 01</span>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Fragmented Data Silos</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Manual spreadsheets caused desynchronized operational tracking across teams.</p>
+                    <h4 className="text-xs font-bold text-white">Fragmented Data Silos</h4>
+                    <p className="text-[11px] text-slate-400">Manual spreadsheets caused desynchronized operational tracking across teams.</p>
                   </div>
-                  <div className="p-4 rounded-xl bg-white dark:bg-[#17181C] border border-slate-200 dark:border-white/10 space-y-1.5">
+                  <div className="p-4 rounded-xl bg-[#17181C] border border-white/10 space-y-1.5">
                     <span className="text-[10px] font-mono text-rose-500 uppercase">Friction 02</span>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">High Latency Triage</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Slow query speeds and fragile plugin dependencies created constant support bottlenecks.</p>
+                    <h4 className="text-xs font-bold text-white">High Latency Triage</h4>
+                    <p className="text-[11px] text-slate-400">Slow query speeds and fragile plugin dependencies created constant support bottlenecks.</p>
                   </div>
                 </div>
               </div>
@@ -224,17 +226,17 @@ export default async function PortfolioDetailPage({ params }: Props) {
           </div>
 
           {/* Section 04: The Solution (Visual Transition Flow) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center pt-8 border-t border-slate-100 dark:border-white/5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center pt-8 border-t border-white/5">
             <div className="lg:col-span-5 space-y-4">
               <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider bg-emerald-500/10 text-[#20A779] border border-emerald-500/20">
                 <span>02</span>
                 <span>•</span>
                 <span>The Solution</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
                 What we engineered
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
                 {project.solution}
               </p>
             </div>
@@ -243,36 +245,36 @@ export default async function PortfolioDetailPage({ params }: Props) {
             <div className="lg:col-span-7">
               <div className="space-y-3">
                 {/* Step 1 */}
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 rounded-full bg-rose-500/10 text-rose-500 text-xs font-mono flex items-center justify-center font-bold">1</span>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white">User Pain Point Isolated</h4>
-                      <p className="text-[11px] text-slate-500">Unreliable manual processing eliminated at the root architecture layer.</p>
+                      <h4 className="text-xs font-bold text-white">User Pain Point Isolated</h4>
+                      <p className="text-[11px] text-slate-400">Unreliable manual processing eliminated at the root architecture layer.</p>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
                 </div>
 
                 {/* Step 2 */}
-                <div className="p-4 rounded-xl bg-blue-50/50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 rounded-full bg-blue-500 text-white text-xs font-mono flex items-center justify-center font-bold">2</span>
                     <div>
                       <h4 className="text-xs font-bold text-[#3B82F6]">ObliqueTech Approach</h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{project.approach}</p>
+                      <p className="text-[11px] text-slate-400">{project.approach}</p>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-[#3B82F6] shrink-0" />
                 </div>
 
                 {/* Step 3 */}
-                <div className="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 rounded-full bg-[#20A779] text-white text-xs font-mono flex items-center justify-center font-bold">3</span>
                     <div>
                       <h4 className="text-xs font-bold text-[#20A779]">Production Digital Product</h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">Deployed high-performance platform delivering verifiable operational lift.</p>
+                      <p className="text-[11px] text-slate-400">Deployed high-performance platform delivering verifiable operational lift.</p>
                     </div>
                   </div>
                   <Check className="w-4 h-4 text-[#20A779] shrink-0" />
@@ -286,16 +288,16 @@ export default async function PortfolioDetailPage({ params }: Props) {
       {/* ------------------------------------------------------------- */}
       {/* SECTION 05 — VISUAL FEATURE SHOWCASE (Alternating Visual/Text) */}
       {/* ------------------------------------------------------------- */}
-      <section className="surface-light py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-light py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-6xl mx-auto space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-xs font-mono uppercase tracking-widest text-[#3B82F6]">
               Engineered Capabilities
             </span>
-            <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white">
               Feature Architecture
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               Purpose-built capabilities engineered to drive speed, resilience, and clarity.
             </p>
           </div>
@@ -313,7 +315,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
                 >
                   {/* Visual Screen */}
                   <div className={`lg:col-span-7 ${isEven ? '' : 'lg:col-start-6'}`}>
-                    <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-950 shadow-lg">
+                    <div className="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 shadow-lg">
                       <img
                         src={project.coverImage}
                         alt={feat}
@@ -327,10 +329,10 @@ export default async function PortfolioDetailPage({ params }: Props) {
                     <span className="text-xs font-mono font-bold text-[#C7A45D]">
                       FEATURE 0{idx + 1}
                     </span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white">
                       {feat}
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                       Engineered with precision for zero downtime and low-friction workflow execution across all active workstations.
                     </p>
                     <div className="pt-1 flex items-center gap-2 text-xs font-mono text-[#3B82F6]">
@@ -348,16 +350,16 @@ export default async function PortfolioDetailPage({ params }: Props) {
       {/* ------------------------------------------------------------- */}
       {/* SECTION 06 — PROJECT IMPACT (Mandatory Impact & Visualization)  */}
       {/* ------------------------------------------------------------- */}
-      <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-6xl mx-auto space-y-10">
           <div className="space-y-2">
             <span className="text-xs font-mono uppercase tracking-widest text-[#20A779]">
               Measured Outcomes
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
               Impact
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
               Real-world operational enhancements delivered through clean software architecture.
             </p>
           </div>
@@ -372,10 +374,10 @@ export default async function PortfolioDetailPage({ params }: Props) {
       {/* ------------------------------------------------------------- */}
       {/* SECTION 07 — PROJECT TECHNOLOGY (Visual Stack Badges)          */}
       {/* ------------------------------------------------------------- */}
-      <section className="surface-warm py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-warm py-16 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
               Technology Stack
             </h3>
             <span className="text-xs font-mono text-slate-400">
@@ -387,10 +389,10 @@ export default async function PortfolioDetailPage({ params }: Props) {
             {project.technologies.map((tech, idx) => (
               <div
                 key={idx}
-                className="group px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121317] hover:border-[#3B82F6] hover:shadow-md transition-all duration-200 flex items-center gap-2 cursor-default"
+                className="group px-4 py-2.5 rounded-xl border border-white/10 bg-[#121317] hover:border-[#3B82F6] hover:shadow-md transition-all duration-200 flex items-center gap-2 cursor-default"
               >
                 <span className="w-2 h-2 rounded-full bg-[#3B82F6] group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-mono font-semibold text-slate-800 dark:text-slate-200">
+                <span className="text-xs font-mono font-semibold text-slate-200">
                   {tech}
                 </span>
               </div>
@@ -402,16 +404,16 @@ export default async function PortfolioDetailPage({ params }: Props) {
       {/* ------------------------------------------------------------- */}
       {/* SECTION 08 — PROJECT GALLERY (Interactive Lightbox Showcase)   */}
       {/* ------------------------------------------------------------- */}
-      <section className="surface-light py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-light py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-6xl mx-auto space-y-10">
           <div className="space-y-2">
             <span className="text-xs font-mono uppercase tracking-widest text-[#C7A45D]">
               Visual Presentation
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Project Gallery
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               Click any screenshot to view in full resolution.
             </p>
           </div>
@@ -424,20 +426,20 @@ export default async function PortfolioDetailPage({ params }: Props) {
       {/* SECTION 09 — RELATED WORK (More from ObliqueTech)               */}
       {/* ------------------------------------------------------------- */}
       {relatedProjects.length > 0 && (
-        <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
           <div className="max-w-6xl mx-auto space-y-10">
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs font-mono uppercase tracking-widest text-slate-400">
                   Selected Portfolio
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
                   More from ObliqueTech
                 </h2>
               </div>
               <Link
                 href="/portfolio"
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-500 transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-400 transition-colors"
               >
                 <span>View All Work</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -451,7 +453,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
                   <Link
                     key={rel.id}
                     href={`/portfolio/${rel.slug}`}
-                    className="group flex flex-col rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121317] hover:border-slate-300 dark:hover:border-white/20 transition-all shadow-xs hover:shadow-lg"
+                    className="group flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-[#121317] hover:border-white/20 transition-all shadow-xs hover:shadow-lg"
                   >
                     <div className="aspect-16/10 overflow-hidden bg-slate-950">
                       <img
@@ -465,14 +467,14 @@ export default async function PortfolioDetailPage({ params }: Props) {
                         <span className={`text-[10px] font-mono uppercase tracking-wider ${relStyle.text}`}>
                           {rel.category} • {rel.clientIndustry}
                         </span>
-                        <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors line-clamp-2">
+                        <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-[#3B82F6] transition-colors line-clamp-2">
                           {rel.title}
                         </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                        <p className="text-xs text-slate-400 line-clamp-2">
                           {rel.shortDescription}
                         </p>
                       </div>
-                      <div className="pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs font-semibold text-slate-900 dark:text-white">
+                      <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-white">
                         <span>View Project</span>
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>

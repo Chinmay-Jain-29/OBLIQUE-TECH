@@ -42,10 +42,10 @@ export default function FAQPage() {
       </section>
 
       {/* Main Content (Surface: Warm White) */}
-      <section className="surface-warm py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-warm py-16 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Category Filter & Search */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-white dark:bg-[#16181E] border border-slate-200 dark:border-white/10 shadow-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-[#16181E] border border-white/10 shadow-xs">
             <div className="flex flex-wrap items-center gap-1.5">
               {CATEGORIES.map((cat) => (
                 <button
@@ -53,8 +53,8 @@ export default function FAQPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     selectedCategory === cat
-                      ? 'bg-[#0B0B0D] dark:bg-white text-white dark:text-[#0B0B0D] font-semibold'
-                      : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-white text-[#0B0B0D] font-semibold'
+                      : 'bg-white/5 text-slate-400 hover:text-white'
                   }`}
                 >
                   {cat}
@@ -69,7 +69,7 @@ export default function FAQPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search questions..."
-                className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
               />
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function FAQPage() {
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#3B82F6] block">
                         {faq.category}
                       </span>
-                      <span className="text-sm font-bold text-slate-900 dark:text-white">
+                      <span className="text-sm font-bold text-white">
                         {faq.question}
                       </span>
                     </div>
@@ -103,7 +103,7 @@ export default function FAQPage() {
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/5">
+                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5">
                       {faq.answer}
                     </div>
                   )}
@@ -113,10 +113,10 @@ export default function FAQPage() {
           </div>
 
           {/* Bottom Assistance Box */}
-          <div className="p-8 rounded-xl bg-white dark:bg-[#16181E] border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-8 rounded-xl bg-[#16181E] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-center sm:text-left">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Still have a question?</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Our engineering leads are available to talk through your specific scenario.</p>
+              <h3 className="text-sm font-bold text-white">Still have a question?</h3>
+              <p className="text-xs text-slate-400">Our engineering leads are available to talk through your specific scenario.</p>
             </div>
             <div className="flex items-center gap-3">
               <Link href="/schedule" className="btn-primary text-xs">

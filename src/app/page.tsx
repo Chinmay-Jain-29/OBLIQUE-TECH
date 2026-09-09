@@ -1,18 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
   obliqueStore, 
-  INITIAL_SERVICES, 
   INITIAL_PORTFOLIO, 
-  INITIAL_POSTS, 
-  INITIAL_FAQS 
+  INITIAL_POSTS 
 } from '@/lib/store';
 import { 
   ArrowRight, 
-  ArrowUpRight, 
   ChevronDown, 
   Globe, 
   Cpu, 
@@ -20,53 +18,90 @@ import {
   Compass, 
   Check, 
   Sparkles,
-  MessageSquare
+  ExternalLink,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
 import { IntroAnimation } from '@/components/ui/IntroAnimation';
+import { HeroPerspectiveCanvas } from '@/components/home/HeroPerspectiveCanvas';
+import { ProcessInteractiveTimeline } from '@/components/home/ProcessInteractiveTimeline';
+import { OriginEvolutionPath } from '@/components/home/OriginEvolutionPath';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function HomePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // 4 Primary services as requested
+  // Section Refs for GSAP ScrollTrigger Mapping
+  const heroRef = useRef<HTMLElement>(null);
+  const servicesRef = useRef<HTMLElement>(null);
+  const portfolioRef = useRef<HTMLElement>(null);
+  const whyRef = useRef<HTMLElement>(null);
+  const insightsRef = useRef<HTMLElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
+
+  // 4 Primary services with controlled accent colors & visual variation styles
   const primaryServices = [
     {
       title: 'Web Development',
       slug: 'web-development',
-      description: 'Websites and web applications built for performance and growth.',
-      icon: <Globe className="w-5 h-5 text-[#3B82F6]" />,
-      accent: 'border-l-[#3B82F6]'
+      number: '01',
+      description: 'Websites and web applications built for performance, resilience, and business growth.',
+      icon: Globe,
+      accentColor: '#3B82F6',
+      cardClass: 'tile-accent-top border-t-[#3B82F6] hover:border-[#3B82F6]/70',
+      accentBadge: 'bg-blue-500/10 text-[#3B82F6] border-blue-500/20',
+      tag: 'Architecture & Web'
     },
     {
       title: 'AI & ML',
       slug: 'ai-ml',
-      description: 'Practical AI solutions, automation, and intelligent systems.',
-      icon: <Cpu className="w-5 h-5 text-[#7C5CFC]" />,
-      accent: 'border-l-[#7C5CFC]'
+      number: '02',
+      description: 'Practical AI solutions, workflow automation, RAG pipelines, and intelligent systems.',
+      icon: Cpu,
+      accentColor: '#7C5CFF',
+      cardClass: 'tile-accent-left border-l-[#7C5CFF] hover:border-[#7C5CFF]/70',
+      accentBadge: 'bg-purple-500/10 text-[#7C5CFF] border-purple-500/20',
+      tag: 'Intelligent Systems'
     },
     {
       title: 'UI/UX Design',
       slug: 'ui-ux-design',
-      description: 'Clear digital experiences designed around people.',
-      icon: <Layout className="w-5 h-5 text-[#C7A45D]" />,
-      accent: 'border-l-[#C7A45D]'
+      number: '03',
+      description: 'Clear digital experiences designed around human workflows and high conversion.',
+      icon: Layout,
+      accentColor: '#FF6B5A',
+      cardClass: 'tile-accent-bottom border-b-[#FF6B5A] hover:border-[#FF6B5A]/70',
+      accentBadge: 'bg-rose-500/10 text-[#FF6B5A] border-rose-500/20',
+      tag: 'Human Workflows'
     },
     {
       title: 'IT Consulting',
       slug: 'it-consulting',
-      description: 'Technology direction for better digital decisions.',
-      icon: <Compass className="w-5 h-5 text-[#20A779]" />,
-      accent: 'border-l-[#20A779]'
+      number: '04',
+      description: 'Pragmatic technology direction and systems architecture for growing companies.',
+      icon: Compass,
+      accentColor: '#D4AF5A',
+      cardClass: 'tile-accent-corner border-white/10 hover:border-[#D4AF5A]/70',
+      accentBadge: 'bg-amber-500/10 text-[#D4AF5A] border-amber-500/20',
+      tag: 'Systems Strategy'
     }
   ];
 
-  // 3 completed featured projects
-  const featuredPortfolio = INITIAL_PORTFOLIO.filter(p => p.status === 'completed').slice(0, 3);
+  // 3 completed featured projects for varied visual layouts
+  const projects = INITIAL_PORTFOLIO.filter(p => p.status === 'completed').slice(0, 3);
+  const proj1 = projects[0];
+  const proj2 = projects[1];
+  const proj3 = projects[2];
 
   // 1 featured + 2 smaller insights
   const featuredPost = INITIAL_POSTS[0];
   const secondaryPosts = INITIAL_POSTS.slice(1, 3);
 
-  // 8 concise FAQ questions as specified
+  // Concise FAQ questions
   const homeFaqs = [
     {
       q: 'What services do you provide?',
@@ -102,61 +137,339 @@ export default function HomePage() {
     }
   ];
 
+  // =========================================================================
+  // GSAP + SCROLLTRIGGER MASTER ANIMATION SYSTEM
+  // =========================================================================
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth < 768;
+
+    const ctx = gsap.context(() => {
+      if (prefersReducedMotion) {
+        // Reduced motion: instantaneous safe reveal
+        gsap.set('.hero-anim-item, .home-service-card, .home-project-card, .home-why-card, .home-insight-card, .cta-anim-item', {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1
+        });
+        return;
+      }
+
+      // -----------------------------------------------------------------------
+      // 1. HERO OPENING ANIMATION (Phases 1–7)
+      // -----------------------------------------------------------------------
+      const heroTl = gsap.timeline({ delay: 0.1 });
+
+      // Initial states
+      gsap.set('.hero-badge', { opacity: 0, y: 15 });
+      gsap.set('.hero-oblique-line', { scaleX: 0, opacity: 0 });
+      gsap.set('.hero-heading-inner', { y: '105%', opacity: 0 });
+      gsap.set('.hero-text', { opacity: 0, y: 20 });
+      gsap.set('.hero-cta', { opacity: 0, y: 15 });
+      gsap.set('.hero-visual-card', { opacity: 0, scale: 0.94, y: 30 });
+
+      // Phase 1: Background perspective activates (handled in canvas)
+      // Phase 2: ObliqueTech badge / wordmark
+      heroTl.to('.hero-badge', {
+        opacity: 1,
+        y: 0,
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+
+      // Phase 3: Subtle diagonal visual element moves across
+      heroTl.to('.hero-oblique-line', {
+        scaleX: 1,
+        opacity: 1,
+        duration: 0.45,
+        ease: 'power3.inOut'
+      }, '-=0.15');
+
+      // Phase 4: Main heading "See Business Differently." smooth text mask reveal
+      heroTl.to('.hero-heading-inner', {
+        y: '0%',
+        opacity: 1,
+        duration: 0.75,
+        ease: 'power3.out'
+      }, '-=0.2');
+
+      // Phase 5: Supporting text appears
+      heroTl.to('.hero-text', {
+        opacity: 1,
+        y: 0,
+        duration: 0.45,
+        ease: 'power2.out'
+      }, '-=0.35');
+
+      // Phase 6: CTA buttons appear
+      heroTl.to('.hero-cta', {
+        opacity: 1,
+        y: 0,
+        duration: 0.4,
+        stagger: 0.08,
+        ease: 'power2.out'
+      }, '-=0.2');
+
+      // Phase 7: Hero visual card settles into subtle continuous movement
+      heroTl.to('.hero-visual-card', {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.65,
+        ease: 'power2.out'
+      }, '-=0.35');
+
+      // -----------------------------------------------------------------------
+      // HERO SCROLL SCRUB EFFECT (continuous scroll-linked motion)
+      // -----------------------------------------------------------------------
+      if (heroRef.current) {
+        gsap.to('.hero-scroll-layer', {
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.8
+          },
+          y: -45,
+          opacity: 0.45,
+          ease: 'none'
+        });
+
+        gsap.to('.hero-visual-card', {
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.8
+          },
+          y: -30,
+          scale: 0.95,
+          ease: 'none'
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // 2. SERVICES SECTION — REVERSIBLE HORIZONTAL SCROLL (LEFT → CENTER / CENTER → LEFT)
+      // -----------------------------------------------------------------------
+      if (servicesRef.current) {
+        const serviceCards = gsap.utils.toArray<HTMLElement>('.home-service-card');
+        const xStart = isMobile ? -25 : -70;
+
+        const servicesTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: servicesRef.current,
+            start: 'top 80%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+
+        servicesTl.fromTo(serviceCards,
+          { opacity: 0, x: xStart, scale: 0.96 },
+          {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 0.7,
+            stagger: 0.12,
+            ease: 'power2.out'
+          }
+        );
+      }
+
+      // -----------------------------------------------------------------------
+      // 3. WHAT WE BUILD — REVERSIBLE SOFT POP / DEPTH REVEAL
+      // -----------------------------------------------------------------------
+      if (portfolioRef.current) {
+        const projectCards = gsap.utils.toArray<HTMLElement>('.home-project-card');
+
+        const portfolioTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: portfolioRef.current,
+            start: 'top 78%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+
+        portfolioTl.fromTo(projectCards,
+          { opacity: 0, scale: 0.92, y: 35 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.18,
+            ease: 'power3.out'
+          }
+        );
+      }
+
+      // -----------------------------------------------------------------------
+      // 4. WHY OBLIQUETECH — REVERSIBLE HORIZONTAL SCROLL (RIGHT → CENTER / CENTER → RIGHT)
+      // -----------------------------------------------------------------------
+      if (whyRef.current) {
+        const whyCards = gsap.utils.toArray<HTMLElement>('.home-why-card');
+        const xStartRight = isMobile ? 25 : 70;
+
+        const whyTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: whyRef.current,
+            start: 'top 80%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+
+        whyTl.fromTo(whyCards,
+          { opacity: 0, x: xStartRight },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.7,
+            stagger: 0.12,
+            ease: 'power2.out'
+          }
+        );
+      }
+
+      // -----------------------------------------------------------------------
+      // 5. INSIGHTS SECTION — REVERSIBLE SOFT POP / DEPTH REVEAL
+      // -----------------------------------------------------------------------
+      if (insightsRef.current) {
+        const insightCards = gsap.utils.toArray<HTMLElement>('.home-insight-card');
+
+        const insightsTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: insightsRef.current,
+            start: 'top 78%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+
+        insightsTl.fromTo(insightCards,
+          { opacity: 0, scale: 0.93, y: 30 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.75,
+            stagger: 0.15,
+            ease: 'power3.out'
+          }
+        );
+      }
+
+      // -----------------------------------------------------------------------
+      // 6. FINAL CTA — REVERSIBLE SCALE
+      // -----------------------------------------------------------------------
+      if (ctaRef.current) {
+        const ctaContent = ctaRef.current.querySelector('.cta-anim-item');
+        if (ctaContent) {
+          const ctaTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: 'top 82%',
+              end: 'bottom 20%',
+              toggleActions: 'play none none reverse'
+            }
+          });
+
+          ctaTl.fromTo(ctaContent,
+            { opacity: 0, scale: 0.94 },
+            {
+              opacity: 1,
+              scale: 1,
+              duration: 0.75,
+              ease: 'power2.out'
+            }
+          );
+        }
+      }
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="flex flex-col">
+    <div ref={containerRef} className="flex flex-col overflow-x-hidden">
       <IntroAnimation />
+
       {/* =========================================================================
-          01 — HERO (Surface: Oblique Black #0B0B0D)
+          01 — HERO (Surface: Oblique Black #08090B + Gold #D4AF5A + Blue #3B82F6)
           ========================================================================= */}
-      <section className="surface-black pt-32 pb-20 md:pt-40 md:pb-28 px-4 sm:px-6 lg:px-8 border-b border-white/10 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section 
+        ref={heroRef}
+        className="surface-black pt-32 pb-20 md:pt-44 md:pb-32 px-4 sm:px-6 lg:px-8 border-b border-white/10 relative overflow-hidden"
+      >
+        {/* Dynamic layered perspective canvas */}
+        <HeroPerspectiveCanvas />
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
           {/* Left Hero Content */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-300">
-              <span className="w-2 h-2 rounded-full bg-[#C7A45D]" />
+          <div className="hero-scroll-layer lg:col-span-7 space-y-6">
+            {/* Phase 2: ObliqueTech badge */}
+            <div className="hero-badge inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/15 text-xs font-mono text-slate-300 backdrop-blur-md shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-[#D4AF5A] animate-pulse" />
               <span>Different perspective. Better technology.</span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08]">
-              See Business <br className="hidden sm:inline" />
-              <span className="text-[#C7A45D]">Differently.</span>
-            </h1>
+            {/* Phase 3: Thin subtle diagonal oblique line */}
+            <div className="hero-oblique-line w-28 h-0.5 bg-gradient-to-r from-[#D4AF5A] via-[#3B82F6] to-transparent origin-left" />
 
-            <p className="text-base sm:text-xl text-slate-300 max-w-xl leading-relaxed font-normal">
+            {/* Phase 4: Dominant Visual Typography with Mask Reveal */}
+            <div className="text-mask-wrap">
+              <h1 className="hero-heading-inner text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08]">
+                See Business <br className="hidden sm:inline" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF5A] via-[#F3E2B4] to-[#3B82F6]">
+                  Differently.
+                </span>
+              </h1>
+            </div>
+
+            {/* Phase 5: Supporting text */}
+            <p className="hero-text text-base sm:text-xl text-slate-300 max-w-xl leading-relaxed font-normal">
               We build practical digital solutions that help businesses grow, adapt, and compete in a changing market.
             </p>
 
+            {/* Phase 6: Action Buttons */}
             <div className="pt-2 flex flex-wrap items-center gap-4">
-              <Link
-                href="/start-project"
-                className="btn-gold"
-              >
-                <span>Start a Project</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/portfolio"
-                className="btn-secondary text-white border-white/30 hover:border-white"
-              >
-                <span>View Our Work</span>
-              </Link>
-              <Link
-                href="/schedule"
-                className="text-xs font-semibold text-slate-400 hover:text-white transition-colors underline-offset-4 hover:underline ml-2"
-              >
-                Schedule a Call →
-              </Link>
+              <div className="hero-cta">
+                <Link href="/start-project" className="btn-gold">
+                  <span>Start a Project</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
+              <div className="hero-cta">
+                <Link href="/portfolio" className="btn-secondary">
+                  <span>View Our Work</span>
+                </Link>
+              </div>
+              <div className="hero-cta">
+                <Link
+                  href="/schedule"
+                  className="text-xs font-semibold text-slate-400 hover:text-white transition-colors underline-offset-4 hover:underline ml-2"
+                >
+                  Schedule a Call →
+                </Link>
+              </div>
             </div>
           </div>
 
-          {/* Right Hero Graphic: Restrained Oblique Geometric Mark & Perspective */}
+          {/* Phase 7: Right Hero Graphic: Oblique Angle Architecture Console */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
-            <div className="w-full max-w-md aspect-square rounded-2xl bg-[#17181C] border border-white/10 p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+            <div className="hero-visual-card w-full max-w-md aspect-square rounded-2xl bg-[#15171B] border border-white/15 p-8 flex flex-col justify-between shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden backdrop-blur-xl group hover:border-[#D4AF5A]/40 transition-colors duration-500">
               {/* Subtle angled geometry overlay */}
               <div className="absolute inset-0 opacity-15 pointer-events-none">
                 <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none">
-                  <line x1="0" y1="400" x2="400" y2="0" stroke="white" strokeWidth="1" />
-                  <line x1="100" y1="400" x2="400" y2="100" stroke="white" strokeWidth="0.5" strokeDasharray="4 4" />
+                  <line x1="0" y1="400" x2="400" y2="0" stroke="#D4AF5A" strokeWidth="1.5" />
+                  <line x1="100" y1="400" x2="400" y2="100" stroke="#3B82F6" strokeWidth="1" strokeDasharray="4 4" />
                   <line x1="0" y1="300" x2="300" y2="0" stroke="white" strokeWidth="0.5" strokeDasharray="4 4" />
                 </svg>
               </div>
@@ -164,23 +477,24 @@ export default function HomePage() {
               {/* Minimal technical telemetry bar */}
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#20A779]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#16A878] animate-pulse" />
                   <span className="text-xs font-mono uppercase tracking-wider text-slate-300">Engineering Studio</span>
                 </div>
-                <span className="text-xs font-mono text-[#C7A45D]">ObliqueTech</span>
+                <span className="text-xs font-mono font-bold text-[#D4AF5A]">ObliqueTech</span>
               </div>
 
               {/* Central Geometric Statement */}
               <div className="space-y-4 py-6">
-                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-[#C7A45D]">
+                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#D4AF5A] shadow-inner">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
                       stroke="currentColor"
-                      strokeWidth="2"
+                      strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
+                    <circle cx="9" cy="15" r="2" fill="#3B82F6" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-white tracking-tight">
@@ -208,24 +522,28 @@ export default function HomePage() {
       </section>
 
       {/* =========================================================================
-          02 — WHAT WE DO (Surface: Warm White #F7F6F2)
+          02 — SERVICES (Surface: Permanent Dark #121316 / #15171B)
+          MOTION: ANIMATES FROM LEFT → RIGHT ON SCROLL
           ========================================================================= */}
-      <section className="surface-warm py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section 
+        ref={servicesRef}
+        className="surface-warm py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10"
+      >
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-3 max-w-2xl">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#3B82F6]">Capabilities</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                Technology that solves real business problems.
+              <span className="section-tag-blue">Services</span>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+                Technology that solves real problems.
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
                 From websites and software to AI and consulting, we build solutions around what your business actually needs.
               </p>
             </div>
             <div>
               <Link
                 href="/services"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-400 transition-colors"
               >
                 <span>View All Services</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -233,207 +551,366 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 4 Primary Services Grid */}
+          {/* 4 Primary Services Grid with Varied Visual Design & Left-to-Right Stagger */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {primaryServices.map((svc) => (
-              <Link
-                key={svc.slug}
-                href={`/services/${svc.slug}`}
-                className={`clean-card p-6 rounded-xl border-l-4 ${svc.accent} flex flex-col justify-between group`}
-              >
-                <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    {svc.icon}
+            {primaryServices.map((svc) => {
+              const Icon = svc.icon;
+              return (
+                <Link
+                  key={svc.slug}
+                  href={`/services/${svc.slug}`}
+                  className={`home-service-card clean-card p-6 sm:p-7 rounded-2xl flex flex-col justify-between group transition-all duration-300 bg-[#15171B] border border-white/10 ${svc.cardClass}`}
+                >
+                  <div className="space-y-4">
+                    {/* Top Row: Icon + Number Label */}
+                    <div className="flex items-center justify-between">
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110" 
+                        style={{ backgroundColor: `${svc.accentColor}15`, color: svc.accentColor }}
+                      >
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
+                        {svc.number}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-mono border ${svc.accentBadge}`}>
+                        {svc.tag}
+                      </span>
+                      <h3 className="text-lg font-bold text-white group-hover:text-[#3B82F6] transition-colors">
+                        {svc.title}
+                      </h3>
+                    </div>
+
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      {svc.description}
+                    </p>
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors">
-                    {svc.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {svc.description}
-                  </p>
-                </div>
-                <div className="pt-6 flex items-center text-xs font-semibold text-[#3B82F6] group-hover:translate-x-1 transition-transform">
-                  <span>Learn more</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </div>
-              </Link>
-            ))}
+
+                  <div className="pt-6 flex items-center text-xs font-semibold text-[#3B82F6] group-hover:translate-x-1.5 transition-transform duration-200">
+                    <span>Learn more</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          03 — SELECTED WORK (Surface: Pure White #FFFFFF)
+          03 — SELECTED WORK (Surface: Permanent Dark #15171B + Emerald #16A878 + Blue #3B82F6)
+          MOTION: SOFT POP / DEPTH REVEAL ON SCROLL
           ========================================================================= */}
-      <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section 
+        ref={portfolioRef}
+        className="surface-white py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10"
+      >
+        <div className="max-w-7xl mx-auto space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#C7A45D]">Work</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                Selected work
+            <div className="space-y-3 max-w-2xl">
+              <span className="section-tag-gold">Selected Work</span>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+                What we’ve built.
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-                A look at what we’ve built.
+              <p className="text-sm sm:text-base text-slate-400">
+                A look at our production software, telemetry platforms, and healthcare hubs.
               </p>
             </div>
             <div>
-              <Link
-                href="/portfolio"
-                className="btn-primary text-xs"
-              >
-                <span>View Portfolio</span>
+              <Link href="/portfolio" className="btn-primary text-xs">
+                <span>View Full Portfolio</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
 
-          {/* Visual-First 3 Project Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredPortfolio.map((project) => (
-              <Link
-                key={project.id}
-                href={`/portfolio/${project.slug}`}
-                className="group flex flex-col space-y-4 rounded-xl overflow-hidden"
-              >
-                {/* Large visual screenshot */}
-                <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 shadow-xs transition-transform duration-300 group-hover:scale-[1.02]">
-                  <img
-                    src={project.coverImage}
-                    alt={project.title}
-                    className="w-full h-full object-cover object-top"
-                  />
-                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-xs text-[10px] font-semibold text-white">
-                    {project.category}
+          {/* Varied Visual Layout 01: Large Left Image + Right Details */}
+          {proj1 && (
+            <div className="home-project-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#121316] shadow-xs hover:shadow-xl transition-all duration-500">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                {/* Large Left Image (7 cols) */}
+                <div className="lg:col-span-7">
+                  <Link href={`/portfolio/${proj1.slug}`} className="group block rounded-2xl overflow-hidden border border-white/10 bg-slate-950 shadow-md">
+                    <img
+                      src={proj1.coverImage}
+                      alt={proj1.title}
+                      className="w-full h-auto object-cover max-h-[380px] group-hover:scale-103 transition-transform duration-500"
+                    />
+                  </Link>
+                </div>
+
+                {/* Right Details (5 cols) */}
+                <div className="lg:col-span-5 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-blue-500/10 text-[#3B82F6] border border-blue-500/20 font-semibold">
+                      {proj1.category}
+                    </span>
+                    <span className="text-xs font-mono text-slate-400">{proj1.clientIndustry}</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug">
+                    <Link href={`/portfolio/${proj1.slug}`} className="hover:text-[#3B82F6] transition-colors">
+                      {proj1.title}
+                    </Link>
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    {proj1.shortDescription}
+                  </p>
+
+                  <div className="pt-2 flex flex-wrap gap-2">
+                    {proj1.technologies.slice(0, 4).map((tech, tIdx) => (
+                      <span key={tIdx} className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/5 border border-white/10 text-slate-300">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 border-t border-white/10">
+                    <Link href={`/portfolio/${proj1.slug}`} className="inline-flex items-center gap-2 text-xs font-semibold text-[#3B82F6] hover:text-blue-500">
+                      <span>Explore Case Study</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Varied Visual Layout 02: Full-Width Showcase Banner with Overlay Metadata */}
+          {proj2 && (
+            <div className="home-project-card relative rounded-3xl overflow-hidden border border-white/10 bg-slate-950 shadow-xl group hover:shadow-2xl transition-all duration-500">
+              <div className="aspect-21/9 sm:aspect-16/7 w-full overflow-hidden">
+                <img
+                  src={proj2.coverImage}
+                  alt={proj2.title}
+                  className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-700"
+                />
+              </div>
+
+              {/* Bottom Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#08090B] via-[#08090B]/60 to-transparent flex flex-col justify-end p-6 sm:p-10">
+                <div className="max-w-3xl space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 font-semibold backdrop-blur-md">
+                      Featured • {proj2.category}
+                    </span>
+                    <span className="text-xs font-mono text-slate-300">{proj2.clientIndustry}</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-4xl font-bold text-white leading-tight">
+                    <Link href={`/portfolio/${proj2.slug}`} className="hover:text-[#D4AF5A] transition-colors">
+                      {proj2.title}
+                    </Link>
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 max-w-2xl">
+                    {proj2.shortDescription}
+                  </p>
+
+                  <div className="pt-2 flex items-center gap-4">
+                    <Link href={`/portfolio/${proj2.slug}`} className="btn-gold text-xs">
+                      <span>View Full Breakdown</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Varied Visual Layout 03: Right Image + Left Details */}
+          {proj3 && (
+            <div className="home-project-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#121316] shadow-xs hover:shadow-xl transition-all duration-500">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                {/* Left Details (5 cols) */}
+                <div className="lg:col-span-5 space-y-4 order-2 lg:order-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-500/10 text-[#16A878] border border-emerald-500/20 font-semibold">
+                      {proj3.category}
+                    </span>
+                    <span className="text-xs font-mono text-slate-400">{proj3.clientIndustry}</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug">
+                    <Link href={`/portfolio/${proj3.slug}`} className="hover:text-[#16A878] transition-colors">
+                      {proj3.title}
+                    </Link>
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    {proj3.shortDescription}
+                  </p>
+
+                  <div className="pt-2 flex flex-wrap gap-2">
+                    {proj3.technologies.slice(0, 4).map((tech, tIdx) => (
+                      <span key={tIdx} className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/5 border border-white/10 text-slate-300">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 border-t border-white/10">
+                    <Link href={`/portfolio/${proj3.slug}`} className="inline-flex items-center gap-2 text-xs font-semibold text-[#16A878] hover:text-emerald-500">
+                      <span>Explore Healthcare Hub</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 </div>
 
-                {/* Minimal Metadata */}
-                <div className="space-y-1">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                    {project.shortDescription}
-                  </p>
+                {/* Right Image (7 cols) */}
+                <div className="lg:col-span-7 order-1 lg:order-2">
+                  <Link href={`/portfolio/${proj3.slug}`} className="group block rounded-2xl overflow-hidden border border-white/10 bg-slate-950 shadow-md">
+                    <img
+                      src={proj3.coverImage}
+                      alt={proj3.title}
+                      className="w-full h-auto object-cover max-h-[380px] group-hover:scale-103 transition-transform duration-500"
+                    />
+                  </Link>
                 </div>
-              </Link>
-            ))}
-          </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
       {/* =========================================================================
-          04 — WHY US (Surface: Soft Grey #F1F2F5)
+          04 — WHY CHOOSE US (Surface: Charcoal #15171B + Coral #FF6B5A + Gold #D4AF5A)
+          MOTION: ANIMATES FROM RIGHT → LEFT ON SCROLL
           ========================================================================= */}
-      <section className="surface-light py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="max-w-2xl space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#20A779]">Reliability</span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Why work with us?
+      <section 
+        ref={whyRef}
+        className="surface-charcoal py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10"
+      >
+        <div className="max-w-7xl mx-auto space-y-16">
+          <div className="space-y-3 max-w-2xl">
+            <span className="section-tag-coral">Why ObliqueTech</span>
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+              A pragmatic partner for serious engineering.
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-              Technology is only as good as the understanding behind it.
+            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+              We eliminate the fluff and focus purely on what works, scales, and creates commercial value.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="clean-card p-6 rounded-xl space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-[#20A779] flex items-center justify-center font-bold text-sm">
-                01
+          {/* 4 Bold Visual Statements with Oversized Numbers & Right-to-Left Reveal */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 01 LISTEN */}
+            <div className="home-why-card p-7 rounded-2xl bg-white/5 border border-white/10 border-t-2 border-t-[#FF6B5A] flex flex-col justify-between space-y-6 hover:border-white/20 transition-all">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-5xl font-extrabold font-mono text-[#FF6B5A]">01</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#FF6B5A] px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 font-bold">
+                    LISTEN
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-white">We understand before we build.</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  We diagnose real business workflows, technical debt, and operational friction before writing any code.
+                </p>
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Listen</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                We understand the problem thoroughly before choosing or writing any technology.
-              </p>
+              <div className="w-8 h-0.5 bg-[#FF6B5A]" />
             </div>
 
-            <div className="clean-card p-6 rounded-xl space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-[#3B82F6] flex items-center justify-center font-bold text-sm">
-                02
+            {/* 02 CLARITY */}
+            <div className="home-why-card p-7 rounded-2xl bg-white/5 border border-white/10 border-t-2 border-t-[#3B82F6] flex flex-col justify-between space-y-6 hover:border-white/20 transition-all">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-5xl font-extrabold font-mono text-[#3B82F6]">02</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#3B82F6] px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 font-bold">
+                    CLARITY
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-white">You always know what comes next.</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Weekly demo builds, clear sprint milestones, transparent contracts, and no technical obfuscation.
+                </p>
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Keep It Clear</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                You always know exactly what is being built, why it matters, and how it performs.
-              </p>
+              <div className="w-8 h-0.5 bg-[#3B82F6]" />
             </div>
 
-            <div className="clean-card p-6 rounded-xl space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-500/10 text-[#C7A45D] flex items-center justify-center font-bold text-sm">
-                03
+            {/* 03 QUALITY */}
+            <div className="home-why-card p-7 rounded-2xl bg-white/5 border border-white/10 border-t-2 border-t-[#D4AF5A] flex flex-col justify-between space-y-6 hover:border-white/20 transition-all">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-5xl font-extrabold font-mono text-[#D4AF5A]">03</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#D4AF5A] px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 font-bold">
+                    QUALITY
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-white">We build for real-world use.</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Type-safe codebases, high availability infrastructure, automated tests, and maintainable data models.
+                </p>
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Build for Real Use</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                We focus on useful, maintainable solutions rather than disposable technical hype.
-              </p>
+              <div className="w-8 h-0.5 bg-[#D4AF5A]" />
             </div>
 
-            <div className="clean-card p-6 rounded-xl space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/10 text-[#7C5CFC] flex items-center justify-center font-bold text-sm">
-                04
+            {/* 04 COMMITMENT */}
+            <div className="home-why-card p-7 rounded-2xl bg-white/5 border border-white/10 border-t-2 border-t-[#16A878] flex flex-col justify-between space-y-6 hover:border-white/20 transition-all">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-5xl font-extrabold font-mono text-[#16A878]">04</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#16A878] px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 font-bold">
+                    COMMITMENT
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-white">We stand behind what we deliver.</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Direct engineering accountability from kickoff through rollout, security patching, and SLA-backed maintenance.
+                </p>
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">We Stay Committed</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                We take direct responsibility for what we agree to deliver from kickoff to post-launch.
-              </p>
+              <div className="w-8 h-0.5 bg-[#16A878]" />
             </div>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          05 — HOW WE WORK (Surface: Soft Grey #F1F2F5 / Process)
+          05 — HOW WE WORK (Surface: Warm Grey #EAE9E4 / Light + Blue + Emerald)
           ========================================================================= */}
-      <section className="surface-light py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Methodology</span>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              A simple, disciplined process.
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {[
-              { step: '01', name: 'Discover', desc: 'Understand the problem.' },
-              { step: '02', name: 'Plan', desc: 'Define the right approach.' },
-              { step: '03', name: 'Build', desc: 'Design and develop the solution.' },
-              { step: '04', name: 'Test', desc: 'Make sure it works properly.' },
-              { step: '05', name: 'Launch', desc: 'Deliver and support.' },
-            ].map((st) => (
-              <div key={st.step} className="p-4 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
-                <span className="text-[11px] font-mono font-bold text-[#C7A45D]">{st.step}</span>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">{st.name}</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{st.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          06 — ABOUT OBLIQUE (Surface: Warm White #F7F6F2)
-          ========================================================================= */}
-      <section className="surface-warm py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-grey py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-7xl mx-auto space-y-12">
+          <div className="space-y-3 max-w-2xl">
+            <span className="section-tag-blue">Process</span>
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+              A disciplined path from idea to production.
+            </h2>
+            <p className="text-sm sm:text-base text-slate-400">
+              Hover through each stage to explore how we execute with speed and precision.
+            </p>
+          </div>
+
+          <ProcessInteractiveTimeline />
+        </div>
+      </section>
+
+      {/* =========================================================================
+          06 — ABOUT OBLIQUE & SIGNATURE ORIGIN EVOLUTION PATH
+          (Surface: Warm White #F7F7F3 + Gold #D4AF5A + Violet #7C5CFF)
+          ========================================================================= */}
+      <section className="surface-warm py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10">
+        <div className="max-w-7xl mx-auto space-y-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#C7A45D]">Our Origin</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <span className="section-tag-violet">Our Origin</span>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
                 Where Oblique began.
               </h2>
-              <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
                 Oblique started after seeing a common challenge among engineering students: companies wanted experience, but students were struggling to find opportunities to gain it.
               </p>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className="text-sm text-slate-400 leading-relaxed">
                 We began by connecting developers with seasoned architects through real commercial prototypes, technical mentorship, and high-velocity sprints. That relentless culture of execution evolved into an enterprise technology company building mission-critical software globally.
               </p>
 
               <div className="pt-2">
                 <Link
                   href="/about"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-400 transition-colors"
                 >
                   <span>Read Our Full Story</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -442,16 +919,16 @@ export default function HomePage() {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="p-8 rounded-2xl bg-white dark:bg-[#17181C] border border-slate-200 dark:border-white/10 space-y-6 shadow-sm">
-                <div className="space-y-2 border-b border-slate-100 dark:border-white/10 pb-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Mission</h4>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+              <div className="p-8 rounded-3xl bg-[#15171B] border border-white/10 space-y-6 shadow-sm">
+                <div className="space-y-2 border-b border-white/10 pb-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4AF5A] font-mono">Mission</h4>
+                  <p className="text-sm font-semibold text-white">
                     Build useful technology, solve real problems, and create opportunities that matter.
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Vision</h4>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#7C5CFF] font-mono">Vision</h4>
+                  <p className="text-sm font-semibold text-white">
                     Become a trusted technology company that builds products with global relevance.
                   </p>
                 </div>
@@ -459,55 +936,50 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Signature Storytelling Progression: Problem -> Different Perspective -> Oblique -> Technology -> Impact */}
-          <div className="pt-8 border-t border-slate-200 dark:border-white/10">
-            <div className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-4">
-              The Evolution Path
+          {/* SIGNATURE ANIMATED EVOLUTION PATH */}
+          <div className="pt-8 border-t border-white/10 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-mono uppercase tracking-widest text-slate-400">
+                The Evolution Path • 5 Key Milestones
+              </div>
+              <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-slate-400">
+                <span className="w-2 h-2 rounded-full bg-[#D4AF5A]" />
+                <span>Origin</span>
+                <ArrowRight className="w-3 h-3" />
+                <span className="w-2 h-2 rounded-full bg-[#FF6B5A]" />
+                <span>Future</span>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-              {[
-                { step: '01', title: 'The Problem', desc: 'The academic experience paradox.', accent: 'text-rose-500 border-rose-500/30' },
-                { step: '02', title: 'Perspective', desc: 'Practical execution over theory.', accent: 'text-[#C7A45D] border-[#C7A45D]/30' },
-                { step: '03', title: 'ObliqueTech', desc: 'Engineering from a different angle.', accent: 'text-[#3B82F6] border-[#3B82F6]/30' },
-                { step: '04', title: 'Technology', desc: 'Clean, type-safe robust systems.', accent: 'text-[#7C5CFC] border-[#7C5CFC]/30' },
-                { step: '05', title: 'Impact', desc: 'Global commercial relevance.', accent: 'text-[#20A779] border-[#20A779]/30' },
-              ].map((stage, sIdx) => (
-                <div
-                  key={sIdx}
-                  className={`p-4 rounded-xl bg-white dark:bg-[#121317] border border-slate-200 dark:border-white/10 space-y-1.5 shadow-2xs hover:border-slate-300 dark:hover:border-white/20 transition-all`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-slate-400">{stage.step}</span>
-                    <span className={`w-2 h-2 rounded-full border ${stage.accent}`} />
-                  </div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">{stage.title}</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">{stage.desc}</p>
-                </div>
-              ))}
-            </div>
+
+            {/* Signature GSAP ScrollTrigger evolution path */}
+            <OriginEvolutionPath />
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          07 — OBLIQUE INSIGHTS (Surface: Pure White #FFFFFF)
+          07 — OBLIQUE INSIGHTS (Surface: Pure White #FFFFFF + Violet #7C5CFF + Blue #3B82F6)
+          MOTION: SOFT POP / DEPTH REVEAL ON SCROLL
           ========================================================================= */}
-      <section className="surface-white py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section 
+        ref={insightsRef}
+        className="surface-white py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10"
+      >
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#7C5CFC]">Thinking</span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Oblique Insights
+            <div className="space-y-3">
+              <span className="section-tag-violet">Insights</span>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+                Ideas worth exploring.
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-                Technology, ideas, and practical thinking.
+              <p className="text-sm sm:text-base text-slate-400">
+                Technology, ideas, and practical thinking from our engineering team.
               </p>
             </div>
             <div>
               <Link
                 href="/insights"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-400 transition-colors"
               >
                 <span>View All Insights</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -521,9 +993,8 @@ export default function HomePage() {
             {featuredPost && (
               <Link
                 href={`/insights/${featuredPost.slug}`}
-                className="lg:col-span-7 clean-card rounded-2xl overflow-hidden flex flex-col justify-between group border border-slate-200 dark:border-white/10 shadow-xs hover:shadow-lg transition-all"
+                className="home-insight-card lg:col-span-7 clean-card rounded-3xl overflow-hidden flex flex-col justify-between group border border-white/10 shadow-xs hover:shadow-lg transition-all"
               >
-                {/* Large visual cover image */}
                 <div className="aspect-16/9 w-full overflow-hidden bg-slate-950 relative">
                   <img
                     src={featuredPost.coverImage}
@@ -531,26 +1002,26 @@ export default function HomePage() {
                     className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-[#0B0B0D]/80 backdrop-blur-md text-[#C7A45D] border border-white/10">
+                    <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-[#08090B]/80 backdrop-blur-md text-[#D4AF5A] border border-white/10">
                       Featured • {featuredPost.category}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-6 sm:p-8 space-y-4 flex-1 flex flex-col justify-between">
+                <div className="p-7 sm:p-8 space-y-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-2">
                     <div className="text-xs font-mono text-slate-400">
                       {featuredPost.readingTimeMinutes} min read • {new Date(featuredPost.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-[#3B82F6] transition-colors leading-snug">
                       {featuredPost.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                       {featuredPost.excerpt}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs font-semibold text-[#3B82F6]">
+                  <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-[#3B82F6]">
                     <span>Read Article</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -569,9 +1040,8 @@ export default function HomePage() {
                   <Link
                     key={post.id}
                     href={`/insights/${post.slug}`}
-                    className="clean-card rounded-2xl overflow-hidden flex-1 flex flex-col sm:flex-row group border border-slate-200 dark:border-white/10 shadow-xs hover:shadow-lg transition-all"
+                    className="home-insight-card clean-card rounded-2xl overflow-hidden flex-1 flex flex-col sm:flex-row group border border-white/10 shadow-xs hover:shadow-lg transition-all"
                   >
-                    {/* Visual Cover Thumbnail */}
                     <div className="sm:w-44 aspect-video sm:aspect-auto overflow-hidden bg-slate-950 shrink-0 relative">
                       <img
                         src={post.coverImage}
@@ -590,15 +1060,14 @@ export default function HomePage() {
                             {post.readingTimeMinutes}m read
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors leading-snug line-clamp-2">
+
+                        <h4 className="text-sm font-bold text-white group-hover:text-[#3B82F6] transition-colors line-clamp-2">
                           {post.title}
                         </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                          {post.excerpt}
-                        </p>
                       </div>
-                      <div className="pt-2 text-xs font-semibold text-[#3B82F6] flex items-center justify-between">
-                        <span>Read Article</span>
+
+                      <div className="pt-2 flex items-center gap-1 text-xs font-semibold text-[#3B82F6]">
+                        <span>Read</span>
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
@@ -611,17 +1080,17 @@ export default function HomePage() {
       </section>
 
       {/* =========================================================================
-          08 — FAQ (Surface: Warm White #F7F6F2)
+          08 — FREQUENTLY ASKED QUESTIONS (Surface: Warm White #F7F7F3)
           ========================================================================= */}
-      <section className="surface-warm py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-warm py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Answers</span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Frequently Asked Questions
+            <span className="section-tag-gold">FAQ</span>
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+              Frequently asked questions.
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Concise answers to what businesses ask us most often.
+            <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
+              Straightforward answers about our capabilities, process, and partnership structure.
             </p>
           </div>
 
@@ -631,23 +1100,24 @@ export default function HomePage() {
               return (
                 <div
                   key={idx}
-                  className="clean-card rounded-xl overflow-hidden"
+                  className="rounded-2xl border border-white/10 bg-[#15171B] overflow-hidden transition-colors"
                 >
                   <button
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 focus:outline-none"
+                    className="w-full py-5 px-6 text-left flex items-center justify-between gap-4 focus:outline-none cursor-pointer"
                   >
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                    <span className="text-sm sm:text-base font-bold text-white">
                       {faq.q}
                     </span>
                     <ChevronDown
-                      className={`w-4 h-4 text-slate-500 transition-transform duration-200 shrink-0 ${
+                      className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 ${
                         isOpen ? 'rotate-180 text-[#3B82F6]' : ''
                       }`}
                     />
                   </button>
+
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-white/5">
+                    <div className="px-6 pb-5 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5 pt-4">
                       {faq.a}
                     </div>
                   )}
@@ -657,42 +1127,51 @@ export default function HomePage() {
           </div>
 
           <div className="text-center pt-4">
-            <Link
-              href="/faq"
-              className="text-xs font-semibold text-[#3B82F6] hover:underline"
-            >
-              View Full FAQ Directory →
-            </Link>
+            <p className="text-xs text-slate-400">
+              Have a specific question not covered here?{' '}
+              <Link href="/contact" className="text-[#3B82F6] hover:underline font-semibold">
+                Speak directly with an engineering lead →
+              </Link>
+            </p>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          09 — FINAL CTA (Surface: Charcoal #17181C)
+          09 — FINAL CALL TO ACTION (Surface: Oblique Black #08090B + Gold + Blue)
           ========================================================================= */}
-      <section className="surface-charcoal py-24 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
-        <div className="max-w-3xl mx-auto space-y-6 relative z-10">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#C7A45D]">Next Step</span>
-          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
-            Have a challenge worth solving?
+      <section 
+        ref={ctaRef}
+        className="surface-black py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden text-center"
+      >
+        {/* Subtle diagonal background lines */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <svg width="100%" height="100%" viewBox="0 0 1200 400" fill="none">
+            <line x1="0" y1="400" x2="1200" y2="0" stroke="#D4AF5A" strokeWidth="2" />
+            <line x1="200" y1="400" x2="1400" y2="0" stroke="#3B82F6" strokeWidth="1" strokeDasharray="6 6" />
+          </svg>
+        </div>
+
+        <div className="cta-anim-item max-w-3xl mx-auto space-y-6 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#D4AF5A]">
+            <span>Next Steps</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+            Let’s look at your challenge differently.
           </h2>
-          <p className="text-base sm:text-xl text-slate-300 max-w-xl mx-auto leading-relaxed">
-            Let’s look at it from a different angle.
+
+          <p className="text-sm sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
+            Whether you need a new web application, an AI workflow, or strategic systems direction, we’re ready to build.
           </p>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/start-project"
-              className="btn-gold w-full sm:w-auto"
-            >
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+            <Link href="/start-project" className="btn-gold">
               <span>Start a Project</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link
-              href="/schedule"
-              className="btn-secondary text-white border-white/30 hover:border-white w-full sm:w-auto"
-            >
-              <span>Schedule a Call</span>
+            <Link href="/schedule" className="btn-secondary">
+              <span>Schedule a 30-Min Call</span>
             </Link>
           </div>
         </div>

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Menu, X, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const NAV_LINKS = [
@@ -37,7 +36,7 @@ export function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/90 dark:bg-[#0B0B0D]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 shadow-sm py-3'
+          ? 'bg-[#08090B]/90 backdrop-blur-md border-b border-white/10 shadow-sm py-3'
           : 'bg-transparent py-5'
       }`}
     >
@@ -45,9 +44,9 @@ export function Navbar() {
         <div className="flex items-center justify-between">
           {/* Official ObliqueTech Wordmark & Angled Geometric Mark */}
           <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
-            <div className="w-8 h-8 rounded bg-[#0B0B0D] dark:bg-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
+            <div className="w-8 h-8 rounded bg-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
               {/* Minimal geometric angled O-mark */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-white dark:text-[#0B0B0D]">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-[#08090B]">
                 <path
                   d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
                   stroke="currentColor"
@@ -59,17 +58,17 @@ export function Navbar() {
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
+              <span className="text-base font-bold tracking-tight text-white transition-colors">
                 Oblique<span className="text-[#C7A45D]">Tech</span>
               </span>
-              <span className="text-[9px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium -mt-0.5">
+              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-medium -mt-0.5">
                 See Business Differently
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10 rounded-full px-3 py-1">
+          <nav className="hidden lg:flex items-center gap-1 bg-white/[0.04] border border-white/10 rounded-full px-3 py-1">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
               return (
@@ -78,8 +77,8 @@ export function Navbar() {
                   href={link.href}
                   className={`px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-150 ${
                     isActive
-                      ? 'text-[#0B0B0D] dark:text-white bg-white dark:bg-white/10 font-semibold shadow-xs'
-                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                      ? 'text-white bg-white/10 font-semibold shadow-xs'
+                      : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   {link.label}
@@ -88,13 +87,11 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Actions: Theme Toggle, Admin, Schedule a Call */}
+          {/* Actions: Admin, Schedule a Call */}
           <div className="hidden lg:flex items-center gap-3">
-            <ThemeToggle />
-
             <Link
               href="/admin"
-              className="text-xs text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2 py-1 transition-colors flex items-center gap-1"
+              className="text-xs text-slate-400 hover:text-white px-2 py-1 transition-colors flex items-center gap-1"
               title="Admin Portal"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -111,10 +108,9 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 lg:hidden">
-            <ThemeToggle />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors focus:outline-none"
+              className="p-2 rounded-lg text-slate-300 hover:bg-white/5 transition-colors focus:outline-none"
               aria-label="Toggle Menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -125,7 +121,7 @@ export function Navbar() {
 
       {/* Mobile Slide Drawer */}
       {mobileOpen && (
-        <div className="lg:hidden bg-white dark:bg-[#0B0B0D] border-b border-slate-200 dark:border-white/10 px-4 pt-3 pb-6 space-y-3 animate-fadeIn">
+        <div className="lg:hidden bg-[#08090B] border-b border-white/10 px-4 pt-3 pb-6 space-y-3 animate-fadeIn">
           <div className="flex flex-col space-y-1">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
@@ -135,8 +131,8 @@ export function Navbar() {
                   href={link.href}
                   className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-slate-100 dark:bg-white/10 text-blue-600 dark:text-blue-400 font-semibold'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
+                      ? 'bg-white/10 text-blue-400 font-semibold'
+                      : 'text-slate-300 hover:bg-white/5'
                   }`}
                 >
                   {link.label}
@@ -145,7 +141,7 @@ export function Navbar() {
             })}
           </div>
 
-          <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex flex-col gap-2">
+          <div className="pt-3 border-t border-white/10 flex flex-col gap-2">
             <Link
               href="/schedule"
               className="w-full text-center py-2.5 text-xs font-semibold rounded-lg bg-[#3B82F6] text-white hover:bg-blue-600 transition-colors"
@@ -154,13 +150,13 @@ export function Navbar() {
             </Link>
             <Link
               href="/start-project"
-              className="w-full text-center py-2.5 text-xs font-semibold rounded-lg border border-slate-300 dark:border-white/20 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              className="w-full text-center py-2.5 text-xs font-semibold rounded-lg border border-white/20 text-slate-200 hover:bg-white/5 transition-colors"
             >
               Start a Project
             </Link>
             <Link
               href="/admin"
-              className="w-full text-center py-1 text-xs text-slate-500 hover:text-slate-900 dark:text-slate-400"
+              className="w-full text-center py-1 text-xs text-slate-400 hover:text-white"
             >
               Admin Portal
             </Link>

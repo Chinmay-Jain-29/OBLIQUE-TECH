@@ -48,7 +48,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0B0B0D',
+  themeColor: '#08090B',
+  colorScheme: 'dark',
   width: 'device-width',
   initialScale: 1,
 };
@@ -59,8 +60,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col antialiased selection:bg-[#C7A45D] selection:text-[#0B0B0D]">
+    <html lang="en" className="dark" style={{ colorScheme: 'dark' }} suppressHydrationWarning>
+      <body className="min-h-screen flex flex-col antialiased bg-[#08090B] text-[#F8FAFC] selection:bg-[#D4AF5A] selection:text-[#08090B]">
         <ThemeProvider>
           <Navbar />
           <main className="flex-1">

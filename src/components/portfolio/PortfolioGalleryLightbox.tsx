@@ -21,7 +21,7 @@ export function PortfolioGalleryLightbox({ images, title }: Props) {
           <div
             key={idx}
             onClick={() => setActiveIdx(idx)}
-            className="group relative rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-900 cursor-pointer shadow-md hover:shadow-xl transition-all duration-300"
+            className="group relative rounded-2xl overflow-hidden border border-white/10 bg-[#15171B] cursor-pointer shadow-md hover:shadow-xl transition-all duration-300"
           >
             <div className="aspect-16/10 overflow-hidden bg-slate-950">
               <img
@@ -40,7 +40,7 @@ export function PortfolioGalleryLightbox({ images, title }: Props) {
             </div>
 
             {/* Caption bar */}
-            <div className="p-3 bg-slate-50 dark:bg-white/5 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <div className="p-3 bg-white/5 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
               <span>View 0{idx + 1}</span>
               <span className="text-[11px] font-mono uppercase tracking-wider text-[#C7A45D]">Interactive View</span>
             </div>

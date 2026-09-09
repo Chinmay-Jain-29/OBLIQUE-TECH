@@ -27,16 +27,14 @@ export function WhatsAppButton() {
         <span className="block text-[10px] text-emerald-400 font-mono">+91 9225260237</span>
       </div>
 
-      {/* Recognized WhatsApp Action Button */}
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat with ObliqueTech on WhatsApp (+91 9225260237)"
-        className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_28px_rgba(37,211,102,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-3 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-[#0B0B0D]"
-      >
-        {/* Subtle breathing ring */}
-        <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-30 animate-ping -z-10 [animation-duration:3s]" />
+        {/* Authentic WhatsApp Action Button */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Chat with ObliqueTech on WhatsApp (+91 9225260237)"
+          className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(37,211,102,0.35)] hover:shadow-[0_8px_30px_rgba(37,211,102,0.55)] hover:scale-108 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-3 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-[#0B0B0D]"
+        >
 
         {/* Authentic WhatsApp Icon SVG */}
         <svg

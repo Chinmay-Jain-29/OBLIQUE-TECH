@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { obliqueStore } from '@/lib/store';
 import { SiteSettings } from '@/types';
-import { Mail, Phone, MessageCircle, CheckCircle2, ArrowRight } from 'lucide-react';
-import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon } from '@/components/ui/Icons';
+import { Mail, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
+import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon, WhatsAppIcon } from '@/components/ui/Icons';
 import { PhoneInput, PhoneInputValue } from '@/components/ui/PhoneInput';
 
 export default function ContactPage() {
@@ -45,39 +45,39 @@ export default function ContactPage() {
 
   return (
     <div className="flex flex-col">
-      {/* Header (Surface: Oblique Black) */}
+      {/* Header */}
       <section className="surface-black pt-32 pb-16 md:pt-40 md:pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-4xl mx-auto space-y-4">
-          <span className="text-xs font-mono uppercase tracking-wider text-[#C7A45D]">Contact</span>
+          <span className="text-xs font-mono uppercase tracking-wider text-[#C7A45D]">Get in Touch</span>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
-            Let's talk.
+            Let’s discuss your project.
           </h1>
-          <p className="text-base sm:text-xl text-slate-300 max-w-xl leading-relaxed">
-            Tell us what you're working on. We’ll take it from there.
+          <p className="text-base sm:text-xl text-slate-300 max-w-2xl leading-relaxed">
+            Reach out with your requirements, ideas, or architectural challenges. We respond with clarity and direct engineering input.
           </p>
         </div>
       </section>
 
-      {/* Main Content (Surface: Warm White) */}
-      <section className="surface-warm py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Direct Channels (5 cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Direct Channels</h2>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Reach us directly through any of the channels below.
+      {/* Main Content */}
+      <section className="surface-warm py-16 md:py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Left Details */}
+          <div className="lg:col-span-5 space-y-8">
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold tracking-tight text-white">Direct Channels</h2>
+              <p className="text-xs sm:text-sm text-slate-400">
+                Contact our engineering team directly through any of our verified communication lines.
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Email */}
-              <div className="p-4 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-[#3B82F6] flex items-center justify-center shrink-0">
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-[#3B82F6] flex items-center justify-center shrink-0">
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-slate-900 dark:text-white">Email Us</div>
+                  <div className="text-xs font-semibold text-white">Email Us</div>
                   <a href={`mailto:${settings.email}`} className="text-xs text-[#3B82F6] hover:underline">
                     {settings.email}
                   </a>
@@ -85,34 +85,38 @@ export default function ContactPage() {
               </div>
 
               {/* Phone */}
-              <div className="p-4 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-500/10 text-[#C7A45D] flex items-center justify-center shrink-0">
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-[#C7A45D] flex items-center justify-center shrink-0">
                   <Phone className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-slate-900 dark:text-white">Call Us</div>
-                  <a href={`tel:${settings.phone}`} className="text-xs text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                  <div className="text-xs font-semibold text-white">Call Us</div>
+                  <a href={`tel:${settings.phone}`} className="text-xs text-slate-300 hover:text-white">
                     {settings.phone}
                   </a>
                 </div>
               </div>
 
-              {/* WhatsApp */}
-              <div className="p-4 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-[#20A779] flex items-center justify-center shrink-0">
-                  <MessageCircle className="w-4 h-4" />
+              {/* WhatsApp with Official Icon & Professional Action */}
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between group hover:border-[#25D366]/40 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                    <WhatsAppIcon className="w-5 h-5 fill-current" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-white">WhatsApp</div>
+                    <div className="text-[11px] text-slate-400 font-mono">+91 9225260237</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-xs font-semibold text-slate-900 dark:text-white">WhatsApp</div>
-                  <a
-                    href={`https://wa.me/${cleanWhatsappNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-[#20A779] hover:underline font-medium"
-                  >
-                    Chat on WhatsApp →
-                  </a>
-                </div>
+                <a
+                  href={`https://wa.me/${cleanWhatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all text-xs font-semibold font-mono flex items-center gap-1 group-hover:translate-x-0.5"
+                >
+                  <span>Chat</span>
+                  <ArrowRight className="w-3 h-3" />
+                </a>
               </div>
             </div>
 
@@ -125,7 +129,7 @@ export default function ContactPage() {
                     href={settings.linkedinUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-8 h-8 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                   >
                     <LinkedInIcon className="w-4 h-4" />
                   </a>
@@ -135,7 +139,7 @@ export default function ContactPage() {
                     href={settings.twitterUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-8 h-8 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                   >
                     <TwitterXIcon className="w-4 h-4" />
                   </a>
@@ -145,7 +149,7 @@ export default function ContactPage() {
                     href={settings.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-8 h-8 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                   >
                     <GitHubIcon className="w-4 h-4" />
                   </a>
@@ -156,14 +160,14 @@ export default function ContactPage() {
 
           {/* Contact Form (7 cols) */}
           <div className="lg:col-span-7">
-            <div className="p-8 rounded-2xl bg-white dark:bg-[#16181E] border border-slate-200 dark:border-white/10 shadow-sm">
+            <div className="p-8 rounded-2xl bg-[#16181E] border border-white/10 shadow-sm">
               {submitted ? (
                 <div className="py-12 text-center space-y-4">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-[#20A779] flex items-center justify-center mx-auto">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-[#20A779] flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Message Dispatched</h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 max-w-sm mx-auto">
+                  <h3 className="text-xl font-bold text-white">Message Dispatched</h3>
+                  <p className="text-xs text-slate-300 max-w-sm mx-auto">
                     Thank you. We have received your note and will get back to you within 1 business day.
                   </p>
                   <button
@@ -177,7 +181,7 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Name <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -186,12 +190,12 @@ export default function ContactPage() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your name"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Email <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -200,14 +204,14 @@ export default function ContactPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="you@company.com"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="contact-phone" className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="contact-phone" className="block text-xs font-medium text-slate-300 mb-1">
                         Phone Number
                       </label>
                       <PhoneInput
@@ -221,7 +225,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Company Name
                       </label>
                       <input
@@ -229,19 +233,19 @@ export default function ContactPage() {
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         placeholder="Organization or project"
-                        className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-medium text-slate-300 mb-1">
                       Service Interested In
                     </label>
                     <select
                       value={service}
                       onChange={(e) => setService(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
+                      className="w-full rounded-xl border border-white/10 bg-[#16181E] px-3 py-3 text-xs text-white focus:outline-none focus:border-[#3B82F6]"
                     >
                       <option value="">Select a service category (optional)</option>
                       <option value="Web Development">Web Development</option>
@@ -255,7 +259,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-medium text-slate-300 mb-1">
                       Message <span className="text-red-500">*</span>
                     </label>
                     <textarea
@@ -264,7 +268,7 @@ export default function ContactPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Tell us what you're working on..."
-                      className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                     />
                   </div>
 

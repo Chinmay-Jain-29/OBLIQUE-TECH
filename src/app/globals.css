@@ -1,46 +1,55 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
-  /* BASE BRAND PALETTE */
-  --oblique-black: #0B0B0D;
-  --oblique-graphite: #17181C;
-  --oblique-warm-white: #F7F6F2;
+  /* =========================================================================
+     OBLIQUETECH CALIBRATED MULTI-COLOR SYSTEM
+     ========================================================================= */
+  /* PRIMARY SURFACES */
+  --oblique-black: #08090B;
+  --oblique-charcoal: #15171B;
+  --oblique-soft-white: #F7F7F3;
+  --oblique-warm-grey: #EAE9E4;
   --oblique-pure-white: #FFFFFF;
-  --oblique-soft-grey: #F1F2F5;
-  --oblique-border-light: rgba(15, 23, 42, 0.09);
-  --oblique-border-dark: rgba(255, 255, 255, 0.09);
+  --oblique-border-light: rgba(15, 23, 42, 0.08);
+  --oblique-border-dark: rgba(255, 255, 255, 0.08);
 
-  /* CALIBRATED ACCENTS */
-  --accent-gold: #C7A45D;
-  --accent-gold-hover: #b5924d;
+  /* BRAND ACCENTS */
+  --accent-gold: #D4AF5A;
+  --accent-gold-muted: #E8D08D;
   --accent-blue: #3B82F6;
-  --accent-emerald: #20A779;
-  --accent-violet: #7C5CFC;
+  --accent-violet: #7C5CFF;
+  --accent-emerald: #16A878;
+  --accent-coral: #FF6B5A;
 
-  /* DEFAULT / LIGHT SURFACES */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F7F6F2;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --border-subtle: rgba(15, 23, 42, 0.08);
-  --border-card: rgba(15, 23, 42, 0.1);
-  --text-primary: #0B0B0D;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
-  --nav-bg: rgba(255, 255, 255, 0.9);
-}
-
-.dark {
-  --bg-primary: #0B0B0D;
-  --bg-secondary: #17181C;
-  --bg-surface: #17181C;
-  --bg-card: #17181C;
+  /* PERMANENT DARK THEME VARIABLES FOR ALL SYSTEMS */
+  --bg-primary: #08090B;
+  --bg-secondary: #15171B;
+  --bg-surface: #15171B;
+  --bg-card: #15171B;
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-card: rgba(255, 255, 255, 0.12);
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
-  --nav-bg: rgba(11, 11, 13, 0.9);
+  --nav-bg: rgba(8, 9, 11, 0.92);
+  color-scheme: dark;
+}
+
+.dark {
+  /* DARK THEME VARIABLES */
+  --bg-primary: #08090B;
+  --bg-secondary: #15171B;
+  --bg-surface: #15171B;
+  --bg-card: #15171B;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(255, 255, 255, 0.12);
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --nav-bg: rgba(8, 9, 11, 0.92);
+  color-scheme: dark;
 }
 
 body {
@@ -48,87 +57,214 @@ body {
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
   -webkit-font-smoothing: antialiased;
 }
 
-/* -------------------------------------------------------------
-   ART-DIRECTED ALTERNATING SURFACES
-   ------------------------------------------------------------- */
+/* =========================================================================
+   ART-DIRECTED SECTION SURFACES
+   ========================================================================= */
 .surface-black {
-  background-color: #0B0B0D;
+  background-color: #08090B;
   color: #F8FAFC;
 }
 .surface-black .text-muted-custom {
   color: #94A3B8;
 }
 
+.surface-charcoal {
+  background-color: #15171B;
+  color: #F8FAFC;
+}
+
 .surface-warm {
-  background-color: #F7F6F2;
-  color: #0B0B0D;
+  background-color: #121316;
+  color: #F8FAFC;
 }
 .dark .surface-warm {
-  background-color: #121317;
+  background-color: #121316;
   color: #F8FAFC;
 }
 
 .surface-white {
-  background-color: #FFFFFF;
-  color: #0B0B0D;
+  background-color: #15171B;
+  color: #F8FAFC;
 }
 .dark .surface-white {
-  background-color: #16181E;
+  background-color: #15171B;
   color: #F8FAFC;
 }
 
+.surface-grey {
+  background-color: #1A1C22;
+  color: #F8FAFC;
+}
+.dark .surface-grey {
+  background-color: #1A1C22;
+  color: #F8FAFC;
+}
+
+/* Backward compatibility utility */
 .surface-light {
-  background-color: #F1F2F5;
-  color: #0B0B0D;
+  background-color: #1A1C22;
+  color: #F8FAFC;
 }
 .dark .surface-light {
-  background-color: #1A1C24;
+  background-color: #1A1C22;
   color: #F8FAFC;
 }
 
-.surface-charcoal {
-  background-color: #17181C;
-  color: #F8FAFC;
+/* =========================================================================
+   SOPHISTICATED GRADIENT SYSTEM
+   ========================================================================= */
+.grad-gold {
+  background: linear-gradient(135deg, #D4AF5A 0%, #F3E2B4 100%);
+}
+.grad-tech {
+  background: linear-gradient(135deg, #3B82F6 0%, #7C5CFF 100%);
+}
+.grad-growth {
+  background: linear-gradient(135deg, #16A878 0%, #3B82F6 100%);
+}
+.grad-dark {
+  background: linear-gradient(180deg, #08090B 0%, #15171B 100%);
+}
+.grad-coral {
+  background: linear-gradient(135deg, #FF6B5A 0%, #D4AF5A 100%);
 }
 
-/* -------------------------------------------------------------
-   SIGNATURE OBLIQUE BRAND METAPHOR
-   ------------------------------------------------------------- */
-.oblique-line {
-  position: relative;
+/* =========================================================================
+   COLORFUL SECTION HEADINGS & INDICATOR LINES
+   ========================================================================= */
+.section-tag-blue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #3B82F6;
+}
+.section-tag-blue::before {
+  content: '';
+  display: inline-block;
+  width: 1.25rem;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(199, 164, 93, 0.8), rgba(59, 130, 246, 0.8), transparent);
+  background-color: #3B82F6;
+}
+
+.section-tag-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #D4AF5A;
+}
+.section-tag-gold::before {
+  content: '';
+  display: inline-block;
+  width: 1.25rem;
+  height: 2px;
+  background-color: #D4AF5A;
+}
+
+.section-tag-violet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7C5CFF;
+}
+.section-tag-violet::before {
+  content: '';
+  display: inline-block;
+  width: 1.25rem;
+  height: 2px;
+  background-color: #7C5CFF;
+}
+
+.section-tag-emerald {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #16A878;
+}
+.section-tag-emerald::before {
+  content: '';
+  display: inline-block;
+  width: 1.25rem;
+  height: 2px;
+  background-color: #16A878;
+}
+
+.section-tag-coral {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #FF6B5A;
+}
+.section-tag-coral::before {
+  content: '';
+  display: inline-block;
+  width: 1.25rem;
+  height: 2px;
+  background-color: #FF6B5A;
+}
+
+/* =========================================================================
+   CREATIVE SECTION DIVIDERS & ANGLED ACCENTS
+   ========================================================================= */
+.divider-oblique {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 90, 0.4) 30%, rgba(59, 130, 246, 0.4) 70%, transparent 100%);
+}
+
+.divider-diagonal {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
   transform: rotate(-0.5deg);
 }
 
-/* Minimal geometric angle motif */
-.oblique-angle-mark {
-  transform: skewX(-12deg);
-}
-.oblique-angle-mark > * {
-  transform: skewX(12deg);
-}
-
-/* Clean cards without excessive glow */
+/* =========================================================================
+   CLEAN ART-DIRECTED CARDS & BUTTONS
+   ========================================================================= */
 .clean-card {
   border: 1px solid var(--border-subtle);
   background-color: var(--bg-card);
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 .clean-card:hover {
-  border-color: rgba(199, 164, 93, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
+  border-color: rgba(212, 175, 90, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
 }
 .dark .clean-card:hover {
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.5);
 }
 
-/* Standardized Buttons */
+/* BUTTONS */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -140,10 +276,13 @@ body {
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
 }
 .btn-primary:hover {
   background-color: #2563EB;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
 }
 
 .btn-gold {
@@ -151,16 +290,19 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background-color: #C7A45D;
-  color: #0B0B0D;
+  background-color: #D4AF5A;
+  color: #08090B;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(212, 175, 90, 0.25);
 }
 .btn-gold:hover {
-  background-color: #B5924D;
+  background-color: #E2BF6F;
+  box-shadow: 0 6px 20px rgba(212, 175, 90, 0.4);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -168,15 +310,19 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 1px solid currentColor;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
   font-size: 0.875rem;
   font-weight: 500;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 .btn-secondary:hover {
-  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
 }
 
 /* Custom scrollbar */
@@ -192,4 +338,73 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.45);
+}
+
+/* =========================================================================
+   SIGNATURE DESIGN ELEMENT: OBLIQUE LINE & ACCENTS
+   ========================================================================= */
+.oblique-line {
+  position: relative;
+  height: 1.5px;
+  background: linear-gradient(90deg, #D4AF5A 0%, #3B82F6 50%, #7C5CFF 100%);
+  transform-origin: left center;
+}
+
+.oblique-line-glow {
+  box-shadow: 0 0 12px rgba(212, 175, 90, 0.4), 0 0 24px rgba(59, 130, 246, 0.3);
+}
+
+/* Text Mask Reveal Helper */
+.text-mask-wrap {
+  overflow: hidden;
+  display: block;
+}
+
+.text-mask-inner {
+  display: block;
+  transform: translateY(0);
+  will-change: transform, opacity;
+}
+
+/* Service Tile Structural Variations */
+.tile-accent-top {
+  position: relative;
+  border-top-width: 2px !important;
+}
+
+.tile-accent-left {
+  position: relative;
+  border-left-width: 3px !important;
+}
+
+.tile-accent-bottom {
+  position: relative;
+  border-bottom-width: 2px !important;
+}
+
+.tile-accent-corner {
+  position: relative;
+  overflow: hidden;
+}
+.tile-accent-corner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 24px 24px 0;
+  border-color: transparent #D4AF5A transparent transparent;
+  opacity: 0.8;
+}
+
+/* Reduced Motion Safety */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -190,7 +190,7 @@ export function ObliqueAIChatbot() {
       <div className="fixed bottom-6 left-6 z-40 select-none">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#0B0B0D] dark:bg-white text-white dark:text-[#0B0B0D] text-xs font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 dark:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C7A45D]"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white text-[#0B0B0D] text-xs font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C7A45D]"
           aria-label="Open Ask Oblique assistant"
         >
           <div className="w-2 h-2 rounded-full bg-[#20A779] animate-pulse" />
@@ -200,7 +200,7 @@ export function ObliqueAIChatbot() {
 
       {/* Floating Chat Window (BOTTOM LEFT) */}
       {isOpen && (
-        <div className="fixed bottom-20 left-6 z-50 w-[calc(100vw-3rem)] sm:w-96 max-h-[560px] bg-white dark:bg-[#121317] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200">
+        <div className="fixed bottom-20 left-6 z-50 w-[calc(100vw-3rem)] sm:w-96 max-h-[560px] bg-[#121317] rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200">
           {/* Header */}
           <div className="p-4 bg-[#0B0B0D] text-white flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -231,7 +231,7 @@ export function ObliqueAIChatbot() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 max-h-[380px] bg-slate-50/50 dark:bg-transparent">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 max-h-[380px] bg-transparent">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -241,7 +241,7 @@ export function ObliqueAIChatbot() {
                   className={`p-3 rounded-xl text-xs max-w-[85%] leading-relaxed ${
                     msg.sender === 'user'
                       ? 'bg-[#3B82F6] text-white rounded-br-xs'
-                      : 'bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-bl-xs shadow-xs'
+                      : 'bg-white/5 border border-white/10 text-slate-200 rounded-bl-xs shadow-xs'
                   }`}
                 >
                   <p className="whitespace-pre-line">{msg.text}</p>
@@ -269,12 +269,12 @@ export function ObliqueAIChatbot() {
           </div>
 
           {/* Quick Questions */}
-          <div className="px-3 py-2 bg-white dark:bg-[#121317] border-t border-slate-100 dark:border-white/5 overflow-x-auto flex gap-1.5 scrollbar-none">
+          <div className="px-3 py-2 bg-[#121317] border-t border-white/5 overflow-x-auto flex gap-1.5 scrollbar-none">
             {QUICK_PROMPTS.slice(0, 4).map((qp, idx) => (
               <button
                 key={idx}
                 onClick={() => handleQuickPrompt(qp)}
-                className="whitespace-nowrap px-2.5 py-1 text-[10px] rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors shrink-0"
+                className="whitespace-nowrap px-2.5 py-1 text-[10px] rounded-full bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
               >
                 {qp}
               </button>
@@ -282,13 +282,13 @@ export function ObliqueAIChatbot() {
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSend} className="p-3 bg-white dark:bg-[#0B0B0D] border-t border-slate-200 dark:border-white/10 flex items-center gap-2">
+          <form onSubmit={handleSend} className="p-3 bg-[#0B0B0D] border-t border-white/10 flex items-center gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about services, projects, process..."
-              className="flex-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
             />
             <button
               type="submit"

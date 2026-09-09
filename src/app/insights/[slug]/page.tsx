@@ -74,11 +74,11 @@ export default async function InsightDetailPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 2. Visual Cover Image Showcase */}
+      {/* 2. Featured Image (Surface: Oblique Black) */}
       {post.coverImage && (
-        <section className="surface-warm py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+        <section className="surface-black pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-slate-950 aspect-16/9">
+            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-slate-950 aspect-16/9">
               <img
                 src={post.coverImage}
                 alt={post.title}
@@ -90,52 +90,52 @@ export default async function InsightDetailPage({ params }: Props) {
       )}
 
       {/* 3. Article Content (Surface: Pure White) */}
-      <section className="surface-white py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-white py-16 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-3xl mx-auto space-y-10">
           {/* Author Box */}
-          <div className="p-4 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-white/5">
+          <div className="p-4 rounded-xl border border-white/10 flex items-center justify-between bg-white/5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white font-bold text-sm flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white/10 text-white font-bold text-sm flex items-center justify-center">
                 {author.fullName.charAt(0)}
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-900 dark:text-white">{author.fullName}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">{author.title}</div>
+                <div className="text-xs font-bold text-white">{author.fullName}</div>
+                <div className="text-[11px] text-slate-400">{author.title}</div>
               </div>
             </div>
             <span className="text-[10px] font-mono text-slate-400">ObliqueTech Editorial</span>
           </div>
 
           {/* Key Perspective Highlight Box */}
-          <div className="p-6 rounded-2xl bg-blue-50/60 dark:bg-blue-500/10 border border-blue-200/80 dark:border-blue-500/20 space-y-2">
+          <div className="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20 space-y-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#3B82F6] font-semibold">
               The Oblique Takeaway
             </span>
-            <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed italic">
+            <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed italic">
               &ldquo;{post.excerpt}&rdquo;
             </p>
           </div>
 
           {/* Article Text Content */}
-          <div className="space-y-6 text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
+          <div className="space-y-6 text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
             {contentSections.map((sec, idx) => {
               if (sec.startsWith('# ')) {
                 return (
-                  <h2 key={idx} className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white pt-6 pb-2 tracking-tight">
+                  <h2 key={idx} className="text-2xl sm:text-3xl font-bold text-white pt-6 pb-2 tracking-tight">
                     {sec.replace('# ', '')}
                   </h2>
                 );
               }
               if (sec.startsWith('## ')) {
                 return (
-                  <h3 key={idx} className="text-xl font-bold text-slate-900 dark:text-white pt-4 pb-1 tracking-tight">
+                  <h3 key={idx} className="text-xl font-bold text-white pt-4 pb-1 tracking-tight">
                     {sec.replace('## ', '')}
                   </h3>
                 );
               }
               if (sec.startsWith('### ')) {
                 return (
-                  <h4 key={idx} className="text-base font-bold text-slate-900 dark:text-white pt-2">
+                  <h4 key={idx} className="text-base font-bold text-white pt-2">
                     {sec.replace('### ', '')}
                   </h4>
                 );
@@ -150,8 +150,8 @@ export default async function InsightDetailPage({ params }: Props) {
 
           {/* Related Articles */}
           {relatedPosts.length > 0 && (
-            <div className="pt-12 border-t border-slate-200 dark:border-white/10 space-y-6">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Related Reading</h3>
+            <div className="pt-12 border-t border-white/10 space-y-6">
+              <h3 className="text-base font-bold text-white">Related Reading</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {relatedPosts.map((rp) => (
                   <Link
@@ -161,7 +161,7 @@ export default async function InsightDetailPage({ params }: Props) {
                   >
                     <div className="space-y-1.5">
                       <span className="text-[10px] font-mono text-[#3B82F6] font-semibold">{rp.category}</span>
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors line-clamp-2">
+                      <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#3B82F6] transition-colors line-clamp-2">
                         {rp.title}
                       </h4>
                     </div>

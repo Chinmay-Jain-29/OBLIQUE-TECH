@@ -80,19 +80,19 @@ export default function SchedulePage() {
       </section>
 
       {/* Booking Form (Surface: Warm White) */}
-      <section className="surface-warm py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-white/10">
+      <section className="surface-warm py-16 px-4 sm:px-6 lg:px-8 border-b border-white/10">
         <div className="max-w-3xl mx-auto">
-          <div className="p-8 sm:p-10 rounded-2xl bg-white dark:bg-[#16181E] border border-slate-200 dark:border-white/10 shadow-sm">
+          <div className="p-8 sm:p-10 rounded-2xl bg-[#16181E] border border-white/10 shadow-sm">
             {submitted ? (
               <div className="text-center py-12 space-y-6">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-[#20A779] flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-[#20A779] flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-white">
                     Consultation Requested
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
                     We have logged your requested slot for <strong>{preferredDate}</strong> ({preferredTime}). Our team will confirm the calendar invite via email.
                   </p>
                 </div>
@@ -116,7 +116,7 @@ export default function SchedulePage() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* 1. Discussion Topic */}
                 <div className="space-y-3">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
                     1. What would you like to discuss?
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -127,8 +127,8 @@ export default function SchedulePage() {
                         onClick={() => setTopic(t)}
                         className={`p-3 rounded-lg text-xs font-medium text-left border transition-all ${
                           topic === t
-                            ? 'border-[#3B82F6] bg-blue-50/50 dark:bg-blue-500/10 text-[#3B82F6] font-semibold'
-                            : 'border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-white/20'
+                            ? 'border-[#3B82F6] bg-blue-500/10 text-[#3B82F6] font-semibold'
+                            : 'border-white/10 text-slate-300 hover:border-white/20'
                         }`}
                       >
                         {t}
@@ -138,13 +138,13 @@ export default function SchedulePage() {
                 </div>
 
                 {/* 2. Contact Details */}
-                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                <div className="space-y-4 pt-4 border-t border-white/5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
                     2. Your details
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Name <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -153,11 +153,11 @@ export default function SchedulePage() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Alex Morgan"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Email <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -166,11 +166,11 @@ export default function SchedulePage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="alex@company.com"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
                     <div>
-                      <label htmlFor="schedule-phone" className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="schedule-phone" className="block text-xs font-medium text-slate-300 mb-1">
                         Phone Number
                       </label>
                       <PhoneInput
@@ -183,7 +183,7 @@ export default function SchedulePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Company Name
                       </label>
                       <input
@@ -191,13 +191,13 @@ export default function SchedulePage() {
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         placeholder="Acme Corp"
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-medium text-slate-300 mb-1">
                       Brief Requirements or Goals
                     </label>
                     <textarea
@@ -205,19 +205,19 @@ export default function SchedulePage() {
                       value={requirements}
                       onChange={(e) => setRequirements(e.target.value)}
                       placeholder="What are the main topics you want to cover?"
-                      className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#3B82F6]"
                     />
                   </div>
                 </div>
 
                 {/* 3. Preferred Time Slot */}
-                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                <div className="space-y-4 pt-4 border-t border-white/5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
                     3. Preferred time (30–45 mins)
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Preferred Date <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -225,17 +225,17 @@ export default function SchedulePage() {
                         required
                         value={preferredDate}
                         onChange={(e) => setPreferredDate(e.target.value)}
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white focus:outline-none focus:border-[#3B82F6]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-medium text-slate-300 mb-1">
                         Time Slot <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={preferredTime}
                         onChange={(e) => setPreferredTime(e.target.value)}
-                        className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
+                        className="w-full rounded-lg border border-white/10 bg-[#16181E] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#3B82F6]"
                       >
                         {TIME_SLOTS.map((slot) => (
                           <option key={slot} value={slot}>{slot}</option>
@@ -246,8 +246,8 @@ export default function SchedulePage() {
                 </div>
 
                 {/* Direct Alternative Options */}
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 dark:border-white/5">
-                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/5">
+                  <div className="flex items-center gap-3 text-xs text-slate-400">
                     <a
                       href={`https://wa.me/${cleanWhatsappNumber}`}
                       target="_blank"
