@@ -13,11 +13,9 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
-    // Check if user already saw intro this session
-    const hasSeenIntro = sessionStorage.getItem('oblique_intro_seen');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (hasSeenIntro || prefersReducedMotion) {
+    if (prefersReducedMotion) {
       if (onComplete) onComplete();
       return;
     }
@@ -25,14 +23,25 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
     setShouldRender(true);
   }, [onComplete]);
 
+  // Lock scrolling while opening animation is active
+  useEffect(() => {
+    if (shouldRender) {
+      document.body.style.overflow = 'hidden';
+      window.scrollTo(0, 0);
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [shouldRender]);
+
   useEffect(() => {
     if (!shouldRender || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         onComplete: () => {
-          sessionStorage.setItem('oblique_intro_seen', 'true');
           setShouldRender(false);
+          document.body.style.overflow = '';
           if (onComplete) onComplete();
         },
       });
@@ -125,7 +134,7 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
 
         {/* Tag */}
         <p className="intro-tag text-xs font-mono uppercase tracking-widest text-slate-400">
-          See Business Differently.
+          Solutions & Innovation
         </p>
       </div>
     </div>

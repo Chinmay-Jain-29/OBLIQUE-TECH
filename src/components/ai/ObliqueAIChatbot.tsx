@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, ArrowUpRight } from 'lucide-react';
+import { MessageSquare, X, Send, ArrowUpRight, Bot } from 'lucide-react';
 import Link from 'next/link';
 
 interface Message {
@@ -186,21 +186,39 @@ export function ObliqueAIChatbot() {
 
   return (
     <>
-      {/* Floating Trigger Button (LEFT BOTTOM CORNER) */}
-      <div className="fixed bottom-6 left-6 z-40 select-none">
+      {/* Floating Trigger Button (LEFT BOTTOM CORNER — Matches WhatsApp circular floating action style) */}
+      <aside
+        aria-label="Ask Oblique AI Assistant"
+        className="fixed bottom-6 left-6 z-40 flex items-center group select-none"
+      >
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white text-[#0B0B0D] text-xs font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#C7A45D]"
-          aria-label="Open Ask Oblique assistant"
+          aria-label={isOpen ? "Close AI Assistant" : "Open Ask Oblique AI Assistant"}
+          className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-[#00D2FF] via-[#7C3AED] to-[#EC4899] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(0,210,255,0.4)] hover:shadow-[0_8px_30px_rgba(124,58,237,0.6)] hover:scale-108 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-3 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-[#08090B]"
         >
-          <div className="w-2 h-2 rounded-full bg-[#20A779] animate-pulse" />
-          <span className="tracking-tight">Ask Oblique</span>
+          {/* Active status pulse badge */}
+          <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-cyan-400 border-2 border-[#08090B]" />
+          </span>
+
+          {isOpen ? (
+            <X className="w-6 h-6 sm:w-7 sm:h-7 text-white transition-transform duration-200" />
+          ) : (
+            <Bot className="w-7 h-7 sm:w-8 sm:h-8 text-white drop-shadow-md" />
+          )}
         </button>
-      </div>
+
+        {/* Tooltip on hover (desktop only, to the right of the button) */}
+        <div className="ml-3 hidden md:block px-3 py-1.5 rounded-lg bg-[#0B0B0D]/95 text-xs text-white border border-cyan-500/30 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-xl pointer-events-none whitespace-nowrap translate-x-1 group-hover:translate-x-0">
+          <span className="font-medium">Ask Oblique AI</span>
+          <span className="block text-[10px] text-cyan-400 font-mono">Instant Technology Advisor</span>
+        </div>
+      </aside>
 
       {/* Floating Chat Window (BOTTOM LEFT) */}
       {isOpen && (
-        <div className="fixed bottom-20 left-6 z-50 w-[calc(100vw-3rem)] sm:w-96 max-h-[560px] bg-[#121317] rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200">
+        <div className="fixed bottom-22 sm:bottom-24 left-6 z-50 w-[calc(100vw-3rem)] sm:w-96 max-h-[560px] bg-[#121317] rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200">
           {/* Header */}
           <div className="p-4 bg-[#0B0B0D] text-white flex items-center justify-between">
             <div className="flex items-center gap-2.5">

@@ -772,7 +772,7 @@ export const INITIAL_FAQS: FAQItem[] = [
 
 export const INITIAL_SETTINGS: SiteSettings = {
   companyName: 'ObliqueTech',
-  tagline: 'See Business Differently.',
+  tagline: 'Solutions & Innovation',
   taglineSub: 'Technology solutions designed around your goals, built for the future, and delivered with clarity, quality, and commitment.',
   email: 'contact@obliquetech.com',
   phone: '+91 9225260237',

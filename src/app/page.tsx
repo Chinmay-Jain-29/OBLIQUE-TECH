@@ -33,6 +33,8 @@ if (typeof window !== 'undefined') {
 
 export default function HomePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [introComplete, setIntroComplete] = useState(false);
+  const heroTlRef = useRef<gsap.core.Timeline | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Section Refs for GSAP ScrollTrigger Mapping
@@ -141,6 +143,21 @@ export default function HomePage() {
   // GSAP + SCROLLTRIGGER MASTER ANIMATION SYSTEM
   // =========================================================================
   useEffect(() => {
+    const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      setIntroComplete(true);
+    }
+  }, []);
+
+  // When opening animation completes, trigger the hero entrance sequence
+  useEffect(() => {
+    if (introComplete && heroTlRef.current) {
+      heroTlRef.current.play();
+      ScrollTrigger.refresh();
+    }
+  }, [introComplete]);
+
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -162,7 +179,8 @@ export default function HomePage() {
       // -----------------------------------------------------------------------
       // 1. HERO OPENING ANIMATION (Phases 1–7)
       // -----------------------------------------------------------------------
-      const heroTl = gsap.timeline({ delay: 0.1 });
+      const heroTl = gsap.timeline({ paused: true, delay: 0.1 });
+      heroTlRef.current = heroTl;
 
       // Initial states
       gsap.set('.hero-badge', { opacity: 0, y: 15 });
@@ -222,6 +240,12 @@ export default function HomePage() {
         duration: 0.65,
         ease: 'power2.out'
       }, '-=0.35');
+
+      // Play immediately only if reduced motion is preferred or already completed
+      const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion || introComplete) {
+        heroTl.play();
+      }
 
       // -----------------------------------------------------------------------
       // HERO SCROLL SCRUB EFFECT (continuous scroll-linked motion)
@@ -399,7 +423,7 @@ export default function HomePage() {
 
   return (
     <div ref={containerRef} className="flex flex-col overflow-x-hidden">
-      <IntroAnimation />
+      <IntroAnimation onComplete={() => setIntroComplete(true)} />
 
       {/* =========================================================================
           01 — HERO (Surface: Oblique Black #08090B + Gold #D4AF5A + Blue #3B82F6)

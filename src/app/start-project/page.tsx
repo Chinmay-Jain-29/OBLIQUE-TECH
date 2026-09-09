@@ -16,37 +16,161 @@ import {
   Code2, 
   Rocket, 
   FileText,
-  Clock
+  Clock,
+  Layout,
+  Check,
+  Compass,
+  Zap,
+  Calendar,
+  Sparkles
 } from 'lucide-react';
 
-const PROJECT_TYPES = [
-  { id: 'website', label: 'Website' },
-  { id: 'web-app', label: 'Web Application' },
-  { id: 'mobile-app', label: 'Mobile App' },
-  { id: 'software', label: 'Software' },
-  { id: 'ai-ml', label: 'AI / ML Solution' },
-  { id: 'saas-product', label: 'SaaS / Product' },
-  { id: 'other', label: 'Other' },
+interface ProjectTypeItem {
+  id: string;
+  label: string;
+  badge: string;
+  description: string;
+  tags: string[];
+  icon: React.ElementType;
+  accentColor: string;
+  gradientClass: string;
+  borderHover: string;
+  selectedBg: string;
+  selectedBorder: string;
+  selectedRing: string;
+}
+
+const PROJECT_TYPES: ProjectTypeItem[] = [
+  {
+    id: 'website',
+    label: 'Website',
+    badge: 'Marketing & Brand',
+    description: 'Corporate websites, high-converting landing pages, marketing funnels & portfolio showcases.',
+    tags: ['Landing Pages', 'Corporate', 'SEO & CMS'],
+    icon: Globe,
+    accentColor: '#00D2FF',
+    gradientClass: 'from-[#00D2FF]/20 to-[#3B82F6]/10 text-[#00D2FF]',
+    borderHover: 'hover:border-[#00D2FF]/50 hover:shadow-[0_0_25px_rgba(0,210,255,0.15)]',
+    selectedBg: 'bg-[#00D2FF]/[0.08]',
+    selectedBorder: 'border-[#00D2FF]',
+    selectedRing: 'ring-1 ring-[#00D2FF]/50'
+  },
+  {
+    id: 'web-app',
+    label: 'Web Application',
+    badge: 'Interactive & Cloud',
+    description: 'Interactive web apps, customer portals, internal workflow tools, dashboards & databases.',
+    tags: ['Client Portals', 'Dashboards', 'Workflow Tools'],
+    icon: Layout,
+    accentColor: '#7C5CFF',
+    gradientClass: 'from-[#7C5CFF]/20 to-[#A855F7]/10 text-[#7C5CFF]',
+    borderHover: 'hover:border-[#7C5CFF]/50 hover:shadow-[0_0_25px_rgba(124,92,255,0.15)]',
+    selectedBg: 'bg-[#7C5CFF]/[0.08]',
+    selectedBorder: 'border-[#7C5CFF]',
+    selectedRing: 'ring-1 ring-[#7C5CFF]/50'
+  },
+  {
+    id: 'mobile-app',
+    label: 'Mobile App',
+    badge: 'iOS & Android',
+    description: 'Native or cross-platform mobile applications engineered for fluid gestures, high performance & offline sync.',
+    tags: ['iOS & Android', 'React Native / Flutter', 'Offline Sync'],
+    icon: Smartphone,
+    accentColor: '#10B981',
+    gradientClass: 'from-[#10B981]/20 to-[#059669]/10 text-[#10B981]',
+    borderHover: 'hover:border-[#10B981]/50 hover:shadow-[0_0_25px_rgba(16,185,129,0.15)]',
+    selectedBg: 'bg-[#10B981]/[0.08]',
+    selectedBorder: 'border-[#10B981]',
+    selectedRing: 'ring-1 ring-[#10B981]/50'
+  },
+  {
+    id: 'software',
+    label: 'Software',
+    badge: 'Backend & Systems',
+    description: 'Custom backend architectures, high-throughput APIs, distributed microservices & database engineering.',
+    tags: ['Microservices', 'Custom APIs', 'Database Architecture'],
+    icon: Code2,
+    accentColor: '#D4AF5A',
+    gradientClass: 'from-[#D4AF5A]/20 to-[#F59E0B]/10 text-[#D4AF5A]',
+    borderHover: 'hover:border-[#D4AF5A]/50 hover:shadow-[0_0_25px_rgba(212,175,90,0.15)]',
+    selectedBg: 'bg-[#D4AF5A]/[0.08]',
+    selectedBorder: 'border-[#D4AF5A]',
+    selectedRing: 'ring-1 ring-[#D4AF5A]/50'
+  },
+  {
+    id: 'ai-ml',
+    label: 'AI / ML Solution',
+    badge: 'Intelligent Systems',
+    description: 'Custom AI integration, RAG knowledge retrieval pipelines, predictive models & automated intelligent workflows.',
+    tags: ['RAG Pipelines', 'AI Automation', 'Predictive Models'],
+    icon: Cpu,
+    accentColor: '#EC4899',
+    gradientClass: 'from-[#EC4899]/20 to-[#F43F5E]/10 text-[#EC4899]',
+    borderHover: 'hover:border-[#EC4899]/50 hover:shadow-[0_0_25px_rgba(236,72,153,0.15)]',
+    selectedBg: 'bg-[#EC4899]/[0.08]',
+    selectedBorder: 'border-[#EC4899]',
+    selectedRing: 'ring-1 ring-[#EC4899]/50'
+  },
+  {
+    id: 'saas-product',
+    label: 'SaaS / Product',
+    badge: 'Startup & Platform',
+    description: 'End-to-end multi-tenant subscription products, recurring billing engines, user auth & scalable architecture.',
+    tags: ['Multi-Tenant', 'Stripe Billing', 'MVP to Scale'],
+    icon: Rocket,
+    accentColor: '#FF6B5A',
+    gradientClass: 'from-[#FF6B5A]/20 to-[#F97316]/10 text-[#FF6B5A]',
+    borderHover: 'hover:border-[#FF6B5A]/50 hover:shadow-[0_0_25px_rgba(255,107,90,0.15)]',
+    selectedBg: 'bg-[#FF6B5A]/[0.08]',
+    selectedBorder: 'border-[#FF6B5A]',
+    selectedRing: 'ring-1 ring-[#FF6B5A]/50'
+  },
+  {
+    id: 'other',
+    label: 'Other',
+    badge: 'Specialized Scope',
+    description: 'Technical architecture reviews, legacy system modernizations, security audits, or unique hybrid engineering.',
+    tags: ['Audits & Security', 'Modernization', 'Consulting'],
+    icon: Layers,
+    accentColor: '#6366F1',
+    gradientClass: 'from-[#6366F1]/20 to-[#818CF8]/10 text-[#6366F1]',
+    borderHover: 'hover:border-[#6366F1]/50 hover:shadow-[0_0_25px_rgba(99,102,241,0.15)]',
+    selectedBg: 'bg-[#6366F1]/[0.08]',
+    selectedBorder: 'border-[#6366F1]',
+    selectedRing: 'ring-1 ring-[#6366F1]/50'
+  },
 ];
 
-const SERVICES_LIST = [
-  'Web Development',
-  'UI/UX Design',
-  'AI/ML',
-  'IT Consulting',
-  'Software Development',
-  'Mobile App Development',
-  'Digital Marketing',
-  'Not Sure Yet'
+interface ServiceItem {
+  label: string;
+  description: string;
+  icon: React.ElementType;
+}
+
+const SERVICES_LIST: ServiceItem[] = [
+  { label: 'Web Development', description: 'Fast, resilient & responsive web platforms', icon: Globe },
+  { label: 'UI/UX Design', description: 'Conversion wireframes, flows & design systems', icon: Layout },
+  { label: 'AI/ML', description: 'RAG pipelines, workflow automation & intelligent tools', icon: Cpu },
+  { label: 'IT Consulting', description: 'Pragmatic tech strategy & architectural reviews', icon: Compass },
+  { label: 'Software Development', description: 'Custom enterprise software, microservices & APIs', icon: Code2 },
+  { label: 'Mobile App Development', description: 'iOS and Android applications built for scale', icon: Smartphone },
+  { label: 'Digital Marketing', description: 'Technical SEO, tracking, attribution & growth', icon: Rocket },
+  { label: 'Not Sure Yet', description: 'We will assess your requirements and recommend', icon: Layers },
 ];
 
-const TIMELINE_OPTIONS = [
-  'As soon as possible',
-  'Within 1 month',
-  'Within 1–3 months',
-  '3–6 months',
-  'Just exploring for now',
-  'Not decided yet'
+interface TimelineItem {
+  label: string;
+  description: string;
+  icon: React.ElementType;
+}
+
+const TIMELINE_OPTIONS: TimelineItem[] = [
+  { label: 'As soon as possible', description: 'Ready to kick off immediately', icon: Zap },
+  { label: 'Within 1 month', description: 'Targeting near-term kickoff', icon: Clock },
+  { label: 'Within 1–3 months', description: 'Planned milestone on quarterly roadmap', icon: Calendar },
+  { label: '3–6 months', description: 'Future development sprint', icon: Layers },
+  { label: 'Just exploring for now', description: 'Researching technical scope & budget', icon: Compass },
+  { label: 'Not decided yet', description: 'Flexible timing based on consultation', icon: Sparkles },
 ];
 
 export default function StartProjectPage() {
@@ -146,7 +270,7 @@ export default function StartProjectPage() {
   }
 
   return (
-    <div className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto space-y-10">
+    <div className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10">
       {/* Progress Indicator */}
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
@@ -161,13 +285,13 @@ export default function StartProjectPage() {
         </div>
         <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#3B82F6] transition-all duration-300"
+            className="h-full bg-gradient-to-r from-[#00D2FF] to-[#3B82F6] transition-all duration-300"
             style={{ width: `${(step / 5) * 100}%` }}
           />
         </div>
       </div>
 
-      <div className="p-8 sm:p-10 rounded-2xl bg-[#121317] border border-white/10 shadow-sm">
+      <div className="p-6 sm:p-10 rounded-2xl bg-[#121317] border border-white/10 shadow-xl">
         {/* STEP 1: What are you building? */}
         {step === 1 && (
           <div className="space-y-6 animate-fadeIn">
@@ -176,33 +300,70 @@ export default function StartProjectPage() {
                 Tell us what you’re building.
               </h2>
               <p className="text-slate-400 text-xs sm:text-sm">
-                Select the option that best describes your project.
+                Select the option that best describes your project to view scope details.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
               {PROJECT_TYPES.map((pt) => {
                 const isSelected = projectType === pt.label;
+                const IconComponent = pt.icon;
                 return (
                   <button
                     key={pt.id}
                     type="button"
                     onClick={() => setProjectType(pt.label)}
-                    className={`p-4 rounded-xl text-left border transition-all flex items-center justify-between ${
+                    className={`relative p-5 rounded-2xl text-left border transition-all duration-200 flex flex-col justify-between group cursor-pointer ${
                       isSelected
-                        ? 'border-[#3B82F6] bg-blue-500/10 text-[#3B82F6] font-semibold'
-                        : 'border-white/10 text-slate-300 hover:border-white/20'
+                        ? `${pt.selectedBorder} ${pt.selectedBg} shadow-[0_0_25px_rgba(0,0,0,0.3)] ${pt.selectedRing}`
+                        : `border-white/10 bg-white/[0.02] hover:bg-white/[0.05] ${pt.borderHover}`
                     }`}
                   >
-                    <span className="text-sm">{pt.label}</span>
-                    <div
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        isSelected
-                          ? 'border-[#3B82F6] bg-[#3B82F6]'
-                          : 'border-white/20'
-                      }`}
-                    >
-                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    {/* Top Row: Icon, Badge & Radio Check */}
+                    <div className="flex items-center justify-between w-full mb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${pt.gradientClass} border border-white/10 transition-transform duration-200 group-hover:scale-105 shadow-inner`}
+                        >
+                          <IconComponent className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-slate-400 border border-white/10">
+                          {pt.badge}
+                        </span>
+                      </div>
+
+                      {/* Radio Checkmark */}
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
+                          isSelected
+                            ? 'border-[#00D2FF] bg-[#00D2FF] text-black shadow-[0_0_10px_rgba(0,210,255,0.5)]'
+                            : 'border-white/20 group-hover:border-white/40'
+                        }`}
+                      >
+                        {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                      </div>
+                    </div>
+
+                    {/* Middle: Title & Descriptive Text to read */}
+                    <div className="space-y-1.5 flex-1">
+                      <h3 className={`text-base font-bold tracking-tight transition-colors ${isSelected ? 'text-white font-extrabold' : 'text-slate-100 group-hover:text-white'}`}>
+                        {pt.label}
+                      </h3>
+                      <p className="text-xs text-slate-400 leading-relaxed">
+                        {pt.description}
+                      </p>
+                    </div>
+
+                    {/* Bottom: Scope tags */}
+                    <div className="flex flex-wrap gap-1.5 mt-3.5 pt-3 border-t border-white/5">
+                      {pt.tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 rounded text-[10px] font-mono tracking-wider bg-white/5 text-slate-300 border border-white/5"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </button>
                 );
@@ -239,26 +400,40 @@ export default function StartProjectPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
               {SERVICES_LIST.map((srv) => {
-                const isSelected = servicesNeeded.includes(srv);
+                const isSelected = servicesNeeded.includes(srv.label);
+                const IconComponent = srv.icon;
                 return (
                   <button
-                    key={srv}
+                    key={srv.label}
                     type="button"
-                    onClick={() => toggleService(srv)}
-                    className={`p-4 rounded-xl text-left border transition-all flex items-center justify-between ${
+                    onClick={() => toggleService(srv.label)}
+                    className={`p-4 rounded-xl text-left border transition-all duration-200 flex items-start justify-between gap-3 group cursor-pointer ${
                       isSelected
-                        ? 'border-[#3B82F6] bg-blue-500/10 text-[#3B82F6] font-semibold'
-                        : 'border-white/10 text-slate-300 hover:border-white/20'
+                        ? 'border-[#3B82F6] bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.2)] ring-1 ring-[#3B82F6]/50'
+                        : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20'
                     }`}
                   >
-                    <span className="text-sm">{srv}</span>
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform text-slate-300 group-hover:text-white">
+                        <IconComponent className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className={`text-sm font-semibold block transition-colors ${isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                          {srv.label}
+                        </span>
+                        <p className="text-[11px] text-slate-400 leading-normal">
+                          {srv.description}
+                        </p>
+                      </div>
+                    </div>
+
                     <div
-                      className={`w-4 h-4 rounded-md border flex items-center justify-center ${
+                      className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 mt-1 transition-all ${
                         isSelected
                           ? 'border-[#3B82F6] bg-[#3B82F6] text-white'
-                          : 'border-white/20'
+                          : 'border-white/20 group-hover:border-white/40'
                       }`}
                     >
                       {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -306,26 +481,40 @@ export default function StartProjectPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
               {TIMELINE_OPTIONS.map((opt) => {
-                const isSelected = timeline === opt;
+                const isSelected = timeline === opt.label;
+                const IconComponent = opt.icon;
                 return (
                   <button
-                    key={opt}
+                    key={opt.label}
                     type="button"
-                    onClick={() => setTimeline(opt)}
-                    className={`p-4 rounded-xl text-left border transition-all flex items-center justify-between ${
+                    onClick={() => setTimeline(opt.label)}
+                    className={`p-4 rounded-xl text-left border transition-all duration-200 flex items-start justify-between gap-3 group cursor-pointer ${
                       isSelected
-                        ? 'border-[#3B82F6] bg-blue-500/10 text-[#3B82F6] font-semibold'
-                        : 'border-white/10 text-slate-300 hover:border-white/20'
+                        ? 'border-[#3B82F6] bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.2)] ring-1 ring-[#3B82F6]/50'
+                        : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20'
                     }`}
                   >
-                    <span className="text-sm">{opt}</span>
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform text-slate-300 group-hover:text-white">
+                        <IconComponent className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className={`text-sm font-semibold block transition-colors ${isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                          {opt.label}
+                        </span>
+                        <p className="text-[11px] text-slate-400 leading-normal">
+                          {opt.description}
+                        </p>
+                      </div>
+                    </div>
+
                     <div
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-1 transition-all ${
                         isSelected
                           ? 'border-[#3B82F6] bg-[#3B82F6]'
-                          : 'border-white/20'
+                          : 'border-white/20 group-hover:border-white/40'
                       }`}
                     >
                       {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}

@@ -6,6 +6,7 @@ import Image from 'next/image';
 interface ObliqueLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'hero';
   showTagline?: boolean;
+  tagline?: string;
   showText?: boolean;
   className?: string;
   iconOnly?: boolean;
@@ -14,6 +15,7 @@ interface ObliqueLogoProps {
 export function ObliqueLogo({
   size = 'md',
   showTagline = false,
+  tagline = 'Solutions & Innovation',
   showText = true,
   iconOnly = false,
   className = '',
@@ -71,7 +73,7 @@ export function ObliqueLogo({
 
           {showTagline && (
             <span className={`uppercase tracking-widest text-slate-400 font-medium font-mono -mt-0.5 ${dimensions.tagClass}`}>
-              See Business Differently
+              {tagline}
             </span>
           )}
         </div>
