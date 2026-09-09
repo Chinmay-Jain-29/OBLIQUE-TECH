@@ -7,16 +7,17 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ServiceItem } from '@/types';
 import { 
   ArrowRight, 
-  Globe, 
-  Compass, 
-  Cpu, 
-  Layout, 
-  Smartphone, 
-  Code, 
-  TrendingUp, 
+  AppWindow, 
+  Waypoints, 
+  BrainCircuit, 
+  Shapes, 
+  TabletSmartphone, 
+  Blocks, 
+  SearchCode, 
   Layers,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  LucideIcon
 } from 'lucide-react';
 
 if (typeof window !== 'undefined') {
@@ -27,45 +28,88 @@ interface ServicesViewProps {
   services: ServiceItem[];
 }
 
+interface ServiceColorTheme {
+  color: string;
+  num: string;
+  tag: string;
+  glowRgba: string;
+  IconComponent: LucideIcon;
+}
+
 export function ServicesView({ services }: ServicesViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLElement>(null);
 
-  // Map service colors
-  const getServiceColorConfig = (slug: string, index: number) => {
+  // Distinct Multi-Color Configuration and Specialized Modern Icons for Each Tile
+  const getServiceColorConfig = (slug: string, index: number): ServiceColorTheme => {
     switch (slug) {
       case 'web-development':
-        return { color: '#3B82F6', badge: 'text-blue-500 bg-blue-500/10 border-blue-500/20', num: '01' };
-      case 'ai-ml':
-        return { color: '#7C5CFF', badge: 'text-purple-500 bg-purple-500/10 border-purple-500/20', num: '02' };
-      case 'ui-ux-design':
-        return { color: '#FF6B5A', badge: 'text-rose-500 bg-rose-500/10 border-rose-500/20', num: '03' };
+        return { 
+          color: '#3B82F6', // Electric Sapphire Blue
+          num: '01',
+          tag: 'Web & Architecture',
+          glowRgba: 'rgba(59, 130, 246, 0.18)',
+          IconComponent: AppWindow
+        };
       case 'it-consulting':
-        return { color: '#D4AF5A', badge: 'text-amber-500 bg-amber-500/10 border-amber-500/20', num: '04' };
-      case 'custom-software':
-        return { color: '#16A878', badge: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20', num: '05' };
+        return { 
+          color: '#D4AF5A', // Warm Amber Gold
+          num: '02',
+          tag: 'Systems Strategy',
+          glowRgba: 'rgba(212, 175, 90, 0.18)',
+          IconComponent: Waypoints
+        };
+      case 'ai-ml':
+        return { 
+          color: '#8B5CF6', // Cosmic Violet
+          num: '03',
+          tag: 'Intelligent Systems',
+          glowRgba: 'rgba(139, 92, 246, 0.22)',
+          IconComponent: BrainCircuit
+        };
+      case 'ui-ux-design':
+        return { 
+          color: '#FF6B5A', // Sunset Coral
+          num: '04',
+          tag: 'Human Experience',
+          glowRgba: 'rgba(255, 107, 90, 0.2)',
+          IconComponent: Shapes
+        };
       case 'mobile-apps':
-        return { color: '#3B82F6', badge: 'text-blue-500 bg-blue-500/10 border-blue-500/20', num: '06' };
+      case 'mobile-app-development':
+        return { 
+          color: '#06B6D4', // Vibrant Cyan
+          num: '05',
+          tag: 'Mobile Platforms',
+          glowRgba: 'rgba(6, 182, 212, 0.18)',
+          IconComponent: TabletSmartphone
+        };
+      case 'custom-software':
+      case 'software-development':
+        return { 
+          color: '#10B981', // Bright Emerald Green
+          num: '06',
+          tag: 'Bespoke Software',
+          glowRgba: 'rgba(16, 185, 129, 0.18)',
+          IconComponent: Blocks
+        };
       case 'digital-marketing':
-        return { color: '#FF6B5A', badge: 'text-rose-500 bg-rose-500/10 border-rose-500/20', num: '07' };
+        return { 
+          color: '#F97316', // Solar Orange
+          num: '07',
+          tag: 'Growth & SEO',
+          glowRgba: 'rgba(249, 115, 22, 0.18)',
+          IconComponent: SearchCode
+        };
       default:
-        return { color: '#3B82F6', badge: 'text-blue-500 bg-blue-500/10 border-blue-500/20', num: `0${index + 1}` };
-    }
-  };
-
-  const getIcon = (iconName: string, color: string) => {
-    const iconProps = { className: 'w-5 h-5', style: { color } };
-    switch (iconName) {
-      case 'Globe': return <Globe {...iconProps} />;
-      case 'Compass': return <Compass {...iconProps} />;
-      case 'Brain':
-      case 'Cpu': return <Cpu {...iconProps} />;
-      case 'Layout': return <Layout {...iconProps} />;
-      case 'Smartphone': return <Smartphone {...iconProps} />;
-      case 'Code': return <Code {...iconProps} />;
-      case 'TrendingUp': return <TrendingUp {...iconProps} />;
-      default: return <Layers {...iconProps} />;
+        return { 
+          color: '#3B82F6', 
+          num: `0${index + 1}`,
+          tag: 'Engineering',
+          glowRgba: 'rgba(59, 130, 246, 0.18)',
+          IconComponent: Layers
+        };
     }
   };
 
@@ -77,11 +121,12 @@ export function ServicesView({ services }: ServicesViewProps) {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set('.svc-title-inner, .svc-hero-sub, .svc-card, .svc-accent-line, .svc-number, .svc-icon, .svc-text', {
+        gsap.set('.svc-title-inner, .svc-hero-sub, .svc-card, .svc-accent-line, .svc-number, .svc-icon-box, .svc-text-anim, .standard-card', {
           opacity: 1,
           y: 0,
           scale: 1,
-          scaleX: 1
+          scaleX: 1,
+          rotate: 0
         });
         return;
       }
@@ -108,49 +153,74 @@ export function ServicesView({ services }: ServicesViewProps) {
           );
       }
 
-      // 2. LAYERED TILE CONSTRUCTION ANIMATION (Reversible on scroll up)
-      if (gridRef.current) {
-        const cards = gsap.utils.toArray<HTMLElement>('.svc-card');
+      // 2. SCROLL POPPING ANIMATION FOR EACH INDIVIDUAL SERVICE TILE
+      const cards = gsap.utils.toArray<HTMLElement>('.svc-card');
+      cards.forEach((card) => {
+        const icon = card.querySelector('.svc-icon-box');
+        const line = card.querySelector('.svc-accent-line');
+        const num = card.querySelector('.svc-number');
+        const texts = card.querySelectorAll('.svc-text-anim');
 
-        const gridTl = gsap.timeline({
+        const cardTl = gsap.timeline({
           scrollTrigger: {
-            trigger: gridRef.current,
-            start: 'top 78%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none reverse'
+            trigger: card,
+            start: 'top 88%',
+            toggleActions: 'play none none reverse',
           }
         });
 
-        cards.forEach((card, i) => {
-          const cardOffset = i * 0.12;
-
-          gridTl.fromTo(card, 
-            { opacity: 0, y: 35, scale: 0.96 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power2.out' },
-            cardOffset
+        cardTl
+          // Elastic spring pop of the card itself
+          .fromTo(card, 
+            { opacity: 0, scale: 0.85, y: 40 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.65, ease: 'back.out(1.5)' }
           )
-          .fromTo(card.querySelectorAll('.svc-accent-line'),
+          // Accent line draws smoothly across the top
+          .fromTo(line,
             { scaleX: 0 },
-            { scaleX: 1, duration: 0.35, ease: 'power3.inOut' },
-            cardOffset + 0.15
+            { scaleX: 1, duration: 0.4, ease: 'power2.out' },
+            '-=0.45'
           )
-          .fromTo(card.querySelectorAll('.svc-number'),
-            { opacity: 0, y: -8 },
-            { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' },
-            cardOffset + 0.2
+          // Modern icon box pops with a dynamic rotational spring
+          .fromTo(icon,
+            { opacity: 0, scale: 0.4, rotate: -14 },
+            { opacity: 1, scale: 1, rotate: 0, duration: 0.45, ease: 'back.out(2)' },
+            '-=0.35'
           )
-          .fromTo(card.querySelectorAll('.svc-icon-box'),
-            { opacity: 0, scale: 0.8 },
-            { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(1.5)' },
-            cardOffset + 0.25
+          // Number badge pops in
+          .fromTo(num,
+            { opacity: 0, scale: 0.6 },
+            { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.8)' },
+            '-=0.3'
           )
-          .fromTo(card.querySelectorAll('.svc-text-block'),
-            { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' },
-            cardOffset + 0.3
+          // Content texts slide in
+          .fromTo(texts,
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.35, stagger: 0.05, ease: 'power2.out' },
+            '-=0.25'
           );
-        });
-      }
+      });
+
+      // 3. STANDARDS SECTION POPPING ANIMATION
+      const standardCards = gsap.utils.toArray<HTMLElement>('.standard-card');
+      standardCards.forEach((sc) => {
+        gsap.fromTo(sc,
+          { opacity: 0, scale: 0.88, y: 35 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'back.out(1.4)',
+            scrollTrigger: {
+              trigger: sc,
+              start: 'top 90%',
+              toggleActions: 'play none none reverse',
+            }
+          }
+        );
+      });
+
     }, containerRef);
 
     return () => ctx.revert();
@@ -181,7 +251,7 @@ export function ServicesView({ services }: ServicesViewProps) {
         </div>
       </section>
 
-      {/* 02 — SERVICES GRID (Surface: Permanent Dark #121316 / #15171B) */}
+      {/* 02 — SERVICES GRID (Surface: Permanent Dark with Multi-Color Tiles) */}
       <section 
         ref={gridRef}
         className="surface-warm py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10"
@@ -190,39 +260,73 @@ export function ServicesView({ services }: ServicesViewProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((svc, idx) => {
               const cfg = getServiceColorConfig(svc.slug, idx);
+              const IconComp = cfg.IconComponent;
 
               return (
                 <div
                   key={svc.id}
-                  className="svc-card clean-card relative rounded-2xl overflow-hidden p-7 flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-[#15171B] border border-white/10"
+                  className="svc-card clean-card relative rounded-2xl overflow-hidden p-7 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1.5"
+                  style={{ 
+                    background: `linear-gradient(155deg, ${cfg.color}15 0%, #15171B 45%, #111215 100%)`,
+                    border: `1px solid ${cfg.color}35`,
+                    boxShadow: `0 8px 30px rgba(0, 0, 0, 0.4)`
+                  }}
                 >
-                  {/* Layer 2: Accent Line (draws horizontally on construction) */}
+                  {/* Subtle Inner Ambient Glow for each color theme */}
+                  <div 
+                    className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-25 group-hover:opacity-45 transition-opacity duration-500"
+                    style={{ backgroundColor: cfg.color }}
+                  />
+
+                  {/* Accent Top Line (sweeps across on scroll pop) */}
                   <div 
                     className="svc-accent-line absolute top-0 left-0 right-0 h-1 origin-left transition-all duration-300 group-hover:h-1.5"
                     style={{ backgroundColor: cfg.color }}
                   />
 
-                  <div className="space-y-5">
-                    {/* Top Row: Icon + Number */}
+                  <div className="space-y-5 relative z-10">
+                    {/* Top Row: Specialized Icon + Number Badge */}
                     <div className="flex items-center justify-between pt-1">
                       <div 
-                        className="svc-icon-box w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                        style={{ backgroundColor: `${cfg.color}15` }}
+                        className="svc-icon-box w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm"
+                        style={{ 
+                          backgroundColor: `${cfg.color}18`,
+                          border: `1px solid ${cfg.color}40`
+                        }}
                       >
-                        {getIcon(svc.iconName, cfg.color)}
+                        <IconComp className="w-5 h-5 transition-transform duration-300 group-hover:scale-105" style={{ color: cfg.color }} />
                       </div>
 
-                      <span 
-                        className="svc-number text-xs font-mono font-bold tracking-wider px-2 py-0.5 rounded"
-                        style={{ color: cfg.color, backgroundColor: `${cfg.color}10` }}
-                      >
-                        {cfg.num}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="svc-number text-[11px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-md border"
+                          style={{ 
+                            color: cfg.color, 
+                            backgroundColor: `${cfg.color}12`,
+                            borderColor: `${cfg.color}35`
+                          }}
+                        >
+                          {cfg.num}
+                        </span>
+                      </div>
                     </div>
 
                     {/* Content Block */}
-                    <div className="svc-text-block space-y-2">
-                      <h3 className="text-xl font-bold text-white transition-colors group-hover:text-[#3B82F6]">
+                    <div className="svc-text-anim space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="text-[10px] font-mono tracking-wider uppercase px-2 py-0.5 rounded border"
+                          style={{ 
+                            color: cfg.color, 
+                            borderColor: `${cfg.color}25`,
+                            backgroundColor: `${cfg.color}08`
+                          }}
+                        >
+                          {cfg.tag}
+                        </span>
+                      </div>
+
+                      <h3 className="text-xl font-bold text-white transition-colors duration-200">
                         {svc.title}
                       </h3>
                       <p className="text-xs text-slate-400 leading-relaxed">
@@ -231,7 +335,7 @@ export function ServicesView({ services }: ServicesViewProps) {
                     </div>
 
                     {/* Capabilities list */}
-                    <div className="svc-text-block space-y-2 pt-3 border-t border-white/10">
+                    <div className="svc-text-anim space-y-2 pt-3 border-t border-white/10">
                       {svc.capabilities.slice(0, 3).map((cap: string, i: number) => (
                         <div key={i} className="flex items-center gap-2 text-xs text-slate-300">
                           <span 
@@ -245,10 +349,11 @@ export function ServicesView({ services }: ServicesViewProps) {
                   </div>
 
                   {/* Card Actions */}
-                  <div className="svc-text-block pt-6 mt-6 border-t border-white/10 flex items-center justify-between">
+                  <div className="svc-text-anim pt-6 mt-6 border-t border-white/10 flex items-center justify-between relative z-10">
                     <Link
                       href={`/services/${svc.slug}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3B82F6] hover:text-blue-400 transition-colors group-hover:translate-x-1"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 group-hover:translate-x-1"
+                      style={{ color: cfg.color }}
                     >
                       <span>Specifications</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -281,8 +386,8 @@ export function ServicesView({ services }: ServicesViewProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-500/10 text-[#3B82F6] flex items-center justify-center font-mono font-bold text-sm">
+            <div className="standard-card p-6 rounded-2xl bg-white/5 border border-blue-500/25 space-y-3 transition-transform duration-300 hover:-translate-y-1">
+              <div className="w-9 h-9 rounded-lg bg-blue-500/15 text-[#3B82F6] border border-blue-500/30 flex items-center justify-center font-mono font-bold text-sm">
                 01
               </div>
               <h4 className="text-base font-bold text-white">Fixed-Scope or Agile Sprints</h4>
@@ -291,8 +396,8 @@ export function ServicesView({ services }: ServicesViewProps) {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-purple-500/10 text-[#7C5CFF] flex items-center justify-center font-mono font-bold text-sm">
+            <div className="standard-card p-6 rounded-2xl bg-white/5 border border-purple-500/25 space-y-3 transition-transform duration-300 hover:-translate-y-1">
+              <div className="w-9 h-9 rounded-lg bg-purple-500/15 text-[#8B5CF6] border border-purple-500/30 flex items-center justify-center font-mono font-bold text-sm">
                 02
               </div>
               <h4 className="text-base font-bold text-white">Direct Lead Access</h4>
@@ -301,8 +406,8 @@ export function ServicesView({ services }: ServicesViewProps) {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-[#16A878] flex items-center justify-center font-mono font-bold text-sm">
+            <div className="standard-card p-6 rounded-2xl bg-white/5 border border-emerald-500/25 space-y-3 transition-transform duration-300 hover:-translate-y-1">
+              <div className="w-9 h-9 rounded-lg bg-emerald-500/15 text-[#10B981] border border-emerald-500/30 flex items-center justify-center font-mono font-bold text-sm">
                 03
               </div>
               <h4 className="text-base font-bold text-white">Complete IP & Code Ownership</h4>

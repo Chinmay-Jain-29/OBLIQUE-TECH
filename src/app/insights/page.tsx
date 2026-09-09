@@ -1,10 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { obliqueStore, INITIAL_POSTS } from '@/lib/store';
 import { BlogPost } from '@/types';
 import { Clock, Search, ArrowRight } from 'lucide-react';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const CATEGORIES = [
   'All',
@@ -21,9 +27,53 @@ export default function InsightsPage() {
   const [posts, setPosts] = useState<BlogPost[]>(INITIAL_POSTS);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setPosts(obliqueStore.getPosts());
+  }, []);
+
+  // Reversible GSAP ScrollTrigger Animations (matching portfolio)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const ctx = gsap.context(() => {
+      if (prefersReducedMotion) {
+        gsap.set('.insights-title-inner, .insights-hero-sub', {
+          opacity: 1,
+          y: 0,
+        });
+        return;
+      }
+
+      // Title mask reveal (reversible on scroll up)
+      if (heroRef.current) {
+        const titleTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+
+        titleTl
+          .fromTo('.insights-title-inner',
+            { y: '105%', opacity: 0 },
+            { y: '0%', opacity: 1, duration: 0.75, ease: 'power3.out' }
+          )
+          .fromTo('.insights-hero-sub',
+            { opacity: 0, y: 15 },
+            { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' },
+            '-=0.25'
+          );
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   const filtered = posts.filter((post) => {
@@ -37,15 +87,22 @@ export default function InsightsPage() {
   const featured = posts.find((p) => p.featured) || posts[0];
 
   return (
-    <div className="flex flex-col">
+    <div ref={containerRef} className="flex flex-col">
       {/* Header (Surface: Oblique Black) */}
-      <section className="surface-black pt-32 pb-16 md:pt-40 md:pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
-        <div className="max-w-4xl mx-auto space-y-4">
+      <section 
+        ref={heroRef}
+        className="surface-black pt-32 pb-16 md:pt-40 md:pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/10 relative overflow-hidden"
+      >
+        <div className="max-w-4xl mx-auto space-y-4 relative z-10">
           <span className="text-xs font-mono uppercase tracking-wider text-[#C7A45D]">Articles & Commentary</span>
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
-            Oblique Insights.
-          </h1>
-          <p className="text-base sm:text-xl text-slate-300 max-w-xl leading-relaxed">
+          
+          <div className="text-mask-wrap">
+            <h1 className="insights-title-inner text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
+              Oblique Insights.
+            </h1>
+          </div>
+
+          <p className="insights-hero-sub text-base sm:text-xl text-slate-300 max-w-xl leading-relaxed">
             Ideas, technology, and practical thinking.
           </p>
         </div>
