@@ -116,9 +116,9 @@ export function Footer() {
                 </a>
               </div>
               <div>
-                <a href={`tel:${settings.phone}`} className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                <a href={`tel:${settings.phone}`} className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5" suppressHydrationWarning>
                   <Phone className="w-3.5 h-3.5 text-[#3B82F6]" />
-                  <span>{settings.phone}</span>
+                  <span suppressHydrationWarning>{settings.phone}</span>
                 </a>
               </div>
               <div className="pt-2 flex flex-col gap-2">

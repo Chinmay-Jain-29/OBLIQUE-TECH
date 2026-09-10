@@ -11,7 +11,6 @@ import {
 } from '@/lib/store';
 import { 
   ArrowRight, 
-  ChevronDown, 
   Globe, 
   Cpu, 
   Layout, 
@@ -22,20 +21,56 @@ import {
   ShieldCheck,
   CheckCircle2
 } from 'lucide-react';
-import { IntroAnimation } from '@/components/ui/IntroAnimation';
 import { HeroPerspectiveCanvas } from '@/components/home/HeroPerspectiveCanvas';
 import { ProcessInteractiveTimeline } from '@/components/home/ProcessInteractiveTimeline';
 import { OriginEvolutionPath } from '@/components/home/OriginEvolutionPath';
+import { Hero3DScene } from '@/components/3d/Hero3DScene';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 export default function HomePage() {
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [introComplete, setIntroComplete] = useState(false);
+  // Check if intro was already seen in this active session
+  const [introComplete, setIntroComplete] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('oblique_intro_seen') === 'true';
+    }
+    return false;
+  });
   const heroTlRef = useRef<gsap.core.Timeline | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // 3D Interactive Card Hover Tilt Handlers (Desktop only)
+  const handleCard3DTilt = (e: React.MouseEvent<HTMLElement>) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return;
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rotX = ((y / rect.height) - 0.5) * -6;
+    const rotY = ((x / rect.width) - 0.5) * 10;
+    gsap.to(card, {
+      rotateX: rotX,
+      rotateY: rotY,
+      z: 16,
+      transformPerspective: 800,
+      transformOrigin: 'center center',
+      duration: 0.3,
+      ease: 'power2.out',
+    });
+  };
+
+  const handleCard3DReset = (e: React.MouseEvent<HTMLElement>) => {
+    const card = e.currentTarget;
+    gsap.to(card, {
+      rotateX: 0,
+      rotateY: 0,
+      z: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+    });
+  };
 
   // Section Refs for GSAP ScrollTrigger Mapping
   const heroRef = useRef<HTMLElement>(null);
@@ -103,56 +138,34 @@ export default function HomePage() {
   const featuredPost = INITIAL_POSTS[0];
   const secondaryPosts = INITIAL_POSTS.slice(1, 3);
 
-  // Concise FAQ questions
-  const homeFaqs = [
-    {
-      q: 'What services do you provide?',
-      a: 'We provide Web Development, AI & Machine Learning solutions, UI/UX Product Design, and IT Consulting as our primary services, alongside Custom Software, Mobile Apps, and Technical Digital Marketing.'
-    },
-    {
-      q: 'Can you work with startups?',
-      a: 'Yes. We frequently partner with founders to validate concepts, build rapid high-converting MVPs, and establish clean technical foundations designed for commercial scale.'
-    },
-    {
-      q: 'Do you work with international clients?',
-      a: 'Yes. We collaborate with clients across North America, Europe, and Asia with structured async updates, weekly sprint reviews, and direct communication channels.'
-    },
-    {
-      q: 'Can you improve an existing product?',
-      a: 'Yes. We audit legacy codebases, resolve performance bottlenecks, modernize user interfaces, and migrate monolithic applications without business interruption.'
-    },
-    {
-      q: 'How do we start a project?',
-      a: 'You can submit your requirements through our neutral 5-step Project Wizard, or book a direct 30–45 minute introductory consultation call.'
-    },
-    {
-      q: 'How long does development usually take?',
-      a: 'A typical MVP or focused web platform takes 4 to 8 weeks. Larger custom systems and enterprise software projects run in structured 2-week agile sprints over 2 to 4 months.'
-    },
-    {
-      q: 'Do you provide ongoing support?',
-      a: 'Yes. We provide clear maintenance arrangements, security updates, cloud optimization, and continuous feature expansion after launch.'
-    },
-    {
-      q: 'Can you integrate AI into existing systems?',
-      a: 'Yes. We build private retrieval pipelines (RAG), workflow automation, and predictive models that integrate safely with your existing databases and APIs.'
-    }
-  ];
-
   // =========================================================================
   // GSAP + SCROLLTRIGGER MASTER ANIMATION SYSTEM
   // =========================================================================
   useEffect(() => {
+    // If already seen or reduced motion, mark intro complete immediately
+    const seen = typeof window !== 'undefined' && sessionStorage.getItem('oblique_intro_seen') === 'true';
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
+    if (seen || reducedMotion) {
       setIntroComplete(true);
+      return;
     }
+
+    // Listen for site-level intro completion
+    const onIntroFinished = () => {
+      setIntroComplete(true);
+    };
+    window.addEventListener('oblique-intro-finished', onIntroFinished);
+    return () => {
+      window.removeEventListener('oblique-intro-finished', onIntroFinished);
+    };
   }, []);
 
-  // When opening animation completes, trigger the hero entrance sequence
+  // When opening animation completes or if already seen, trigger the hero entrance sequence
   useEffect(() => {
-    if (introComplete && heroTlRef.current) {
-      heroTlRef.current.play();
+    if (introComplete) {
+      if (heroTlRef.current) {
+        heroTlRef.current.play();
+      }
       ScrollTrigger.refresh();
     }
   }, [introComplete]);
@@ -167,7 +180,7 @@ export default function HomePage() {
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
         // Reduced motion: instantaneous safe reveal
-        gsap.set('.hero-anim-item, .home-service-card, .home-project-card, .home-why-card, .home-insight-card, .cta-anim-item', {
+        gsap.set('.hero-anim-item, .home-service-card, .home-project-card, .home-why-card, .home-insight-card, .cta-anim-item, .cta-badge, .cta-heading-line, .cta-paragraph, .cta-buttons', {
           opacity: 1,
           x: 0,
           y: 0,
@@ -241,9 +254,10 @@ export default function HomePage() {
         ease: 'power2.out'
       }, '-=0.35');
 
-      // Play immediately only if reduced motion is preferred or already completed
+      // Play immediately if intro has already completed, already seen in session, or reduced motion
       const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reducedMotion || introComplete) {
+      const isAlreadySeen = typeof window !== 'undefined' && sessionStorage.getItem('oblique_intro_seen') === 'true';
+      if (reducedMotion || isAlreadySeen || introComplete) {
         heroTl.play();
       }
 
@@ -277,7 +291,7 @@ export default function HomePage() {
       }
 
       // -----------------------------------------------------------------------
-      // 2. SERVICES SECTION — REVERSIBLE HORIZONTAL SCROLL (LEFT → CENTER / CENTER → LEFT)
+      // 2. SERVICES SECTION — REVERSIBLE HORIZONTAL SCROLL WITH 3D DEPTH (LEFT → CENTER / CENTER → LEFT)
       // -----------------------------------------------------------------------
       if (servicesRef.current) {
         const serviceCards = gsap.utils.toArray<HTMLElement>('.home-service-card');
@@ -293,12 +307,13 @@ export default function HomePage() {
         });
 
         servicesTl.fromTo(serviceCards,
-          { opacity: 0, x: xStart, scale: 0.96 },
+          { opacity: 0, x: xStart, scale: 0.94, z: -40, transformPerspective: 1000 },
           {
             opacity: 1,
             x: 0,
             scale: 1,
-            duration: 0.7,
+            z: 0,
+            duration: 0.75,
             stagger: 0.12,
             ease: 'power2.out'
           }
@@ -306,7 +321,7 @@ export default function HomePage() {
       }
 
       // -----------------------------------------------------------------------
-      // 3. WHAT WE BUILD — REVERSIBLE SOFT POP / DEPTH REVEAL
+      // 3. WHAT WE BUILD — REVERSIBLE 3D POP / DEPTH REVEAL
       // -----------------------------------------------------------------------
       if (portfolioRef.current) {
         const projectCards = gsap.utils.toArray<HTMLElement>('.home-project-card');
@@ -321,11 +336,12 @@ export default function HomePage() {
         });
 
         portfolioTl.fromTo(projectCards,
-          { opacity: 0, scale: 0.92, y: 35 },
+          { opacity: 0, scale: 0.90, y: 40, z: -50, transformPerspective: 1000 },
           {
             opacity: 1,
             scale: 1,
             y: 0,
+            z: 0,
             duration: 0.8,
             stagger: 0.18,
             ease: 'power3.out'
@@ -334,7 +350,7 @@ export default function HomePage() {
       }
 
       // -----------------------------------------------------------------------
-      // 4. WHY OBLIQUETECH — REVERSIBLE HORIZONTAL SCROLL (RIGHT → CENTER / CENTER → RIGHT)
+      // 4. WHY OBLIQUETECH — REVERSIBLE HORIZONTAL SCROLL (RIGHT → CENTER) WITH 3D ROTATION
       // -----------------------------------------------------------------------
       if (whyRef.current) {
         const whyCards = gsap.utils.toArray<HTMLElement>('.home-why-card');
@@ -350,10 +366,12 @@ export default function HomePage() {
         });
 
         whyTl.fromTo(whyCards,
-          { opacity: 0, x: xStartRight },
+          { opacity: 0, x: xStartRight, z: -30, rotateY: 8, transformPerspective: 900 },
           {
             opacity: 1,
             x: 0,
+            z: 0,
+            rotateY: 0,
             duration: 0.7,
             stagger: 0.12,
             ease: 'power2.out'
@@ -362,7 +380,7 @@ export default function HomePage() {
       }
 
       // -----------------------------------------------------------------------
-      // 5. INSIGHTS SECTION — REVERSIBLE SOFT POP / DEPTH REVEAL
+      // 5. INSIGHTS SECTION — REVERSIBLE 3D SOFT POP / DEPTH REVEAL
       // -----------------------------------------------------------------------
       if (insightsRef.current) {
         const insightCards = gsap.utils.toArray<HTMLElement>('.home-insight-card');
@@ -377,11 +395,12 @@ export default function HomePage() {
         });
 
         insightsTl.fromTo(insightCards,
-          { opacity: 0, scale: 0.93, y: 30 },
+          { opacity: 0, scale: 0.92, y: 30, z: -30, transformPerspective: 1000 },
           {
             opacity: 1,
             scale: 1,
             y: 0,
+            z: 0,
             duration: 0.75,
             stagger: 0.15,
             ease: 'power3.out'
@@ -390,30 +409,56 @@ export default function HomePage() {
       }
 
       // -----------------------------------------------------------------------
-      // 6. FINAL CTA — REVERSIBLE SCALE
+      // 6. FINAL CTA — STAGGERED TEXT REVEAL & MOTION
       // -----------------------------------------------------------------------
       if (ctaRef.current) {
-        const ctaContent = ctaRef.current.querySelector('.cta-anim-item');
-        if (ctaContent) {
-          const ctaTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: ctaRef.current,
-              start: 'top 82%',
-              end: 'bottom 20%',
-              toggleActions: 'play none none reverse'
-            }
-          });
+        const ctaTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ctaRef.current,
+            start: 'top 78%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse',
+          },
+        });
 
-          ctaTl.fromTo(ctaContent,
-            { opacity: 0, scale: 0.94 },
-            {
-              opacity: 1,
-              scale: 1,
-              duration: 0.75,
-              ease: 'power2.out'
-            }
-          );
-        }
+        // 1. Next Steps badge spring pop
+        ctaTl.fromTo('.cta-badge',
+          { opacity: 0, scale: 0.8, y: -16 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.55, ease: 'back.out(1.8)' }
+        );
+
+        // 2. Heading lines upward mask reveal with 3D perspective angle
+        ctaTl.fromTo('.cta-heading-line',
+          { y: '125%', opacity: 0, rotateX: 18, transformPerspective: 800 },
+          { y: '0%', opacity: 1, rotateX: 0, duration: 0.85, stagger: 0.15, ease: 'power3.out' },
+          '-=0.25'
+        );
+
+        // 3. Supporting paragraph smooth upward drift
+        ctaTl.fromTo('.cta-paragraph',
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out' },
+          '-=0.4'
+        );
+
+        // 4. CTA Action Buttons reveal
+        ctaTl.fromTo('.cta-buttons',
+          { opacity: 0, y: 18, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power2.out' },
+          '-=0.3'
+        );
+
+        // 5. Ambient diagonal background lines
+        ctaTl.fromTo('.cta-line-gold',
+          { opacity: 0, x: -60 },
+          { opacity: 0.25, x: 0, duration: 1.0, ease: 'power2.out' },
+          0
+        );
+        ctaTl.fromTo('.cta-line-blue',
+          { opacity: 0, x: 60 },
+          { opacity: 0.2, x: 0, duration: 1.0, ease: 'power2.out' },
+          0.15
+        );
       }
 
     }, containerRef);
@@ -423,8 +468,6 @@ export default function HomePage() {
 
   return (
     <div ref={containerRef} className="flex flex-col overflow-x-hidden">
-      <IntroAnimation onComplete={() => setIntroComplete(true)} />
-
       {/* =========================================================================
           01 — HERO (Surface: Oblique Black #08090B + Gold #D4AF5A + Blue #3B82F6)
           ========================================================================= */}
@@ -448,10 +491,10 @@ export default function HomePage() {
             <div className="hero-oblique-line w-28 h-0.5 bg-gradient-to-r from-[#D4AF5A] via-[#3B82F6] to-transparent origin-left" />
 
             {/* Phase 4: Dominant Visual Typography with Mask Reveal */}
-            <div className="text-mask-wrap">
-              <h1 className="hero-heading-inner text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08]">
+            <div className="text-mask-wrap py-2 -my-2">
+              <h1 className="hero-heading-inner text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.18] pb-2">
                 See Business <br className="hidden sm:inline" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF5A] via-[#F3E2B4] to-[#3B82F6]">
+                <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF5A] via-[#F3E2B4] to-[#3B82F6] pb-2 pr-1">
                   Differently.
                 </span>
               </h1>
@@ -486,58 +529,49 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Phase 7: Right Hero Graphic: Oblique Angle Architecture Console */}
+          {/* Phase 7: Right Hero Content: 3D Oblique Monogram & Architecture Console */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
-            <div className="hero-visual-card w-full max-w-md aspect-square rounded-2xl bg-[#15171B] border border-white/15 p-8 flex flex-col justify-between shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden backdrop-blur-xl group hover:border-[#D4AF5A]/40 transition-colors duration-500">
-              {/* Subtle angled geometry overlay */}
-              <div className="absolute inset-0 opacity-15 pointer-events-none">
-                <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none">
-                  <line x1="0" y1="400" x2="400" y2="0" stroke="#D4AF5A" strokeWidth="1.5" />
-                  <line x1="100" y1="400" x2="400" y2="100" stroke="#3B82F6" strokeWidth="1" strokeDasharray="4 4" />
-                  <line x1="0" y1="300" x2="300" y2="0" stroke="white" strokeWidth="0.5" strokeDasharray="4 4" />
-                </svg>
+            <div className="hero-visual-card w-full max-w-md rounded-2xl bg-[#0D0F13]/90 border border-white/15 p-6 sm:p-7 flex flex-col justify-between shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative overflow-hidden backdrop-blur-xl group hover:border-[#00D2FF]/40 transition-colors duration-500">
+              {/* Minimal technical telemetry bar */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3 z-10 relative">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#00D2FF] animate-pulse" />
+                  <span className="text-xs font-mono uppercase tracking-wider text-slate-300">3D Identity Console</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10">v2.4</span>
+                  <span className="text-xs font-mono font-bold text-[#00D2FF]">ObliqueTech</span>
+                </div>
               </div>
 
-              {/* Minimal technical telemetry bar */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#16A878] animate-pulse" />
-                  <span className="text-xs font-mono uppercase tracking-wider text-slate-300">Engineering Studio</span>
-                </div>
-                <span className="text-xs font-mono font-bold text-[#D4AF5A]">ObliqueTech</span>
+              {/* Central 3D Scene Container */}
+              <div className="relative w-full h-[270px] sm:h-[300px] flex items-center justify-center my-2">
+                <Hero3DScene className="w-full h-full" />
               </div>
 
               {/* Central Geometric Statement */}
-              <div className="space-y-4 py-6">
-                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#D4AF5A] shadow-inner">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M5 19L19 5M6 5H18C18.5523 5 19 5.44772 19 6V18"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="9" cy="15" r="2" fill="#3B82F6" />
-                  </svg>
+              <div className="space-y-2 py-2 z-10 relative">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-gradient-to-r from-[#00D2FF] via-[#7C3AED] to-[#EC4899]" />
+                    Angle of Departure
+                  </h3>
+                  <span className="text-[10px] font-mono text-slate-400">WebGL • Three.js</span>
                 </div>
-                <h3 className="text-xl font-bold text-white tracking-tight">
-                  Angle of Departure
-                </h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Most organizations take the crowded, linear route. We assess architectural problems from an intentional angle to eliminate unnecessary complexity.
+                  Engineered directly from the authentic Oblique monogram. Interactive desktop cursor parallax and depth-reactive scroll physics.
                 </p>
               </div>
 
               {/* Metric indicators */}
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-white/10 z-10 relative">
                 <div>
-                  <div className="text-lg font-bold text-white font-mono">3 Live</div>
-                  <div className="text-[11px] text-slate-400">Production Deployments</div>
+                  <div className="text-base font-bold text-white font-mono">3 Live</div>
+                  <div className="text-[10px] text-slate-400">Production Deployments</div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-[#3B82F6] font-mono">2 Active</div>
-                  <div className="text-[11px] text-slate-400">Engineering Bench</div>
+                  <div className="text-base font-bold text-[#00D2FF] font-mono">2 Active</div>
+                  <div className="text-[10px] text-slate-400">Engineering Bench</div>
                 </div>
               </div>
             </div>
@@ -583,6 +617,8 @@ export default function HomePage() {
                 <Link
                   key={svc.slug}
                   href={`/services/${svc.slug}`}
+                  onMouseMove={handleCard3DTilt}
+                  onMouseLeave={handleCard3DReset}
                   className={`home-service-card clean-card p-6 sm:p-7 rounded-2xl flex flex-col justify-between group transition-all duration-300 bg-[#15171B] border border-white/10 ${svc.cardClass}`}
                 >
                   <div className="space-y-4">
@@ -653,7 +689,11 @@ export default function HomePage() {
 
           {/* Varied Visual Layout 01: Large Left Image + Right Details */}
           {proj1 && (
-            <div className="home-project-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#121316] shadow-xs hover:shadow-xl transition-all duration-500">
+            <div 
+              onMouseMove={handleCard3DTilt}
+              onMouseLeave={handleCard3DReset}
+              className="home-project-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#121316] shadow-xs hover:shadow-xl transition-all duration-500"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 {/* Large Left Image (7 cols) */}
                 <div className="lg:col-span-7">
@@ -706,7 +746,11 @@ export default function HomePage() {
 
           {/* Varied Visual Layout 02: Full-Width Showcase Banner with Overlay Metadata */}
           {proj2 && (
-            <div className="home-project-card relative rounded-3xl overflow-hidden border border-white/10 bg-slate-950 shadow-xl group hover:shadow-2xl transition-all duration-500">
+            <div 
+              onMouseMove={handleCard3DTilt}
+              onMouseLeave={handleCard3DReset}
+              className="home-project-card relative rounded-3xl overflow-hidden border border-white/10 bg-slate-950 shadow-xl group hover:shadow-2xl transition-all duration-500"
+            >
               <div className="aspect-21/9 sm:aspect-16/7 w-full overflow-hidden">
                 <img
                   src={proj2.coverImage}
@@ -748,7 +792,11 @@ export default function HomePage() {
 
           {/* Varied Visual Layout 03: Right Image + Left Details */}
           {proj3 && (
-            <div className="home-project-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#121316] shadow-xs hover:shadow-xl transition-all duration-500">
+            <div 
+              onMouseMove={handleCard3DTilt}
+              onMouseLeave={handleCard3DReset}
+              className="home-project-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#121316] shadow-xs hover:shadow-xl transition-all duration-500"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 {/* Left Details (5 cols) */}
                 <div className="lg:col-span-5 space-y-4 order-2 lg:order-1">
@@ -1104,95 +1152,51 @@ export default function HomePage() {
       </section>
 
       {/* =========================================================================
-          08 — FREQUENTLY ASKED QUESTIONS (Surface: Warm White #F7F7F3)
-          ========================================================================= */}
-      <section className="surface-warm py-24 px-4 sm:px-6 lg:px-8 border-b border-white/10">
-        <div className="max-w-4xl mx-auto space-y-12">
-          <div className="text-center space-y-3">
-            <span className="section-tag-gold">FAQ</span>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
-              Frequently asked questions.
-            </h2>
-            <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
-              Straightforward answers about our capabilities, process, and partnership structure.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {homeFaqs.map((faq, idx) => {
-              const isOpen = openFaqIndex === idx;
-              return (
-                <div
-                  key={idx}
-                  className="rounded-2xl border border-white/10 bg-[#15171B] overflow-hidden transition-colors"
-                >
-                  <button
-                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full py-5 px-6 text-left flex items-center justify-between gap-4 focus:outline-none cursor-pointer"
-                  >
-                    <span className="text-sm sm:text-base font-bold text-white">
-                      {faq.q}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 ${
-                        isOpen ? 'rotate-180 text-[#3B82F6]' : ''
-                      }`}
-                    />
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-6 pb-5 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5 pt-4">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="text-center pt-4">
-            <p className="text-xs text-slate-400">
-              Have a specific question not covered here?{' '}
-              <Link href="/contact" className="text-[#3B82F6] hover:underline font-semibold">
-                Speak directly with an engineering lead →
-              </Link>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          09 — FINAL CALL TO ACTION (Surface: Oblique Black #08090B + Gold + Blue)
+          08 — FINAL CALL TO ACTION (Surface: Oblique Black #08090B + Gold + Blue)
           ========================================================================= */}
       <section 
         ref={ctaRef}
         className="surface-black py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden text-center"
       >
         {/* Subtle diagonal background lines */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
           <svg width="100%" height="100%" viewBox="0 0 1200 400" fill="none">
-            <line x1="0" y1="400" x2="1200" y2="0" stroke="#D4AF5A" strokeWidth="2" />
-            <line x1="200" y1="400" x2="1400" y2="0" stroke="#3B82F6" strokeWidth="1" strokeDasharray="6 6" />
+            <line className="cta-line-gold" x1="0" y1="400" x2="1200" y2="0" stroke="#D4AF5A" strokeWidth="2" />
+            <line className="cta-line-blue" x1="200" y1="400" x2="1400" y2="0" stroke="#00D2FF" strokeWidth="1.5" strokeDasharray="6 6" />
           </svg>
         </div>
 
-        <div className="cta-anim-item max-w-3xl mx-auto space-y-6 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#D4AF5A]">
-            <span>Next Steps</span>
+        <div className="cta-anim-item max-w-3xl mx-auto space-y-8 relative z-10">
+          <div>
+            <div className="cta-badge inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#00D2FF] backdrop-blur-md shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-[#00D2FF] animate-pulse" />
+              <span>Next Steps</span>
+            </div>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-            Let’s look at your challenge differently.
-          </h2>
+          <div className="space-y-1.5 overflow-hidden py-1">
+            <div className="overflow-hidden py-1">
+              <h2 className="cta-heading-line text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+                Let’s look at your challenge
+              </h2>
+            </div>
+            <div className="overflow-hidden py-2">
+              <h2 className="cta-heading-line text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight pb-1">
+                <span className="bg-gradient-to-r from-[#00D2FF] via-[#7C3AED] to-[#EC4899] bg-clip-text text-transparent inline-block font-extrabold pb-2 pr-1">
+                  differently.
+                </span>
+              </h2>
+            </div>
+          </div>
 
-          <p className="text-sm sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
+          <p className="cta-paragraph text-sm sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
             Whether you need a new web application, an AI workflow, or strategic systems direction, we’re ready to build.
           </p>
 
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/start-project" className="btn-gold">
+          <div className="cta-buttons pt-2 flex flex-wrap items-center justify-center gap-4">
+            <Link href="/start-project" className="btn-gold group">
               <span>Start a Project</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link href="/schedule" className="btn-secondary">
               <span>Schedule a 30-Min Call</span>

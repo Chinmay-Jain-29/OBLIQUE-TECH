@@ -52,6 +52,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { SiteIntro } from '@/components/ui/SiteIntro';
+
 export const viewport: Viewport = {
   themeColor: '#08090B',
   colorScheme: 'dark',
@@ -66,15 +68,36 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" style={{ colorScheme: 'dark' }} suppressHydrationWarning>
+      <head>
+        <script
+          id="oblique-intro-init"
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var seen = sessionStorage.getItem('oblique_intro_seen');
+                var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (!seen && !prefersReduced) {
+                  document.documentElement.classList.add('oblique-intro-active');
+                }
+              } catch(e) {}
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col antialiased bg-[#08090B] text-[#F8FAFC] selection:bg-[#D4AF5A] selection:text-[#08090B]">
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <WhatsAppButton />
-          <ObliqueAIChatbot />
+          <SiteIntro />
+          <div id="site-main-content" className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
+          <div className="floating-controls">
+            <WhatsAppButton />
+            <ObliqueAIChatbot />
+          </div>
         </ThemeProvider>
       </body>
     </html>
