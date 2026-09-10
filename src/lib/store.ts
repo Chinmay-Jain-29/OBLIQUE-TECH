@@ -2080,6 +2080,16 @@ class ObliqueStore {
   // =========================================================================
   // USER PLATFORM API ("MY OBLIQUE")
   // =========================================================================
+  public getUserProfiles(): UserProfile[] {
+    return Object.values(this.userProfiles || {});
+  }
+
+  public getUserProfileByEmail(email: string): UserProfile | undefined {
+    if (!email) return undefined;
+    const clean = email.trim().toLowerCase();
+    return Object.values(this.userProfiles || {}).find(p => p.email.toLowerCase() === clean);
+  }
+
   public getUserProfile(userId: string): UserProfile | undefined {
     if (!userId) return undefined;
     return this.userProfiles[userId];

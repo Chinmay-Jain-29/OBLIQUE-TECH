@@ -16,16 +16,24 @@ interface AuthGuardProps {
 }
 
 export function AuthGuard({ children, fallbackMessage }: AuthGuardProps) {
-  const { user, isLoading, openAuthModal } = useAuth();
+  const { user, isLoading, openAuthModal, authModalOpen } = useAuth();
+  const hasTriggeredRef = React.useRef(false);
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isLoading && !user && !authModalOpen && !hasTriggeredRef.current) {
+      hasTriggeredRef.current = true;
       openAuthModal({
         title: 'Sign in to your workspace',
         message: fallbackMessage || 'Create your ObliqueTech profile to manage your projects, requests, calls, and other activities in one place.'
       });
     }
-  }, [isLoading, user, openAuthModal, fallbackMessage]);
+  }, [isLoading, user, fallbackMessage, authModalOpen, openAuthModal]);
+
+  useEffect(() => {
+    if (user) {
+      hasTriggeredRef.current = false;
+    }
+  }, [user]);
 
   if (isLoading) {
     return (
