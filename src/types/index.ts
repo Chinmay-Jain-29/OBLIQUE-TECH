@@ -63,27 +63,119 @@ export interface AuthorProfile {
   linkedInUrl?: string;
   twitterUrl?: string;
   githubUrl?: string;
+  websiteUrl?: string;
+  isComplete?: boolean;
 }
 
-export type ArticleStatus = 'draft' | 'review' | 'approved' | 'published';
+export interface AuthorUser {
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl?: string;
+  role: 'author' | 'editor' | 'admin';
+  createdAt: string;
+  profileCompleted: boolean;
+}
+
+export type ArticleStatus = 'draft' | 'review' | 'changes_requested' | 'approved' | 'published' | 'archived';
+
+export interface ReviewFeedback {
+  id: string;
+  reviewerName: string;
+  reviewerRole: string;
+  date: string;
+  comment: string;
+  status: 'changes_requested' | 'approved';
+}
+
+export type BlockType = 
+  | 'paragraph'
+  | 'heading'
+  | 'key_points'
+  | 'callout'
+  | 'quote'
+  | 'image'
+  | 'gallery'
+  | 'video'
+  | 'code'
+  | 'table'
+  | 'divider'
+  | 'bullet_list'
+  | 'numbered_list'
+  | 'checklist';
+
+export interface MediaRecord {
+  id: string;
+  articleId: string;
+  authorId: string;
+  storagePath: string;
+  publicUrl: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  width?: number;
+  height?: number;
+  altText?: string;
+  caption?: string;
+  mediaType: 'cover' | 'content' | 'gallery';
+  status: 'uploaded' | 'used' | 'unused' | 'deleted';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EditorBlock {
+  id: string;
+  type: BlockType;
+  content: string; // text content, or primary markdown string
+  level?: 1 | 2 | 3 | 4; // for headings
+  align?: 'left' | 'center' | 'right' | 'justify';
+  textColor?: string;
+  highlightColor?: string;
+  items?: string[]; // for lists and key points
+  checkItems?: { text: string; checked: boolean }[]; // for checklists
+  calloutTone?: 'info' | 'tip' | 'warning' | 'accent';
+  quoteAuthor?: string;
+  imageUrl?: string;
+  previewUrl?: string; // transient preview during active upload
+  uploadStatus?: 'idle' | 'uploading' | 'uploaded' | 'failed';
+  uploadProgress?: number;
+  mediaId?: string;
+  storagePath?: string;
+  errorMessage?: string;
+  imageCaption?: string;
+  imageAlt?: string;
+  imageAlignment?: 'left' | 'center' | 'right' | 'full';
+  imageSize?: 'sm' | 'md' | 'lg' | 'full';
+  galleryImages?: { url: string; caption?: string; alt?: string; mediaId?: string; storagePath?: string }[];
+  videoUrl?: string;
+  codeLanguage?: string;
+  tableHeaders?: string[];
+  tableRows?: string[][];
+}
 
 export interface BlogPost {
   id: string;
   slug: string;
   title: string;
   excerpt: string;
-  content: string; // Markdown or rich text
+  content: string; // Markdown or compiled text
+  blocks?: EditorBlock[]; // Rich block-based content
   category: string;
   authorId: string;
+  authorProfile?: AuthorProfile;
   publishedAt: string;
   updatedAt: string;
   status: ArticleStatus;
   readingTimeMinutes: number;
+  wordCount?: number;
   coverImage: string;
+  coverMediaId?: string;
+  coverStoragePath?: string;
   tags: string[];
   featured: boolean;
   seoTitle?: string;
   seoDescription?: string;
+  reviewFeedback?: ReviewFeedback[];
 }
 
 export interface FAQItem {

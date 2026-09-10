@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { obliqueStore, INITIAL_SERVICES } from '@/lib/store';
 import { SiteSettings, ServiceItem } from '@/types';
 import { Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
@@ -9,6 +10,7 @@ import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon } from '@/compone
 import { ObliqueLogo } from '@/components/ui/ObliqueLogo';
 
 export function Footer() {
+  const pathname = usePathname();
   const [settings, setSettings] = useState<SiteSettings>(obliqueStore.getSettings());
   const [services, setServices] = useState<ServiceItem[]>(INITIAL_SERVICES);
 
@@ -16,6 +18,10 @@ export function Footer() {
     setSettings(obliqueStore.getSettings());
     setServices(obliqueStore.getServices());
   }, []);
+
+  if (pathname === '/insights/write' || pathname?.startsWith('/insights/write')) {
+    return null;
+  }
 
   return (
     <footer className="bg-[#0B0B0D] text-slate-400 border-t border-white/10 pt-16 pb-12">

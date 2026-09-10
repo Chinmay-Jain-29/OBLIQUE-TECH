@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { obliqueStore, INITIAL_POSTS } from '@/lib/store';
 import { BlogPost } from '@/types';
-import { Clock, Search, ArrowRight } from 'lucide-react';
+import { Clock, Search, ArrowRight, PenTool, Sparkles } from 'lucide-react';
+import { AuthorAuthModal } from '@/components/auth/AuthorAuthModal';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -24,15 +26,33 @@ const CATEGORIES = [
 ];
 
 export default function InsightsPage() {
+  const router = useRouter();
   const [posts, setPosts] = useState<BlogPost[]>(INITIAL_POSTS);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    setPosts(obliqueStore.getPosts());
+    const load = () => setPosts(obliqueStore.getPosts());
+    load();
+    window.addEventListener('oblique_posts_updated', load);
+    return () => window.removeEventListener('oblique_posts_updated', load);
   }, []);
+
+  const handleStartWriting = () => {
+    const currentUser = obliqueStore.getCurrentAuthorUser();
+    if (!currentUser) {
+      setAuthModalOpen(true);
+      return;
+    }
+    if (!obliqueStore.isAuthorProfileComplete(currentUser.id)) {
+      router.push('/author/profile?redirect=/insights/write');
+    } else {
+      router.push('/insights/write');
+    }
+  };
 
   // Reversible GSAP ScrollTrigger Animations (matching portfolio)
   useEffect(() => {
@@ -76,7 +96,10 @@ export default function InsightsPage() {
     return () => ctx.revert();
   }, []);
 
-  const filtered = posts.filter((post) => {
+  // Only published articles are shown on the public Insights feed
+  const publishedPosts = posts.filter((p) => p.status === 'published');
+
+  const filtered = publishedPosts.filter((post) => {
     const matchesCat = selectedCategory === 'All' || post.category.toLowerCase().includes(selectedCategory.toLowerCase());
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,7 +107,7 @@ export default function InsightsPage() {
     return matchesCat && matchesSearch;
   });
 
-  const featured = posts.find((p) => p.featured) || posts[0];
+  const featured = publishedPosts.find((p) => p.featured) || publishedPosts[0];
 
   return (
     <div ref={containerRef} className="flex flex-col">
@@ -243,8 +266,49 @@ export default function InsightsPage() {
               );
             })}
           </div>
+
+          {/* Write for ObliqueTech Primary Editorial CTA */}
+          <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#13161C] via-[#0E1014] to-[#08090B] p-8 sm:p-12 shadow-2xl group">
+            {/* Angled Oblique visual element backdrop */}
+            <div className="absolute top-0 right-0 w-[420px] h-full bg-gradient-to-l from-[#3B82F6]/15 via-[#7C5CFF]/10 to-transparent pointer-events-none transform -skew-x-12 translate-x-20 transition-all duration-700 group-hover:translate-x-10" />
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-[#C7A45D]/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+              <div className="space-y-3 max-w-2xl text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[#3B82F6] text-xs font-mono font-medium">
+                  <PenTool className="w-3.5 h-3.5" />
+                  <span>ObliqueTech Publishing Platform</span>
+                </div>
+
+                <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
+                  Write for ObliqueTech
+                </h2>
+
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                  Have an idea worth sharing? Publish your technology insights with the Oblique community.
+                </p>
+              </div>
+
+              <div className="shrink-0 w-full sm:w-auto">
+                <button
+                  onClick={handleStartWriting}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#3B82F6] via-[#6366F1] to-[#7C5CFF] hover:from-blue-600 hover:to-purple-600 text-white font-semibold text-sm shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all duration-300 group/btn cursor-pointer"
+                >
+                  <span>Start Writing</span>
+                  <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1.5 transition-transform duration-200" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* Author Authentication Modal */}
+      <AuthorAuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        redirectUrl="/insights/write"
+      />
     </div>
   );
 }

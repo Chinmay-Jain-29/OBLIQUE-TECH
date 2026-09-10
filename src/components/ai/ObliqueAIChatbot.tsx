@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, ArrowUpRight, Bot } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface Message {
   id: string;
@@ -21,6 +22,7 @@ const QUICK_PROMPTS = [
 ];
 
 export function ObliqueAIChatbot() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
@@ -41,6 +43,11 @@ export function ObliqueAIChatbot() {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen]);
+
+  // Hide in editorial studio after hooks are declared
+  if (pathname === '/insights/write' || pathname?.startsWith('/insights/write')) {
+    return null;
+  }
 
   const generateAIResponse = (query: string): Message => {
     const q = query.toLowerCase();

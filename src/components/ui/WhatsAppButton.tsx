@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { obliqueStore } from '@/lib/store';
 
 export function WhatsAppButton() {
+  const pathname = usePathname();
   const [number, setNumber] = useState('919225260237');
 
   useEffect(() => {
@@ -12,6 +14,10 @@ export function WhatsAppButton() {
       setNumber(settings.whatsappNumber.replace(/[^0-9]/g, ''));
     }
   }, []);
+
+  if (pathname === '/insights/write' || pathname?.startsWith('/insights/write')) {
+    return null;
+  }
 
   const message = encodeURIComponent('Hello ObliqueTech, I would like to discuss a technology project.');
   const whatsappUrl = `https://wa.me/${number}?text=${message}`;

@@ -3,12 +3,15 @@ import {
   PortfolioProject, 
   BlogPost, 
   AuthorProfile, 
+  AuthorUser,
+  ReviewFeedback,
   FAQItem, 
   TestimonialSubmission, 
   ContactSubmission, 
   CallRequest, 
   ProjectWizardInquiry, 
-  SiteSettings 
+  SiteSettings,
+  MediaRecord
 } from '@/types';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 
@@ -770,6 +773,33 @@ export const INITIAL_FAQS: FAQItem[] = [
   }
 ];
 
+export const INITIAL_TESTIMONIALS: TestimonialSubmission[] = [
+  {
+    id: 'test-1',
+    clientName: 'David Vance',
+    company: 'Apex Logistics Global',
+    position: 'VP of Technology',
+    project: 'Cloud Inventory Platform',
+    rating: 5,
+    testimonial: 'ObliqueTech redesigned our logistics engine with incredible precision. Real-time fleet synchronization slashed our warehouse latency by 68%.',
+    status: 'approved',
+    submittedAt: '2026-01-15T10:00:00.000Z',
+    featured: true
+  },
+  {
+    id: 'test-2',
+    clientName: 'Elena Rostova',
+    company: 'MedData Health Systems',
+    position: 'Chief Information Officer',
+    project: 'Healthcare Patient Portal',
+    rating: 5,
+    testimonial: 'The engineering standards and clean HIPAA-compliant architectural discipline ObliqueTech brought to our platform exceeded all expectations.',
+    status: 'approved',
+    submittedAt: '2026-02-10T14:30:00.000Z',
+    featured: true
+  }
+];
+
 export const INITIAL_SETTINGS: SiteSettings = {
   companyName: 'ObliqueTech',
   tagline: 'Solutions & Innovation',
@@ -794,22 +824,500 @@ export const INITIAL_SETTINGS: SiteSettings = {
   ]
 };
 
-// In-Memory / Local Storage state manager
+// =============================================================================
+// SUPABASE DATABASE MAPPERS (Snake Case <-> Camel Case)
+// =============================================================================
+function mapBlogToDbPost(post: BlogPost) {
+  return {
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    content: post.content,
+    category: post.category,
+    author_id: post.authorId || null,
+    published_at: post.publishedAt || new Date().toISOString(),
+    updated_at: post.updatedAt || new Date().toISOString(),
+    status: post.status,
+    reading_time_minutes: post.readingTimeMinutes || 5,
+    cover_image: post.coverImage,
+    tags: post.tags || [],
+    featured: Boolean(post.featured),
+    seo_title: post.seoTitle || null,
+    seo_description: post.seoDescription || null,
+    blocks: post.blocks || []
+  };
+}
+
+function mapDbPostToBlog(row: any): BlogPost {
+  return {
+    id: String(row.id),
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    content: row.content,
+    category: row.category,
+    authorId: row.author_id || '',
+    publishedAt: row.published_at,
+    updatedAt: row.updated_at,
+    status: row.status,
+    readingTimeMinutes: row.reading_time_minutes || 5,
+    coverImage: row.cover_image,
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    featured: Boolean(row.featured),
+    seoTitle: row.seo_title,
+    seoDescription: row.seo_description,
+    blocks: Array.isArray(row.blocks) ? row.blocks : []
+  };
+}
+
+function mapTsServiceToDb(s: ServiceItem) {
+  return {
+    id: s.id,
+    slug: s.slug,
+    title: s.title,
+    short_description: s.shortDescription,
+    full_description: s.fullDescription,
+    icon_name: s.iconName,
+    badge: s.badge,
+    accent: s.accent,
+    business_value: s.businessValue,
+    problem_statement: s.problemStatement,
+    what_we_provide: s.whatWeProvide || [],
+    capabilities: s.capabilities || [],
+    typical_use_cases: s.typicalUseCases || [],
+    technologies: s.technologies || [],
+    deliverables: s.deliverables || [],
+    process: s.process || [],
+    faqs: s.faqs || []
+  };
+}
+
+function mapDbServiceToTs(row: any): ServiceItem {
+  return {
+    id: String(row.id),
+    slug: row.slug,
+    title: row.title,
+    shortDescription: row.short_description,
+    fullDescription: row.full_description,
+    iconName: row.icon_name,
+    badge: row.badge,
+    accent: row.accent || 'gold',
+    businessValue: row.business_value,
+    problemStatement: row.problem_statement,
+    whatWeProvide: Array.isArray(row.what_we_provide) ? row.what_we_provide : [],
+    capabilities: Array.isArray(row.capabilities) ? row.capabilities : [],
+    typicalUseCases: Array.isArray(row.typical_use_cases) ? row.typical_use_cases : [],
+    technologies: Array.isArray(row.technologies) ? row.technologies : [],
+    deliverables: Array.isArray(row.deliverables) ? row.deliverables : [],
+    process: Array.isArray(row.process) ? row.process : [],
+    faqs: Array.isArray(row.faqs) ? row.faqs : []
+  };
+}
+
+function mapTsProjectToDb(p: PortfolioProject) {
+  return {
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    short_description: p.shortDescription,
+    client_industry: p.clientIndustry,
+    status: p.status,
+    category: p.category,
+    problem: p.problem,
+    approach: p.approach,
+    solution: p.solution,
+    features: p.features || [],
+    technologies: p.technologies || [],
+    metrics_or_highlights: p.metricsOrHighlights || [],
+    live_url: p.liveUrl || null,
+    github_url: p.githubUrl || null,
+    cover_image: p.coverImage,
+    gallery_images: p.galleryImages || [],
+    published: p.published !== false,
+    featured: Boolean(p.featured),
+    display_order: p.order || 0
+  };
+}
+
+function mapDbProjectToTs(row: any): PortfolioProject {
+  return {
+    id: String(row.id),
+    slug: row.slug,
+    title: row.title,
+    shortDescription: row.short_description,
+    clientIndustry: row.client_industry,
+    status: row.status,
+    category: row.category,
+    problem: row.problem,
+    approach: row.approach,
+    solution: row.solution,
+    features: Array.isArray(row.features) ? row.features : [],
+    technologies: Array.isArray(row.technologies) ? row.technologies : [],
+    metricsOrHighlights: Array.isArray(row.metrics_or_highlights) ? row.metrics_or_highlights : [],
+    liveUrl: row.live_url,
+    githubUrl: row.github_url,
+    coverImage: row.cover_image,
+    galleryImages: Array.isArray(row.gallery_images) ? row.gallery_images : [],
+    published: row.published !== false,
+    featured: Boolean(row.featured),
+    order: row.display_order || 0
+  };
+}
+
+function mapTsFaqToDb(f: FAQItem) {
+  return {
+    id: f.id,
+    question: f.question,
+    answer: f.answer,
+    category: f.category,
+    display_order: f.order || 0,
+    published: f.published !== false
+  };
+}
+
+function mapDbFaqToTs(row: any): FAQItem {
+  return {
+    id: String(row.id),
+    question: row.question,
+    answer: row.answer,
+    category: row.category,
+    order: row.display_order || 0,
+    published: row.published !== false
+  };
+}
+
+function mapTsAuthorToDb(a: AuthorProfile) {
+  return {
+    id: a.id,
+    slug: a.slug,
+    full_name: a.fullName,
+    title: a.title,
+    bio: a.bio,
+    expertise: a.expertise || [],
+    avatar_url: a.avatarUrl,
+    linkedin_url: a.linkedInUrl || null,
+    twitter_url: a.twitterUrl || null,
+    github_url: a.githubUrl || null
+  };
+}
+
+function mapDbAuthorToTs(row: any): AuthorProfile {
+  return {
+    id: String(row.id),
+    slug: row.slug,
+    fullName: row.full_name,
+    title: row.title,
+    bio: row.bio,
+    expertise: Array.isArray(row.expertise) ? row.expertise : [],
+    avatarUrl: row.avatar_url,
+    linkedInUrl: row.linkedin_url,
+    twitterUrl: row.twitter_url,
+    githubUrl: row.github_url,
+    isComplete: Boolean(row.full_name && row.title && row.bio)
+  };
+}
+
+function mapTsSettingsToDb(s: SiteSettings) {
+  return {
+    id: 'current_settings',
+    company_name: s.companyName,
+    tagline: s.tagline,
+    tagline_sub: s.taglineSub,
+    email: s.email,
+    phone: s.phone,
+    whatsapp_number: s.whatsappNumber,
+    office_address: s.officeAddress,
+    google_maps_url: s.googleMapsUrl || null,
+    linkedin_url: s.linkedinUrl,
+    twitter_url: s.twitterUrl,
+    github_url: s.githubUrl,
+    mission_statement: s.missionStatement,
+    vision_statement: s.visionStatement,
+    trust_strip_statements: s.trustStripStatements || []
+  };
+}
+
+function mapDbSettingsToTs(row: any): SiteSettings {
+  return {
+    companyName: row.company_name || 'ObliqueTech',
+    tagline: row.tagline || 'See Business Differently.',
+    taglineSub: row.tagline_sub || '',
+    email: row.email || 'contact@obliquetech.com',
+    phone: row.phone || '+1 (555) 019-2834',
+    whatsappNumber: row.whatsapp_number || '+15550192834',
+    officeAddress: row.office_address || 'Global Technology Operations',
+    googleMapsUrl: row.google_maps_url || '',
+    linkedinUrl: row.linkedin_url || '',
+    twitterUrl: row.twitter_url || '',
+    githubUrl: row.github_url || '',
+    missionStatement: row.mission_statement || '',
+    visionStatement: row.vision_statement || '',
+    trustStripStatements: Array.isArray(row.trust_strip_statements) ? row.trust_strip_statements : []
+  };
+}
+
+function mapTsTestimonialToDb(t: TestimonialSubmission) {
+  return {
+    id: t.id,
+    client_name: t.clientName,
+    company: t.company,
+    position: t.position,
+    project: t.project,
+    rating: t.rating,
+    testimonial: t.testimonial,
+    status: t.status,
+    submitted_at: t.submittedAt || new Date().toISOString(),
+    featured: Boolean(t.featured)
+  };
+}
+
+function mapDbTestimonialToTs(row: any): TestimonialSubmission {
+  return {
+    id: String(row.id),
+    clientName: row.client_name,
+    company: row.company,
+    position: row.position,
+    project: row.project,
+    rating: row.rating,
+    testimonial: row.testimonial,
+    status: row.status,
+    submittedAt: row.submitted_at,
+    featured: Boolean(row.featured)
+  };
+}
+
+function mapTsContactToDb(c: ContactSubmission) {
+  return {
+    id: c.id,
+    name: c.name,
+    email: c.email,
+    phone: c.phone || '',
+    company: c.company || '',
+    service: c.service,
+    message: c.message,
+    status: c.status || 'new',
+    submitted_at: c.submittedAt || new Date().toISOString()
+  };
+}
+
+function mapDbContactToTs(row: any): ContactSubmission {
+  return {
+    id: String(row.id),
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    company: row.company,
+    service: row.service,
+    message: row.message,
+    status: row.status,
+    submittedAt: row.submitted_at
+  };
+}
+
+function mapTsCallToDb(c: CallRequest) {
+  return {
+    id: c.id,
+    name: c.name,
+    email: c.email,
+    phone: c.phone,
+    business_name: c.businessName || '',
+    reason: c.reason,
+    service_required: c.serviceRequired,
+    project_type: c.projectType,
+    preferred_date: c.preferredDate,
+    preferred_time: c.preferredTime,
+    duration_minutes: c.durationMinutes || 30,
+    requirements: c.requirements || '',
+    status: c.status || 'pending',
+    submitted_at: c.submittedAt || new Date().toISOString()
+  };
+}
+
+function mapDbCallToTs(row: any): CallRequest {
+  return {
+    id: String(row.id),
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    businessName: row.business_name,
+    reason: row.reason,
+    serviceRequired: row.service_required,
+    projectType: row.project_type,
+    preferredDate: row.preferred_date,
+    preferredTime: row.preferred_time,
+    durationMinutes: row.duration_minutes,
+    requirements: row.requirements,
+    status: row.status,
+    submittedAt: row.submitted_at
+  };
+}
+
+function mapTsWizardToDb(w: ProjectWizardInquiry) {
+  return {
+    id: w.id,
+    project_type: w.projectType,
+    services_needed: w.servicesNeeded || [],
+    core_objective: w.coreObjective,
+    key_features: w.keyFeatures,
+    timeline: w.timeline,
+    name: w.name,
+    email: w.email,
+    phone: w.phone,
+    company: w.company || '',
+    status: w.status || 'new',
+    submitted_at: w.submittedAt || new Date().toISOString()
+  };
+}
+
+function mapDbWizardToTs(row: any): ProjectWizardInquiry {
+  return {
+    id: String(row.id),
+    projectType: row.project_type,
+    servicesNeeded: Array.isArray(row.services_needed) ? row.services_needed : [],
+    coreObjective: row.core_objective,
+    keyFeatures: row.key_features,
+    timeline: row.timeline,
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    company: row.company,
+    status: row.status,
+    submittedAt: row.submitted_at
+  };
+}
+
+// In-Memory / Local Storage state manager with Supabase Cloud Sync
 class ObliqueStore {
   private services: ServiceItem[] = INITIAL_SERVICES;
   private portfolio: PortfolioProject[] = INITIAL_PORTFOLIO;
   private posts: BlogPost[] = INITIAL_POSTS;
   private authors: AuthorProfile[] = INITIAL_AUTHORS;
+  private currentAuthorUser: AuthorUser | null = null;
+  private draftArticles: Record<string, BlogPost> = {};
   private faqs: FAQItem[] = INITIAL_FAQS;
   private testimonials: TestimonialSubmission[] = [];
   private contactSubmissions: ContactSubmission[] = [];
   private callRequests: CallRequest[] = [];
   private wizardInquiries: ProjectWizardInquiry[] = [];
   private settings: SiteSettings = INITIAL_SETTINGS;
+  private mediaRecords: MediaRecord[] = [];
 
   constructor() {
     if (typeof window !== 'undefined') {
       this.loadFromStorage();
+      this.initSupabaseSync();
+    }
+  }
+
+  // =========================================================================
+  // SUPABASE FULL CLOUD SYNC & SEED
+  // =========================================================================
+  public async initSupabaseSync() {
+    if (!isSupabaseConfigured || !supabase) return;
+
+    try {
+      // 1. Sync Posts
+      const { data: postsData } = await supabase.from('blog_posts').select('*').order('published_at', { ascending: false });
+      if (postsData && postsData.length > 0) {
+        this.posts = postsData.map(mapDbPostToBlog);
+        this.saveToStorage('oblique_posts', this.posts);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('oblique_posts_updated'));
+        }
+      } else if (postsData && postsData.length === 0) {
+        // Auto-seed initial posts to Supabase
+        for (const post of INITIAL_POSTS) {
+          await supabase.from('blog_posts').upsert(mapBlogToDbPost(post));
+        }
+      }
+
+      // 2. Sync Services
+      const { data: srvData } = await supabase.from('services').select('*');
+      if (srvData && srvData.length > 0) {
+        this.services = srvData.map(mapDbServiceToTs);
+        this.saveToStorage('oblique_services', this.services);
+      } else if (srvData && srvData.length === 0) {
+        for (const srv of INITIAL_SERVICES) {
+          await supabase.from('services').upsert(mapTsServiceToDb(srv));
+        }
+      }
+
+      // 3. Sync Portfolio
+      const { data: portData } = await supabase.from('portfolio_projects').select('*').order('display_order', { ascending: true });
+      if (portData && portData.length > 0) {
+        this.portfolio = portData.map(mapDbProjectToTs);
+        this.saveToStorage('oblique_portfolio', this.portfolio);
+      } else if (portData && portData.length === 0) {
+        for (const proj of INITIAL_PORTFOLIO) {
+          await supabase.from('portfolio_projects').upsert(mapTsProjectToDb(proj));
+        }
+      }
+
+      // 4. Sync FAQs
+      const { data: faqData } = await supabase.from('faqs').select('*').order('display_order', { ascending: true });
+      if (faqData && faqData.length > 0) {
+        this.faqs = faqData.map(mapDbFaqToTs);
+        this.saveToStorage('oblique_faqs', this.faqs);
+      } else if (faqData && faqData.length === 0) {
+        for (const faq of INITIAL_FAQS) {
+          await supabase.from('faqs').upsert(mapTsFaqToDb(faq));
+        }
+      }
+
+      // 5. Sync Testimonials
+      const { data: testData } = await supabase.from('testimonials').select('*').order('submitted_at', { ascending: false });
+      if (testData && testData.length > 0) {
+        this.testimonials = testData.map(mapDbTestimonialToTs);
+        this.saveToStorage('oblique_testimonials', this.testimonials);
+      } else if (testData && testData.length === 0) {
+        for (const t of INITIAL_TESTIMONIALS) {
+          await supabase.from('testimonials').upsert(mapTsTestimonialToDb(t));
+        }
+      }
+
+      // 6. Sync Authors
+      const { data: authData } = await supabase.from('authors').select('*');
+      if (authData && authData.length > 0) {
+        this.authors = authData.map(mapDbAuthorToTs);
+        this.saveToStorage('oblique_authors', this.authors);
+      } else if (authData && authData.length === 0) {
+        for (const auth of INITIAL_AUTHORS) {
+          await supabase.from('authors').upsert(mapTsAuthorToDb(auth));
+        }
+      }
+
+      // 7. Sync Settings
+      const { data: setData } = await supabase.from('site_settings').select('*').limit(1);
+      if (setData && setData.length > 0) {
+        this.settings = mapDbSettingsToTs(setData[0]);
+        this.saveToStorage('oblique_settings', this.settings);
+      } else if (setData && setData.length === 0) {
+        await supabase.from('site_settings').upsert(mapTsSettingsToDb(this.settings));
+      }
+
+      // 8. Sync Contact Submissions
+      const { data: cntData } = await supabase.from('contact_submissions').select('*').order('submitted_at', { ascending: false });
+      if (cntData && cntData.length > 0) {
+        this.contactSubmissions = cntData.map(mapDbContactToTs);
+        this.saveToStorage('oblique_contacts', this.contactSubmissions);
+      }
+
+      // 9. Sync Call Requests
+      const { data: callData } = await supabase.from('call_requests').select('*').order('submitted_at', { ascending: false });
+      if (callData && callData.length > 0) {
+        this.callRequests = callData.map(mapDbCallToTs);
+        this.saveToStorage('oblique_calls', this.callRequests);
+      }
+
+      // 10. Sync Project Wizard Inquiries
+      const { data: wizData } = await supabase.from('project_wizard_inquiries').select('*').order('submitted_at', { ascending: false });
+      if (wizData && wizData.length > 0) {
+        this.wizardInquiries = wizData.map(mapDbWizardToTs);
+        this.saveToStorage('oblique_wizards', this.wizardInquiries);
+      }
+    } catch (e) {
+      console.warn('Initial Supabase sync check:', e);
     }
   }
 
@@ -823,6 +1331,18 @@ class ObliqueStore {
 
       const savedPosts = localStorage.getItem('oblique_posts');
       if (savedPosts) this.posts = JSON.parse(savedPosts);
+
+      const savedMedia = localStorage.getItem('oblique_media');
+      if (savedMedia) this.mediaRecords = JSON.parse(savedMedia);
+
+      const savedAuthors = localStorage.getItem('oblique_authors');
+      if (savedAuthors) this.authors = JSON.parse(savedAuthors);
+
+      const savedAuthorUser = localStorage.getItem('oblique_author_user');
+      if (savedAuthorUser) this.currentAuthorUser = JSON.parse(savedAuthorUser);
+
+      const savedDrafts = localStorage.getItem('oblique_drafts');
+      if (savedDrafts) this.draftArticles = JSON.parse(savedDrafts);
 
       const savedFaqs = localStorage.getItem('oblique_faqs');
       if (savedFaqs) this.faqs = JSON.parse(savedFaqs);
@@ -868,6 +1388,10 @@ class ObliqueStore {
   public updateService(updated: ServiceItem) {
     this.services = this.services.map(s => s.id === updated.id ? updated : s);
     this.saveToStorage('oblique_services', this.services);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('services').upsert(mapTsServiceToDb(updated)).then();
+    }
   }
 
   // PORTFOLIO
@@ -887,35 +1411,118 @@ class ObliqueStore {
       this.portfolio.unshift(project);
     }
     this.saveToStorage('oblique_portfolio', this.portfolio);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('portfolio_projects').upsert(mapTsProjectToDb(project)).then();
+    }
   }
 
   public deleteProject(id: string) {
     this.portfolio = this.portfolio.filter(p => p.id !== id);
     this.saveToStorage('oblique_portfolio', this.portfolio);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('portfolio_projects').delete().eq('id', id).then();
+    }
   }
 
   // INSIGHTS
   public getPosts(): BlogPost[] {
-    return this.posts;
+    return [...this.posts];
   }
 
   public getPostBySlug(slug: string): BlogPost | undefined {
-    return this.posts.find(p => p.slug === slug);
+    if (!slug) return undefined;
+    const cleanSlug = slug.toLowerCase().trim();
+
+    // 1. Exact match in published / review / active posts
+    const exact = this.posts.find(p => p.slug?.toLowerCase() === cleanSlug);
+    if (exact) return exact;
+
+    // 2. Draft matching (e.g. previewing recent author drafts)
+    const drafts = Object.values(this.draftArticles || {});
+    const exactDraft = drafts.find(d => d.slug?.toLowerCase() === cleanSlug);
+    if (exactDraft) return exactDraft;
+
+    return undefined;
   }
 
   public savePost(post: BlogPost) {
     const existingIndex = this.posts.findIndex(p => p.id === post.id);
     if (existingIndex >= 0) {
-      this.posts[existingIndex] = post;
+      const nextPosts = [...this.posts];
+      nextPosts[existingIndex] = { ...post };
+      this.posts = nextPosts;
     } else {
-      this.posts.unshift(post);
+      this.posts = [{ ...post }, ...this.posts];
     }
     this.saveToStorage('oblique_posts', this.posts);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_posts_updated'));
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('blog_posts').upsert(mapBlogToDbPost(post)).then();
+    }
   }
 
   public deletePost(id: string) {
     this.posts = this.posts.filter(p => p.id !== id);
     this.saveToStorage('oblique_posts', this.posts);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_posts_updated'));
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('blog_posts').delete().eq('id', id).then();
+    }
+  }
+
+  // MEDIA PERSISTENCE (Section 10, 15, 22)
+  public getMediaForArticle(articleId: string): MediaRecord[] {
+    return this.mediaRecords.filter(m => m.articleId === articleId && m.status !== 'deleted');
+  }
+
+  public saveMediaRecord(record: MediaRecord) {
+    const existingIdx = this.mediaRecords.findIndex(m => m.id === record.id);
+    if (existingIdx >= 0) {
+      this.mediaRecords[existingIdx] = record;
+    } else {
+      this.mediaRecords.unshift(record);
+    }
+    this.saveToStorage('oblique_media', this.mediaRecords);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('blog_media').upsert({
+        id: record.id,
+        article_id: record.articleId,
+        author_id: record.authorId || null,
+        storage_path: record.storagePath,
+        public_url: record.publicUrl,
+        file_name: record.fileName,
+        mime_type: record.mimeType,
+        file_size: record.fileSize,
+        width: record.width || null,
+        height: record.height || null,
+        alt_text: record.altText || null,
+        caption: record.caption || null,
+        media_type: record.mediaType,
+        status: record.status
+      }).then();
+    }
+  }
+
+  public markMediaUnused(mediaId: string) {
+    const record = this.mediaRecords.find(m => m.id === mediaId);
+    if (record) {
+      record.status = 'unused';
+      record.updatedAt = new Date().toISOString();
+      this.saveToStorage('oblique_media', this.mediaRecords);
+
+      if (isSupabaseConfigured && supabase) {
+        supabase.from('blog_media').update({ status: 'unused' }).eq('id', mediaId).then();
+      }
+    }
   }
 
   public getAuthors(): AuthorProfile[] {
@@ -924,6 +1531,206 @@ class ObliqueStore {
 
   public getAuthorById(id: string): AuthorProfile | undefined {
     return this.authors.find(a => a.id === id);
+  }
+
+  // =========================================================================
+  // AUTHOR AUTHENTICATION & PROFILES
+  // =========================================================================
+  public getCurrentAuthorUser(): AuthorUser | null {
+    return this.currentAuthorUser;
+  }
+
+  public loginAuthor(email: string, _password?: string): AuthorUser {
+    let existingProfile = this.authors.find(a => a.id === 'auth-user' || a.slug === email.split('@')[0]);
+    const isComplete = existingProfile ? (existingProfile.fullName?.trim().length > 0 && !!existingProfile.title && !!existingProfile.bio && !!existingProfile.linkedInUrl) : false;
+
+    const user: AuthorUser = {
+      id: existingProfile ? existingProfile.id : `auth-${Date.now()}`,
+      email: email.trim().toLowerCase(),
+      name: existingProfile ? existingProfile.fullName : email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      avatarUrl: existingProfile?.avatarUrl || '/avatars/author-default.png',
+      role: 'author',
+      createdAt: new Date().toISOString(),
+      profileCompleted: !!isComplete
+    };
+
+    this.currentAuthorUser = user;
+    this.saveToStorage('oblique_author_user', user);
+    return user;
+  }
+
+  public registerAuthor(name: string, email: string, _password?: string): AuthorUser {
+    const newId = `auth-${Date.now()}`;
+    const user: AuthorUser = {
+      id: newId,
+      email: email.trim().toLowerCase(),
+      name: name.trim(),
+      avatarUrl: '/avatars/author-default.png',
+      role: 'author',
+      createdAt: new Date().toISOString(),
+      profileCompleted: false
+    };
+
+    const newProfile: AuthorProfile = {
+      id: newId,
+      slug: email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      fullName: name.trim(),
+      title: '',
+      bio: '',
+      expertise: [],
+      avatarUrl: '/avatars/author-default.png',
+      linkedInUrl: '',
+      isComplete: false
+    };
+
+    this.authors.unshift(newProfile);
+    this.saveToStorage('oblique_authors', this.authors);
+
+    this.currentAuthorUser = user;
+    this.saveToStorage('oblique_author_user', user);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('authors').upsert(mapTsAuthorToDb(newProfile)).then();
+    }
+
+    return user;
+  }
+
+  public logoutAuthor(): void {
+    this.currentAuthorUser = null;
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('oblique_author_user');
+    }
+  }
+
+  public getAuthorProfile(authorId?: string): AuthorProfile | undefined {
+    const id = authorId || this.currentAuthorUser?.id;
+    if (!id) return undefined;
+    return this.authors.find(a => a.id === id);
+  }
+
+  public isAuthorProfileComplete(authorId?: string): boolean {
+    const profile = this.getAuthorProfile(authorId);
+    if (!profile) return false;
+    return Boolean(
+      profile.fullName?.trim() &&
+      profile.title?.trim() &&
+      profile.bio?.trim() &&
+      profile.expertise?.length > 0 &&
+      profile.linkedInUrl?.trim()
+    );
+  }
+
+  public saveAuthorProfile(profile: AuthorProfile): void {
+    const isComplete = Boolean(
+      profile.fullName?.trim() &&
+      profile.title?.trim() &&
+      profile.bio?.trim() &&
+      profile.expertise?.length > 0 &&
+      profile.linkedInUrl?.trim()
+    );
+
+    const updatedProfile: AuthorProfile = {
+      ...profile,
+      isComplete
+    };
+
+    const existingIdx = this.authors.findIndex(a => a.id === profile.id);
+    if (existingIdx >= 0) {
+      this.authors[existingIdx] = updatedProfile;
+    } else {
+      this.authors.unshift(updatedProfile);
+    }
+    this.saveToStorage('oblique_authors', this.authors);
+
+    if (this.currentAuthorUser && this.currentAuthorUser.id === profile.id) {
+      this.currentAuthorUser.name = updatedProfile.fullName;
+      this.currentAuthorUser.avatarUrl = updatedProfile.avatarUrl;
+      this.currentAuthorUser.profileCompleted = isComplete;
+      this.saveToStorage('oblique_author_user', this.currentAuthorUser);
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('authors').upsert(mapTsAuthorToDb(updatedProfile)).then();
+    }
+  }
+
+  // =========================================================================
+  // DRAFTS & EDITORIAL WORKFLOW
+  // =========================================================================
+  public getDraftArticle(authorId?: string): BlogPost | null {
+    const id = authorId || this.currentAuthorUser?.id || 'default';
+    return this.draftArticles[id] || null;
+  }
+
+  public saveDraftArticle(article: BlogPost, authorId?: string): void {
+    const id = authorId || this.currentAuthorUser?.id || 'default';
+    this.draftArticles[id] = {
+      ...article,
+      status: 'draft',
+      updatedAt: new Date().toISOString()
+    };
+    this.saveToStorage('oblique_drafts', this.draftArticles);
+  }
+
+  public clearDraftArticle(authorId?: string): void {
+    const id = authorId || this.currentAuthorUser?.id || 'default';
+    delete this.draftArticles[id];
+    this.saveToStorage('oblique_drafts', this.draftArticles);
+  }
+
+  public submitArticleForReview(article: BlogPost): BlogPost {
+    const submitted: BlogPost = {
+      ...article,
+      status: 'review',
+      updatedAt: new Date().toISOString(),
+      publishedAt: article.publishedAt || new Date().toISOString()
+    };
+
+    this.savePost(submitted);
+
+    const authorId = article.authorId || this.currentAuthorUser?.id || 'default';
+    this.clearDraftArticle(authorId);
+
+    return submitted;
+  }
+
+  public requestArticleChanges(articleId: string, feedback: { reviewerName: string; comment: string }): BlogPost | undefined {
+    const post = this.posts.find(p => p.id === articleId);
+    if (!post) return undefined;
+
+    const newFeedback: ReviewFeedback = {
+      id: `fb-${Date.now()}`,
+      reviewerName: feedback.reviewerName,
+      reviewerRole: 'Senior Technical Editor',
+      date: new Date().toISOString(),
+      comment: feedback.comment,
+      status: 'changes_requested'
+    };
+
+    const updated: BlogPost = {
+      ...post,
+      status: 'changes_requested',
+      updatedAt: new Date().toISOString(),
+      reviewFeedback: [...(post.reviewFeedback || []), newFeedback]
+    };
+
+    this.savePost(updated);
+    return updated;
+  }
+
+  public approveArticle(articleId: string): BlogPost | undefined {
+    const post = this.posts.find(p => p.id === articleId);
+    if (!post) return undefined;
+
+    const updated: BlogPost = {
+      ...post,
+      status: 'approved',
+      updatedAt: new Date().toISOString()
+    };
+
+    this.savePost(updated);
+    return updated;
   }
 
   // FAQS
@@ -939,11 +1746,19 @@ class ObliqueStore {
       this.faqs.push(faq);
     }
     this.saveToStorage('oblique_faqs', this.faqs);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('faqs').upsert(mapTsFaqToDb(faq)).then();
+    }
   }
 
   public deleteFAQ(id: string) {
     this.faqs = this.faqs.filter(f => f.id !== id);
     this.saveToStorage('oblique_faqs', this.faqs);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('faqs').delete().eq('id', id).then();
+    }
   }
 
   // TESTIMONIALS
@@ -966,15 +1781,7 @@ class ObliqueStore {
     this.saveToStorage('oblique_testimonials', this.testimonials);
 
     if (isSupabaseConfigured && supabase) {
-      supabase.from('testimonials').insert([{
-        client_name: newSubmission.clientName,
-        company: newSubmission.company,
-        position: newSubmission.position,
-        project: newSubmission.project,
-        rating: newSubmission.rating,
-        testimonial: newSubmission.testimonial,
-        status: 'pending'
-      }]).then();
+      supabase.from('testimonials').insert([mapTsTestimonialToDb(newSubmission)]).then();
     }
 
     return newSubmission;
@@ -983,6 +1790,10 @@ class ObliqueStore {
   public updateTestimonialStatus(id: string, status: 'pending' | 'approved' | 'rejected') {
     this.testimonials = this.testimonials.map(t => t.id === id ? { ...t, status } : t);
     this.saveToStorage('oblique_testimonials', this.testimonials);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('testimonials').update({ status }).eq('id', id).then();
+    }
   }
 
   // INQUIRIES & CALL REQUESTS
@@ -997,14 +1808,11 @@ class ObliqueStore {
     this.saveToStorage('oblique_contacts', this.contactSubmissions);
 
     if (isSupabaseConfigured && supabase) {
-      await supabase.from('contact_submissions').insert([{
-        name: data.name,
-        email: data.email,
-        phone: data.phone || '',
-        company: data.company || '',
-        service: data.service,
-        message: data.message
-      }]);
+      try {
+        await supabase.from('contact_submissions').insert([mapTsContactToDb(submission)]);
+      } catch (err) {
+        console.warn('Supabase contact submission error:', err);
+      }
     }
 
     return submission;
@@ -1025,19 +1833,11 @@ class ObliqueStore {
     this.saveToStorage('oblique_calls', this.callRequests);
 
     if (isSupabaseConfigured && supabase) {
-      await supabase.from('call_requests').insert([{
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        business_name: data.businessName || '',
-        reason: data.reason,
-        service_required: data.serviceRequired,
-        project_type: data.projectType,
-        preferred_date: data.preferredDate,
-        preferred_time: data.preferredTime,
-        duration_minutes: data.durationMinutes,
-        requirements: data.requirements
-      }]);
+      try {
+        await supabase.from('call_requests').insert([mapTsCallToDb(request)]);
+      } catch (err) {
+        console.warn('Supabase call request error:', err);
+      }
     }
 
     return request;
@@ -1058,17 +1858,11 @@ class ObliqueStore {
     this.saveToStorage('oblique_wizards', this.wizardInquiries);
 
     if (isSupabaseConfigured && supabase) {
-      await supabase.from('project_wizard_inquiries').insert([{
-        project_type: data.projectType,
-        services_needed: data.servicesNeeded,
-        core_objective: data.coreObjective,
-        key_features: data.keyFeatures,
-        timeline: data.timeline,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        company: data.company || ''
-      }]);
+      try {
+        await supabase.from('project_wizard_inquiries').insert([mapTsWizardToDb(inquiry)]);
+      } catch (err) {
+        console.warn('Supabase wizard inquiry error:', err);
+      }
     }
 
     return inquiry;
@@ -1086,7 +1880,12 @@ class ObliqueStore {
   public updateSettings(newSettings: Partial<SiteSettings>) {
     this.settings = { ...this.settings, ...newSettings };
     this.saveToStorage('oblique_settings', this.settings);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('site_settings').upsert(mapTsSettingsToDb(this.settings)).then();
+    }
   }
 }
 
 export const obliqueStore = new ObliqueStore();
+
