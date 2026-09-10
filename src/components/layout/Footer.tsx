@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { obliqueStore, INITIAL_SERVICES } from '@/lib/store';
+import { obliqueStore, INITIAL_SERVICES, INITIAL_SETTINGS } from '@/lib/store';
 import { SiteSettings, ServiceItem } from '@/types';
 import { Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
 import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon } from '@/components/ui/Icons';
@@ -11,7 +11,7 @@ import { ObliqueLogo } from '@/components/ui/ObliqueLogo';
 
 export function Footer() {
   const pathname = usePathname();
-  const [settings, setSettings] = useState<SiteSettings>(obliqueStore.getSettings());
+  const [settings, setSettings] = useState<SiteSettings>(INITIAL_SETTINGS);
   const [services, setServices] = useState<ServiceItem[]>(INITIAL_SERVICES);
 
   useEffect(() => {

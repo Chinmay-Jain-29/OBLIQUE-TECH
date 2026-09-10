@@ -41,7 +41,12 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,8 +73,12 @@ export function Navbar() {
     setDropdownOpen(false);
   }, [pathname]);
 
-  // Exclude navbar entirely on admin routes
-  if (pathname.startsWith('/admin')) {
+  // Exclude navbar entirely on admin routes and dedicated fullscreen editorial workspace
+  if (
+    pathname.startsWith('/admin') || 
+    pathname === '/insights/write' || 
+    pathname.startsWith('/insights/write')
+  ) {
     return null;
   }
 
@@ -110,7 +119,7 @@ export function Navbar() {
 
           {/* Desktop Right Actions */}
           <div className="hidden lg:flex items-center gap-2.5">
-            {user ? (
+            {mounted && user ? (
               /* Authenticated "My Oblique" Dropdown */
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -238,7 +247,7 @@ export function Navbar() {
       {mobileOpen && (
         <div className="lg:hidden bg-[#08090B] border-b border-white/10 px-4 pt-3 pb-6 space-y-3 animate-fadeIn">
           {/* Mobile User Card */}
-          {user ? (
+          {mounted && user ? (
             <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between mb-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white overflow-hidden">

@@ -18,12 +18,14 @@ import {
   Menu,
   X,
   UserCheck,
-  LogOut
+  LogOut,
+  Users
 } from 'lucide-react';
 import { AdminAuthGuard, logoutAdmin } from '@/components/admin/AdminAuthGuard';
 
 const ADMIN_NAV = [
   { label: 'Overview Dashboard', href: '/admin', icon: <LayoutDashboard className="w-4 h-4" /> },
+  { label: 'Registered Users', href: '/admin/users', icon: <Users className="w-4 h-4" /> },
   { label: 'Portfolio Projects', href: '/admin/portfolio', icon: <Briefcase className="w-4 h-4" /> },
   { label: 'Services', href: '/admin/services', icon: <Layers className="w-4 h-4" /> },
   { label: 'Oblique Insights', href: '/admin/insights', icon: <FileText className="w-4 h-4" /> },

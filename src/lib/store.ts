@@ -13,6 +13,7 @@ import {
   SiteSettings,
   MediaRecord,
   UserProfile,
+  UserRole,
   UserActivity,
   UserNotification,
   UserFeedbackItem,
@@ -1070,6 +1071,7 @@ function mapTsSettingsToDb(s: SiteSettings) {
     linkedin_url: s.linkedinUrl,
     twitter_url: s.twitterUrl,
     github_url: s.githubUrl,
+    instagram_url: s.instagramUrl || 'https://instagram.com/obliquetech',
     mission_statement: s.missionStatement,
     vision_statement: s.visionStatement,
     trust_strip_statements: s.trustStripStatements || []
@@ -1089,6 +1091,7 @@ function mapDbSettingsToTs(row: any): SiteSettings {
     linkedinUrl: row.linkedin_url || '',
     twitterUrl: row.twitter_url || '',
     githubUrl: row.github_url || '',
+    instagramUrl: row.instagram_url || 'https://instagram.com/obliquetech',
     missionStatement: row.mission_statement || '',
     visionStatement: row.vision_statement || '',
     trustStripStatements: Array.isArray(row.trust_strip_statements) ? row.trust_strip_statements : []
@@ -1486,6 +1489,19 @@ class ObliqueStore {
       if (wizData && wizData.length > 0) {
         this.wizardInquiries = wizData.map(mapDbWizardToTs);
         this.saveToStorage('oblique_wizards', this.wizardInquiries);
+      }
+
+      // 11. Sync Profiles
+      const { data: profData } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+      if (profData && profData.length > 0) {
+        profData.forEach((row: any) => {
+          const p = mapDbProfileToTs(row);
+          this.userProfiles[p.id] = p;
+        });
+        this.saveToStorage('oblique_user_profiles', this.userProfiles);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('oblique_profiles_updated'));
+        }
       }
     } catch (e) {
       console.warn('Initial Supabase sync check:', e);
@@ -2116,6 +2132,43 @@ class ObliqueStore {
     }
 
     return updated;
+  }
+
+  public async deleteUserProfile(userId: string): Promise<boolean> {
+    if (!userId) return false;
+    delete this.userProfiles[userId];
+    this.saveToStorage('oblique_user_profiles', this.userProfiles);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_profiles_updated'));
+    }
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('profiles').delete().eq('id', userId);
+      } catch (e) {
+        console.warn('Supabase deleteUserProfile error:', e);
+      }
+    }
+    return true;
+  }
+
+  public async updateUserRole(userId: string, role: UserRole): Promise<boolean> {
+    const prof = this.userProfiles[userId];
+    if (!prof) return false;
+    prof.role = role;
+    prof.updatedAt = new Date().toISOString();
+    this.userProfiles[userId] = prof;
+    this.saveToStorage('oblique_user_profiles', this.userProfiles);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_profiles_updated'));
+    }
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('profiles').update({ role }).eq('id', userId);
+      } catch (e) {
+        console.warn('Supabase updateUserRole error:', e);
+      }
+    }
+    return true;
   }
 
   public calculateProfileCompletion(profile?: UserProfile | null): number {
