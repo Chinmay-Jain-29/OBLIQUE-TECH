@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { obliqueStore } from '@/lib/store';
+import { useAuth } from '@/lib/authContext';
 import { PhoneInput, PhoneInputValue } from '@/components/ui/PhoneInput';
 import { 
   ArrowRight, 
@@ -174,6 +175,7 @@ const TIMELINE_OPTIONS: TimelineItem[] = [
 ];
 
 export default function StartProjectPage() {
+  const { user, openAuthModal } = useAuth();
   const [step, setStep] = useState(1);
   
   // COMPLETELY NEUTRAL INITIAL STATE — ZERO PRE-SELECTIONS
@@ -193,6 +195,16 @@ export default function StartProjectPage() {
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Pre-fill with authenticated profile
+  React.useEffect(() => {
+    if (user) {
+      if (!name) setName(user.fullName);
+      if (!email) setEmail(user.email);
+      if (!phone && user.phone) setPhone(user.phone);
+      if (!company && user.companyName) setCompany(user.companyName);
+    }
+  }, [user]);
 
   const toggleService = (srv: string) => {
     if (servicesNeeded.includes(srv)) {
@@ -214,8 +226,17 @@ export default function StartProjectPage() {
     e.preventDefault();
     if (!name || !email || !phone) return;
 
+    if (!user) {
+      openAuthModal({
+        title: 'Sign in to submit your project',
+        message: 'Create your ObliqueTech profile to submit this project inquiry and track review status in your personal workspace.'
+      });
+      return;
+    }
+
     setLoading(true);
     await obliqueStore.submitProjectWizard({
+      userId: user.id,
       projectType: projectType || 'Not specified',
       servicesNeeded: servicesNeeded.length > 0 ? servicesNeeded : ['Not specified'],
       coreObjective: projectDetails,
@@ -226,6 +247,14 @@ export default function StartProjectPage() {
       phone: phoneE164 || phone,
       company: company || 'Not specified'
     });
+
+    await obliqueStore.logUserActivity(
+      user.id,
+      'project_inquiry',
+      'Submitted Project Inquiry',
+      `${projectType || 'Custom'} requirements submitted for engineering review.`
+    );
+
     setLoading(false);
     setSubmitted(true);
   };
@@ -249,6 +278,12 @@ export default function StartProjectPage() {
         </div>
 
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/account/projects"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-500/20 transition-all text-center"
+          >
+            Track in My Oblique →
+          </Link>
           <Link
             href="/"
             className="w-full sm:w-auto px-6 py-3 rounded-lg border border-white/20 text-slate-200 text-xs font-semibold hover:bg-white/5 transition-colors"

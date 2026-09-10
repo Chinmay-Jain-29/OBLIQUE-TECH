@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { obliqueStore } from '@/lib/store';
+import { useAuth } from '@/lib/authContext';
 import { BlogPost, EditorBlock, BlockType, AuthorProfile, AuthorUser } from '@/types';
 import { EditorToolbar } from '@/components/editor/EditorToolbar';
 import { BlockRenderer } from '@/components/editor/BlockRenderer';
@@ -77,6 +78,8 @@ export async function processTelemetryBatch(stream: ReadableStream): Promise<voi
 export default function EditorialWritingPage() {
   const router = useRouter();
 
+  const { user: authUser } = useAuth();
+
   // Authentication & Author State
   const [currentUser, setCurrentUser] = useState<AuthorUser | null>(null);
   const [authorProfile, setAuthorProfile] = useState<AuthorProfile | undefined>(undefined);
@@ -128,33 +131,62 @@ export default function EditorialWritingPage() {
 
   // 1. Initialize Author User & Profile, or Redirect
   useEffect(() => {
-    const user = obliqueStore.getCurrentAuthorUser();
-    if (!user) {
-      // Create author user if visited directly
-      const demoUser = obliqueStore.loginAuthor('guest.writer@obliquetech.com');
-      setCurrentUser(demoUser);
-      setArticle(prev => ({ ...prev, authorId: demoUser.id }));
-    } else {
-      setCurrentUser(user);
-      setArticle(prev => ({ ...prev, authorId: user.id }));
+    if (authUser) {
+      const activeUser: AuthorUser = {
+        id: authUser.id,
+        email: authUser.email,
+        name: authUser.fullName || authUser.email.split('@')[0],
+        avatarUrl: authUser.profilePhoto || authUser.avatarUrl || '/avatars/author-default.png',
+        role: 'author',
+        createdAt: authUser.createdAt,
+        profileCompleted: true
+      };
+      setCurrentUser(activeUser);
+      setArticle(prev => ({ ...prev, authorId: activeUser.id }));
 
-      const profile = obliqueStore.getAuthorProfile(user.id);
+      let profile = obliqueStore.getAuthorProfile(authUser.id);
+      if (!profile) {
+        const newProfile: AuthorProfile = {
+          id: authUser.id,
+          fullName: authUser.fullName,
+          slug: authUser.fullName ? authUser.fullName.toLowerCase().replace(/[^a-z0-9]/g, '-') : authUser.email.split('@')[0],
+          title: authUser.jobTitle || 'Technical Contributor',
+          bio: authUser.bio || 'Technology & engineering contributor at ObliqueTech.',
+          avatarUrl: authUser.profilePhoto || authUser.avatarUrl || '/avatars/author-default.png',
+          expertise: ['Engineering', 'Architecture'],
+          linkedInUrl: authUser.linkedin || authUser.linkedinUrl || 'https://linkedin.com'
+        };
+        obliqueStore.saveAuthorProfile(newProfile);
+        profile = newProfile;
+      }
       setAuthorProfile(profile);
+    } else {
+      const user = obliqueStore.getCurrentAuthorUser();
+      if (!user) {
+        const demoUser = obliqueStore.loginAuthor('guest.writer@obliquetech.com');
+        setCurrentUser(demoUser);
+        setArticle(prev => ({ ...prev, authorId: demoUser.id }));
+      } else {
+        setCurrentUser(user);
+        setArticle(prev => ({ ...prev, authorId: user.id }));
 
-      // If user profile is not complete, redirect to /author/profile (Section 6)
-      if (!obliqueStore.isAuthorProfileComplete(user.id)) {
-        router.push('/author/profile?redirect=/insights/write');
-        return;
+        const profile = obliqueStore.getAuthorProfile(user.id);
+        setAuthorProfile(profile);
+
+        if (!obliqueStore.isAuthorProfileComplete(user.id)) {
+          router.push('/author/profile?redirect=/insights/write');
+          return;
+        }
       }
     }
 
-    // 2. Check for autosaved recovered draft (Section 63)
-    const savedDraft = obliqueStore.getDraftArticle(user?.id);
+    const effectiveId = authUser?.id || obliqueStore.getCurrentAuthorUser()?.id;
+    const savedDraft = obliqueStore.getDraftArticle(effectiveId);
     if (savedDraft && savedDraft.title) {
       setRecoveredDate(new Date(savedDraft.updatedAt).toLocaleTimeString());
       setArticle(savedDraft);
     }
-  }, [router]);
+  }, [router, authUser]);
 
   // 3. Dynamic Word Count and Reading Time (Section 34)
   let text = `${article.title || ''} ${article.excerpt || ''} `;
@@ -445,6 +477,16 @@ export default function EditorialWritingPage() {
     const submitted = obliqueStore.submitArticleForReview(article);
     setArticle(submitted);
     setHasUnsavedChanges(false);
+
+    if (authUser) {
+      obliqueStore.logUserActivity(
+        authUser.id,
+        'article_submitted',
+        'Submitted Article for Review',
+        `Article "${article.title}" submitted to editorial review.`
+      );
+    }
+
     setSubmitSuccessModal(true);
   };
 
@@ -976,18 +1018,18 @@ export default function EditorialWritingPage() {
               <div><strong className="text-white">Status:</strong> <span className="text-amber-400 font-mono">In Review</span></div>
             </div>
 
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => setSubmitSuccessModal(false)}
-                className="flex-1 py-2.5 rounded-xl border border-white/10 text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                onClick={() => router.push('/account/articles')}
+                className="w-full sm:flex-1 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-blue-600 text-xs font-bold text-white transition-colors cursor-pointer"
               >
-                Keep Editing
+                Track in My Oblique →
               </button>
               <button
                 type="button"
                 onClick={() => router.push('/insights')}
-                className="flex-1 py-2.5 rounded-xl bg-[#3B82F6] hover:bg-blue-600 text-xs font-bold text-white transition-colors cursor-pointer"
+                className="w-full sm:flex-1 py-2.5 rounded-xl border border-white/10 text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
               >
                 Return to Insights
               </button>

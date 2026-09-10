@@ -53,6 +53,8 @@ export const metadata: Metadata = {
 };
 
 import { SiteIntro } from '@/components/ui/SiteIntro';
+import { AuthProvider } from '@/lib/authContext';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 export const viewport: Viewport = {
   themeColor: '#08090B',
@@ -86,18 +88,21 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col antialiased bg-[#08090B] text-[#F8FAFC] selection:bg-[#D4AF5A] selection:text-[#08090B]">
         <ThemeProvider>
-          <SiteIntro />
-          <div id="site-main-content" className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <div className="floating-controls">
-            <WhatsAppButton />
-            <ObliqueAIChatbot />
-          </div>
+          <AuthProvider>
+            <SiteIntro />
+            <div id="site-main-content" className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <div className="floating-controls">
+              <WhatsAppButton />
+              <ObliqueAIChatbot />
+            </div>
+            <AuthModal />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

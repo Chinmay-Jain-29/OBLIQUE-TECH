@@ -11,7 +11,12 @@ import {
   CallRequest, 
   ProjectWizardInquiry, 
   SiteSettings,
-  MediaRecord
+  MediaRecord,
+  UserProfile,
+  UserActivity,
+  UserNotification,
+  UserFeedbackItem,
+  UserActivityType
 } from '@/types';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 
@@ -1163,6 +1168,7 @@ function mapTsCallToDb(c: CallRequest) {
     duration_minutes: c.durationMinutes || 30,
     requirements: c.requirements || '',
     status: c.status || 'pending',
+    user_id: c.userId || null,
     submitted_at: c.submittedAt || new Date().toISOString()
   };
 }
@@ -1170,6 +1176,7 @@ function mapTsCallToDb(c: CallRequest) {
 function mapDbCallToTs(row: any): CallRequest {
   return {
     id: String(row.id),
+    userId: row.user_id,
     name: row.name,
     email: row.email,
     phone: row.phone,
@@ -1189,6 +1196,8 @@ function mapDbCallToTs(row: any): CallRequest {
 function mapTsWizardToDb(w: ProjectWizardInquiry) {
   return {
     id: w.id,
+    user_id: w.userId || null,
+    project_status: w.projectStatus || 'submitted',
     project_type: w.projectType,
     services_needed: w.servicesNeeded || [],
     core_objective: w.coreObjective,
@@ -1206,6 +1215,8 @@ function mapTsWizardToDb(w: ProjectWizardInquiry) {
 function mapDbWizardToTs(row: any): ProjectWizardInquiry {
   return {
     id: String(row.id),
+    userId: row.user_id,
+    projectStatus: row.project_status || 'submitted',
     projectType: row.project_type,
     servicesNeeded: Array.isArray(row.services_needed) ? row.services_needed : [],
     coreObjective: row.core_objective,
@@ -1217,6 +1228,127 @@ function mapDbWizardToTs(row: any): ProjectWizardInquiry {
     company: row.company,
     status: row.status,
     submittedAt: row.submitted_at
+  };
+}
+
+function mapDbProfileToTs(row: any): UserProfile {
+  return {
+    id: String(row.id),
+    authUserId: row.auth_user_id || String(row.id),
+    fullName: row.full_name || 'User',
+    email: row.email,
+    phone: row.phone || '',
+    countryCode: row.country_code || '+91',
+    companyName: row.company_name || '',
+    jobTitle: row.job_title || '',
+    bio: row.bio || '',
+    country: row.country || '',
+    city: row.city || '',
+    profilePhoto: row.profile_photo || '',
+    linkedin: row.linkedin || '',
+    website: row.website || '',
+    role: row.role || 'user',
+    createdAt: row.created_at || new Date().toISOString(),
+    updatedAt: row.updated_at || new Date().toISOString()
+  };
+}
+
+function mapTsProfileToDb(p: UserProfile) {
+  return {
+    id: p.id,
+    auth_user_id: p.authUserId || p.id,
+    full_name: p.fullName,
+    profile_photo: p.profilePhoto || null,
+    email: p.email,
+    phone: p.phone || null,
+    country_code: p.countryCode || '+91',
+    company_name: p.companyName || null,
+    job_title: p.jobTitle || null,
+    bio: p.bio || null,
+    country: p.country || null,
+    city: p.city || null,
+    linkedin: p.linkedin || null,
+    website: p.website || null,
+    role: p.role || 'user',
+    updated_at: new Date().toISOString()
+  };
+}
+
+function mapDbActivityToTs(row: any): UserActivity {
+  return {
+    id: String(row.id),
+    userId: row.user_id,
+    type: row.activity_type,
+    title: row.title,
+    description: row.description || '',
+    timestamp: row.created_at || new Date().toISOString(),
+    metadata: row.metadata || {}
+  };
+}
+
+function mapTsActivityToDb(a: UserActivity) {
+  return {
+    id: a.id,
+    user_id: a.userId,
+    activity_type: a.type,
+    title: a.title,
+    description: a.description || null,
+    metadata: a.metadata || {},
+    created_at: a.timestamp || new Date().toISOString()
+  };
+}
+
+function mapDbNotificationToTs(row: any): UserNotification {
+  return {
+    id: String(row.id),
+    userId: row.user_id,
+    title: row.title,
+    message: row.message,
+    type: row.type || 'info',
+    read: Boolean(row.read),
+    actionUrl: row.action_url || '',
+    createdAt: row.created_at || new Date().toISOString()
+  };
+}
+
+function mapTsNotificationToDb(n: UserNotification) {
+  return {
+    id: n.id,
+    user_id: n.userId,
+    title: n.title,
+    message: n.message,
+    type: n.type,
+    read: n.read,
+    action_url: n.actionUrl || null,
+    created_at: n.createdAt || new Date().toISOString()
+  };
+}
+
+function mapDbFeedbackToTs(row: any): UserFeedbackItem {
+  return {
+    id: String(row.id),
+    userId: row.user_id,
+    userName: row.user_name,
+    userEmail: row.user_email,
+    category: row.category,
+    rating: row.rating || 5,
+    message: row.message,
+    status: row.status || 'submitted',
+    createdAt: row.created_at || new Date().toISOString()
+  };
+}
+
+function mapTsFeedbackToDb(f: UserFeedbackItem) {
+  return {
+    id: f.id,
+    user_id: f.userId,
+    user_name: f.userName,
+    user_email: f.userEmail,
+    category: f.category,
+    rating: f.rating,
+    message: f.message,
+    status: f.status,
+    created_at: f.createdAt || new Date().toISOString()
   };
 }
 
@@ -1235,6 +1367,12 @@ class ObliqueStore {
   private wizardInquiries: ProjectWizardInquiry[] = [];
   private settings: SiteSettings = INITIAL_SETTINGS;
   private mediaRecords: MediaRecord[] = [];
+  
+  // USER PLATFORM REPOSITORIES
+  private userProfiles: Record<string, UserProfile> = {};
+  private userActivities: Record<string, UserActivity[]> = {};
+  private userNotifications: Record<string, UserNotification[]> = {};
+  private userFeedbackItems: UserFeedbackItem[] = [];
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -1401,6 +1539,18 @@ class ObliqueStore {
 
       const savedSettings = localStorage.getItem('oblique_settings');
       if (savedSettings) this.settings = JSON.parse(savedSettings);
+
+      const savedProfiles = localStorage.getItem('oblique_user_profiles');
+      if (savedProfiles) this.userProfiles = JSON.parse(savedProfiles);
+
+      const savedActivities = localStorage.getItem('oblique_user_activities');
+      if (savedActivities) this.userActivities = JSON.parse(savedActivities);
+
+      const savedNotifications = localStorage.getItem('oblique_user_notifications');
+      if (savedNotifications) this.userNotifications = JSON.parse(savedNotifications);
+
+      const savedFeedback = localStorage.getItem('oblique_user_feedback');
+      if (savedFeedback) this.userFeedbackItems = JSON.parse(savedFeedback);
     } catch (e) {
       console.warn('Could not read from local storage:', e);
     }
@@ -1925,6 +2075,186 @@ class ObliqueStore {
     if (isSupabaseConfigured && supabase) {
       supabase.from('site_settings').upsert(mapTsSettingsToDb(this.settings)).then();
     }
+  }
+
+  // =========================================================================
+  // USER PLATFORM API ("MY OBLIQUE")
+  // =========================================================================
+  public getUserProfile(userId: string): UserProfile | undefined {
+    if (!userId) return undefined;
+    return this.userProfiles[userId];
+  }
+
+  public async saveUserProfile(profile: UserProfile): Promise<UserProfile> {
+    const updated: UserProfile = {
+      ...profile,
+      updatedAt: new Date().toISOString()
+    };
+    this.userProfiles[profile.id] = updated;
+    this.saveToStorage('oblique_user_profiles', this.userProfiles);
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_profile_updated', { detail: updated }));
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('profiles').upsert(mapTsProfileToDb(updated));
+      } catch (e) {
+        console.warn('Supabase saveUserProfile error:', e);
+      }
+    }
+
+    return updated;
+  }
+
+  public calculateProfileCompletion(profile?: UserProfile | null): number {
+    if (!profile) return 0;
+    const checks = [
+      Boolean(profile.fullName?.trim()),
+      Boolean(profile.email?.trim()),
+      Boolean(profile.phone?.trim()),
+      Boolean(profile.companyName?.trim()),
+      Boolean(profile.jobTitle?.trim()),
+      Boolean(profile.bio?.trim()),
+      Boolean(profile.profilePhoto?.trim()),
+      Boolean(profile.linkedin?.trim() || profile.website?.trim())
+    ];
+    const completed = checks.filter(Boolean).length;
+    return Math.round((completed / checks.length) * 100);
+  }
+
+  public getUserActivities(userId: string): UserActivity[] {
+    if (!userId) return [];
+    return this.userActivities[userId] || [];
+  }
+
+  public async logUserActivity(
+    userId: string, 
+    type: UserActivityType, 
+    title: string, 
+    description?: string, 
+    metadata?: Record<string, any>
+  ): Promise<UserActivity> {
+    const activity: UserActivity = {
+      id: `act-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      userId,
+      type,
+      title,
+      description,
+      metadata: metadata || {},
+      timestamp: new Date().toISOString()
+    };
+
+    const list = this.userActivities[userId] || [];
+    this.userActivities[userId] = [activity, ...list];
+    this.saveToStorage('oblique_user_activities', this.userActivities);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('user_activities').insert([mapTsActivityToDb(activity)]);
+      } catch (e) {
+        console.warn('Supabase logUserActivity error:', e);
+      }
+    }
+
+    return activity;
+  }
+
+  public getUserNotifications(userId: string): UserNotification[] {
+    if (!userId) return [];
+    return this.userNotifications[userId] || [];
+  }
+
+  public markNotificationAsRead(userId: string, notificationId: string): void {
+    if (!userId || !this.userNotifications[userId]) return;
+    this.userNotifications[userId] = this.userNotifications[userId].map(n => 
+      n.id === notificationId ? { ...n, read: true } : n
+    );
+    this.saveToStorage('oblique_user_notifications', this.userNotifications);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('user_notifications').update({ read: true }).eq('id', notificationId).then();
+    }
+  }
+
+  public async addNotification(
+    userId: string,
+    notif: Omit<UserNotification, 'id' | 'createdAt' | 'read'>
+  ): Promise<UserNotification> {
+    const item: UserNotification = {
+      ...notif,
+      id: `notif-${Date.now()}`,
+      userId,
+      read: false,
+      createdAt: new Date().toISOString()
+    };
+
+    const current = this.userNotifications[userId] || [];
+    this.userNotifications[userId] = [item, ...current];
+    this.saveToStorage('oblique_user_notifications', this.userNotifications);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('user_notifications').insert([mapTsNotificationToDb(item)]);
+      } catch (e) {
+        console.warn('Supabase addNotification error:', e);
+      }
+    }
+
+    return item;
+  }
+
+  public getUserFeedback(userId: string): UserFeedbackItem[] {
+    if (!userId) return [];
+    return this.userFeedbackItems.filter(f => f.userId === userId);
+  }
+
+  public async submitUserFeedback(
+    data: Omit<UserFeedbackItem, 'id' | 'createdAt' | 'status'>
+  ): Promise<UserFeedbackItem> {
+    const feedback: UserFeedbackItem = {
+      ...data,
+      id: `fb-${Date.now()}`,
+      status: 'submitted',
+      createdAt: new Date().toISOString()
+    };
+
+    this.userFeedbackItems.unshift(feedback);
+    this.saveToStorage('oblique_user_feedback', this.userFeedbackItems);
+
+    // Also record user activity
+    await this.logUserActivity(
+      data.userId,
+      'feedback_submitted',
+      'Submitted Feedback',
+      `Feedback category: ${data.category}`
+    );
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('user_feedback').insert([mapTsFeedbackToDb(feedback)]);
+      } catch (e) {
+        console.warn('Supabase submitUserFeedback error:', e);
+      }
+    }
+
+    return feedback;
+  }
+
+  public getUserProjectInquiries(userId: string): ProjectWizardInquiry[] {
+    if (!userId) return [];
+    return this.wizardInquiries.filter(w => w.userId === userId);
+  }
+
+  public getUserCallRequests(userId: string): CallRequest[] {
+    if (!userId) return [];
+    return this.callRequests.filter(c => c.userId === userId);
+  }
+
+  public getUserArticles(userId: string): BlogPost[] {
+    if (!userId) return [];
+    return this.posts.filter(p => p.authorId === userId);
   }
 }
 

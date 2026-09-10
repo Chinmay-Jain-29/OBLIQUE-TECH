@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { obliqueStore, INITIAL_POSTS } from '@/lib/store';
+import { useAuth } from '@/lib/authContext';
 import { BlogPost } from '@/types';
 import { Clock, Search, ArrowRight, PenTool, Sparkles } from 'lucide-react';
 import { AuthorAuthModal } from '@/components/auth/AuthorAuthModal';
@@ -27,6 +28,7 @@ const CATEGORIES = [
 
 export default function InsightsPage() {
   const router = useRouter();
+  const { user, openAuthModal } = useAuth();
   const [posts, setPosts] = useState<BlogPost[]>(INITIAL_POSTS);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,9 +44,16 @@ export default function InsightsPage() {
   }, []);
 
   const handleStartWriting = () => {
+    if (user) {
+      router.push('/insights/write');
+      return;
+    }
     const currentUser = obliqueStore.getCurrentAuthorUser();
     if (!currentUser) {
-      setAuthModalOpen(true);
+      openAuthModal({
+        title: 'Sign in to write perspectives',
+        message: 'Create or sign into your ObliqueTech profile to write, submit, and track engineering articles in your dashboard.'
+      });
       return;
     }
     if (!obliqueStore.isAuthorProfileComplete(currentUser.id)) {

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { obliqueStore } from '@/lib/store';
-import { Clock, CheckCircle2, MessageCircle, Mail, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/lib/authContext';
+import { Clock, CheckCircle2, MessageCircle, Mail, ArrowRight, Calendar } from 'lucide-react';
 import { PhoneInput, PhoneInputValue } from '@/components/ui/PhoneInput';
 
 const TOPICS = [
@@ -27,6 +28,7 @@ const TIME_SLOTS = [
 ];
 
 export default function SchedulePage() {
+  const { user, openAuthModal } = useAuth();
   const [topic, setTopic] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -39,12 +41,30 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    if (user) {
+      if (!name && user.fullName) setName(user.fullName);
+      if (!email && user.email) setEmail(user.email);
+      if (!phone && user.phone) setPhone(user.phone);
+      if (!company && user.companyName) setCompany(user.companyName);
+    }
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !preferredDate) return;
 
+    if (!user) {
+      openAuthModal({
+        title: 'Sign in to schedule your call',
+        message: 'Create or log into your ObliqueTech profile to schedule your consultation and track calendar confirmations in your dashboard.'
+      });
+      return;
+    }
+
     setLoading(true);
     await obliqueStore.submitCallRequest({
+      userId: user.id,
       name,
       email,
       phone: phoneE164 || phone,
@@ -57,6 +77,14 @@ export default function SchedulePage() {
       durationMinutes: 45,
       requirements
     });
+
+    await obliqueStore.logUserActivity(
+      user.id,
+      'call_scheduled',
+      'Scheduled Consultation Call',
+      `Requested consultation on ${preferredDate} at ${preferredTime}.`
+    );
+
     setLoading(false);
     setSubmitted(true);
   };
@@ -98,8 +126,12 @@ export default function SchedulePage() {
                 </div>
 
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <Link href="/" className="btn-secondary text-xs">
-                    Back to Home
+                  <Link
+                    href="/account/calls"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#3B82F6] hover:bg-blue-600 text-white text-xs font-semibold shadow-xs transition-colors"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>Track in My Oblique →</span>
                   </Link>
                   <a
                     href={`https://wa.me/${cleanWhatsappNumber}?text=${encodeURIComponent(`Hi ObliqueTech, I just requested a call for ${preferredDate} (${preferredTime}).`)}`}
@@ -110,6 +142,9 @@ export default function SchedulePage() {
                     <MessageCircle className="w-4 h-4" />
                     <span>Confirm via WhatsApp</span>
                   </a>
+                  <Link href="/" className="btn-secondary text-xs">
+                    Back to Home
+                  </Link>
                 </div>
               </div>
             ) : (

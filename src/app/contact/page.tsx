@@ -5,6 +5,7 @@ import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { obliqueStore } from '@/lib/store';
+import { useAuth } from '@/lib/authContext';
 import { SiteSettings } from '@/types';
 import { Mail, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
 import { LinkedInIcon, TwitterXIcon, GitHubIcon, InstagramIcon, WhatsAppIcon } from '@/components/ui/Icons';
@@ -15,6 +16,7 @@ if (typeof window !== 'undefined') {
 }
 
 export default function ContactPage() {
+  const { user } = useAuth();
   const [settings, setSettings] = useState<SiteSettings>(obliqueStore.getSettings());
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -31,6 +33,15 @@ export default function ContactPage() {
   useEffect(() => {
     setSettings(obliqueStore.getSettings());
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      if (!name && user.fullName) setName(user.fullName);
+      if (!email && user.email) setEmail(user.email);
+      if (!phone && user.phone) setPhone(user.phone);
+      if (!company && user.companyName) setCompany(user.companyName);
+    }
+  }, [user]);
 
   // Reversible GSAP ScrollTrigger Animations (matching portfolio)
   useEffect(() => {
@@ -80,6 +91,7 @@ export default function ContactPage() {
 
     setLoading(true);
     await obliqueStore.submitContact({
+      userId: user ? user.id : undefined,
       name,
       email,
       phone: phoneE164 || phone,
@@ -87,6 +99,16 @@ export default function ContactPage() {
       service: service || 'General Inquiry',
       message,
     });
+
+    if (user) {
+      await obliqueStore.logUserActivity(
+        user.id,
+        'inquiry_sent',
+        'Sent Contact Message',
+        `Inquiry regarding ${service || 'General Inquiry'}.`
+      );
+    }
+
     setLoading(false);
     setSubmitted(true);
   };
@@ -227,12 +249,22 @@ export default function ContactPage() {
                   <p className="text-xs text-slate-300 max-w-sm mx-auto">
                     Thank you. We have received your note and will get back to you within 1 business day.
                   </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="text-xs font-semibold text-[#3B82F6] hover:underline pt-2"
-                  >
-                    Send another note
-                  </button>
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    {user && (
+                      <Link
+                        href="/account/inquiries"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#3B82F6] hover:bg-blue-600 text-white text-xs font-semibold shadow-xs transition-colors"
+                      >
+                        <span>View in My Oblique →</span>
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => setSubmitted(false)}
+                      className="text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                    >
+                      Send another note
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

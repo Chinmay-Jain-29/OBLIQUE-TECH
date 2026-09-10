@@ -238,22 +238,101 @@ CREATE POLICY "Public full access project_wizard_inquiries" ON project_wizard_in
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public full access site_settings" ON site_settings FOR ALL USING (true) WITH CHECK (true);
 
--- 3.1 STORAGE BUCKET & OPEN OBJECT POLICIES (FOR BLOG & MEDIA UPLOADS)
+-- 2.1 USER PLATFORM TABLES & EXTENSIONS
+ALTER TABLE project_wizard_inquiries ADD COLUMN IF NOT EXISTS user_id TEXT;
+ALTER TABLE project_wizard_inquiries ADD COLUMN IF NOT EXISTS project_status TEXT DEFAULT 'submitted';
+
+ALTER TABLE call_requests ADD COLUMN IF NOT EXISTS user_id TEXT;
+ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS user_id TEXT;
+ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS user_id TEXT;
+
+CREATE TABLE IF NOT EXISTS profiles (
+  id TEXT PRIMARY KEY,
+  auth_user_id TEXT NOT NULL,
+  full_name TEXT NOT NULL,
+  profile_photo TEXT,
+  email TEXT NOT NULL,
+  phone TEXT,
+  country_code TEXT DEFAULT '+91',
+  company_name TEXT,
+  job_title TEXT,
+  bio TEXT,
+  country TEXT,
+  city TEXT,
+  linkedin TEXT,
+  website TEXT,
+  role TEXT DEFAULT 'user' CHECK (role IN ('user', 'author', 'editor', 'admin', 'super_admin')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public select profiles" ON profiles FOR SELECT USING (true);
+CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (true);
+
+CREATE TABLE IF NOT EXISTS user_activities (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  user_id TEXT NOT NULL,
+  activity_type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE user_activities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public access user_activities" ON user_activities FOR ALL USING (true) WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS user_notifications (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  user_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  type TEXT NOT NULL DEFAULT 'info' CHECK (type IN ('info', 'success', 'warning', 'action')),
+  read BOOLEAN DEFAULT FALSE,
+  action_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE user_notifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public access user_notifications" ON user_notifications FOR ALL USING (true) WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS user_feedback (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  user_id TEXT NOT NULL,
+  user_name TEXT NOT NULL,
+  user_email TEXT NOT NULL,
+  category TEXT NOT NULL,
+  rating INT NOT NULL DEFAULT 5,
+  message TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted', 'reviewing', 'resolved')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE user_feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public access user_feedback" ON user_feedback FOR ALL USING (true) WITH CHECK (true);
+
+-- 3.1 STORAGE BUCKETS & OPEN OBJECT POLICIES (FOR BLOG MEDIA & USER AVATARS)
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('blog-media', 'blog-media', true)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('user-avatars', 'user-avatars', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
 DROP POLICY IF EXISTS "Public storage select blog-media" ON storage.objects;
-CREATE POLICY "Public storage select blog-media" ON storage.objects FOR SELECT USING (bucket_id = 'blog-media');
+CREATE POLICY "Public storage select blog-media" ON storage.objects FOR SELECT USING (bucket_id IN ('blog-media', 'user-avatars'));
 
 DROP POLICY IF EXISTS "Public storage insert blog-media" ON storage.objects;
-CREATE POLICY "Public storage insert blog-media" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'blog-media');
+CREATE POLICY "Public storage insert blog-media" ON storage.objects FOR INSERT WITH CHECK (bucket_id IN ('blog-media', 'user-avatars'));
 
 DROP POLICY IF EXISTS "Public storage update blog-media" ON storage.objects;
-CREATE POLICY "Public storage update blog-media" ON storage.objects FOR UPDATE USING (bucket_id = 'blog-media');
+CREATE POLICY "Public storage update blog-media" ON storage.objects FOR UPDATE USING (bucket_id IN ('blog-media', 'user-avatars'));
 
 DROP POLICY IF EXISTS "Public storage delete blog-media" ON storage.objects;
-CREATE POLICY "Public storage delete blog-media" ON storage.objects FOR DELETE USING (bucket_id = 'blog-media');
+CREATE POLICY "Public storage delete blog-media" ON storage.objects FOR DELETE USING (bucket_id IN ('blog-media', 'user-avatars'));
 
 
 -- =============================================================================

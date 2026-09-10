@@ -198,10 +198,12 @@ export interface TestimonialSubmission {
   status: 'pending' | 'approved' | 'rejected';
   submittedAt: string;
   featured?: boolean;
+  userId?: string;
 }
 
 export interface ContactSubmission {
   id: string;
+  userId?: string;
   name: string;
   email: string;
   phone?: string;
@@ -212,8 +214,11 @@ export interface ContactSubmission {
   status: 'new' | 'contacted' | 'archived';
 }
 
+export type DetailedCallStatus = 'requested' | 'confirmed' | 'completed' | 'cancelled';
+
 export interface CallRequest {
   id: string;
+  userId?: string;
   name: string;
   email: string;
   phone: string;
@@ -229,8 +234,20 @@ export interface CallRequest {
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
 }
 
+export type DetailedProjectStatus = 
+  | 'draft' 
+  | 'submitted' 
+  | 'reviewing' 
+  | 'discussion' 
+  | 'approved' 
+  | 'in_progress' 
+  | 'completed' 
+  | 'on_hold' 
+  | 'cancelled';
+
 export interface ProjectWizardInquiry {
   id: string;
+  userId?: string;
   projectType: string;
   servicesNeeded: string[];
   coreObjective: string;
@@ -242,6 +259,78 @@ export interface ProjectWizardInquiry {
   company?: string;
   submittedAt: string;
   status: 'new' | 'in-review' | 'contacted' | 'closed';
+  projectStatus?: DetailedProjectStatus;
+}
+
+export type UserRole = 'user' | 'author' | 'editor' | 'admin' | 'super_admin';
+
+export interface UserProfile {
+  id: string;
+  authUserId: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  countryCode?: string;
+  companyName?: string;
+  jobTitle?: string;
+  bio?: string;
+  country?: string;
+  city?: string;
+  profilePhoto?: string;
+  avatarUrl?: string;
+  linkedin?: string;
+  linkedinUrl?: string;
+  website?: string;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type UserActivityType = 
+  | 'login' 
+  | 'logout' 
+  | 'profile_update' 
+  | 'project_inquiry' 
+  | 'inquiry_sent'
+  | 'call_scheduled' 
+  | 'feedback_submitted' 
+  | 'review_submitted' 
+  | 'article_draft' 
+  | 'article_submitted' 
+  | 'article_published' 
+  | 'password_changed';
+
+export interface UserActivity {
+  id: string;
+  userId: string;
+  type: UserActivityType;
+  title: string;
+  description?: string;
+  timestamp: string;
+  metadata?: Record<string, any>;
+}
+
+export interface UserNotification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'action';
+  read: boolean;
+  actionUrl?: string;
+  createdAt: string;
+}
+
+export interface UserFeedbackItem {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  category: 'general' | 'project' | 'service' | 'feature_request' | 'bug_report';
+  rating: number;
+  message: string;
+  status: 'submitted' | 'reviewing' | 'resolved';
+  createdAt: string;
 }
 
 export interface SiteSettings {
