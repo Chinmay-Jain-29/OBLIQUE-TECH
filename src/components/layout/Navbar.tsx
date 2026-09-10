@@ -33,7 +33,12 @@ export function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
-  if (pathname === '/insights/write' || pathname?.startsWith('/insights/write')) {
+  if (
+    pathname === '/insights/write' || 
+    pathname?.startsWith('/insights/write') ||
+    pathname === '/admin' ||
+    pathname?.startsWith('/admin')
+  ) {
     return null;
   }
 
@@ -72,17 +77,8 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Actions: Admin, Schedule a Call */}
+          {/* Action: Schedule a Call */}
           <div className="hidden lg:flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="text-xs text-slate-400 hover:text-white px-2 py-1 transition-colors flex items-center gap-1"
-              title="Admin Portal"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Admin</span>
-            </Link>
-
             <Link
               href="/schedule"
               className="inline-flex items-center justify-center text-xs font-semibold px-4 py-2 rounded-lg bg-[#3B82F6] hover:bg-blue-600 text-white transition-all shadow-xs"
@@ -138,12 +134,6 @@ export function Navbar() {
               className="w-full text-center py-2.5 text-xs font-semibold rounded-lg border border-white/20 text-slate-200 hover:bg-white/5 transition-colors"
             >
               Start a Project
-            </Link>
-            <Link
-              href="/admin"
-              className="w-full text-center py-1 text-xs text-slate-400 hover:text-white"
-            >
-              Admin Portal
             </Link>
           </div>
         </div>

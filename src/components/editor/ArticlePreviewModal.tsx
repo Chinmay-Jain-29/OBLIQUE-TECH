@@ -301,12 +301,21 @@ export function ArticlePreviewModal({
 
                     case 'gallery':
                       return (
-                        <div key={block.id} className="my-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                          {(block.galleryImages || []).map((img, idx) => (
-                            <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 aspect-16/10 shadow-xs">
-                              <img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover" />
-                            </div>
-                          ))}
+                        <div key={block.id} className="my-6 space-y-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {(block.galleryImages || []).map((img, idx) => (
+                              <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 shadow-xs flex flex-col bg-slate-50">
+                                <div className="aspect-16/10 overflow-hidden bg-slate-900">
+                                  <img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover" />
+                                </div>
+                                {img.caption && (
+                                  <div className="p-2 text-center text-[11px] text-slate-600 italic bg-white border-t border-slate-100">
+                                    {img.caption}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       );
 

@@ -365,6 +365,31 @@ export function InsightDetailView({ slug, initialPost }: InsightDetailViewProps)
                     </div>
                   );
                 }
+                if (block.type === 'gallery' && block.galleryImages && block.galleryImages.length > 0) {
+                  return (
+                    <div key={block.id} className="my-8 space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        {block.galleryImages.map((gImg, gIdx) => (
+                          <figure key={gIdx} className="group/g relative rounded-xl overflow-hidden border border-white/10 bg-slate-900 shadow-md">
+                            <div className="aspect-16/10 overflow-hidden">
+                              <img
+                                src={gImg.url}
+                                alt={gImg.alt || gImg.caption || 'Article gallery image'}
+                                className="w-full h-full object-cover group-hover/g:scale-105 transition-transform duration-300"
+                                loading="lazy"
+                              />
+                            </div>
+                            {gImg.caption && (
+                              <figcaption className="p-2.5 bg-black/70 backdrop-blur-xs text-[11px] text-slate-300 text-center italic border-t border-white/5">
+                                {gImg.caption}
+                              </figcaption>
+                            )}
+                          </figure>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
                 if (block.type === 'table') {
                   return (
                     <div key={block.id} className="my-6 overflow-x-auto rounded-xl border border-white/10 bg-white/5">

@@ -15,7 +15,12 @@ export function WhatsAppButton() {
     }
   }, []);
 
-  if (pathname === '/insights/write' || pathname?.startsWith('/insights/write')) {
+  if (
+    pathname === '/insights/write' || 
+    pathname?.startsWith('/insights/write') ||
+    pathname === '/admin' ||
+    pathname?.startsWith('/admin')
+  ) {
     return null;
   }
 

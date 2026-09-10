@@ -19,7 +19,12 @@ export function Footer() {
     setServices(obliqueStore.getServices());
   }, []);
 
-  if (pathname === '/insights/write' || pathname?.startsWith('/insights/write')) {
+  if (
+    pathname === '/insights/write' || 
+    pathname?.startsWith('/insights/write') ||
+    pathname === '/admin' ||
+    pathname?.startsWith('/admin')
+  ) {
     return null;
   }
 
@@ -153,7 +158,6 @@ export function Footer() {
           <div className="flex items-center gap-6">
             <Link href="/privacy-policy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
-            <Link href="/admin" className="hover:text-slate-400 transition-colors">Admin Portal</Link>
           </div>
         </div>
       </div>

@@ -44,8 +44,13 @@ export function ObliqueAIChatbot() {
     }
   }, [messages, isOpen]);
 
-  // Hide in editorial studio after hooks are declared
-  if (pathname === '/insights/write' || pathname?.startsWith('/insights/write')) {
+  // Hide in editorial studio and admin console after hooks are declared
+  if (
+    pathname === '/insights/write' || 
+    pathname?.startsWith('/insights/write') ||
+    pathname === '/admin' ||
+    pathname?.startsWith('/admin')
+  ) {
     return null;
   }
 

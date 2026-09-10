@@ -32,7 +32,9 @@ import {
   Loader2,
   RefreshCw,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { uploadArticleMedia } from '@/lib/mediaService';
 
@@ -155,6 +157,75 @@ export function BlockRenderer({
         errorMessage: err?.message || 'Failed to process image.',
       });
     }
+  };
+
+  const [galleryUploading, setGalleryUploading] = useState<{ active: boolean; current: number; total: number }>({
+    active: false,
+    current: 0,
+    total: 0
+  });
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
+
+  const handleGalleryFilesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setGalleryUploading({ active: true, current: 0, total: files.length });
+    const currentList = [...(block.galleryImages || [])];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setGalleryUploading({ active: true, current: i + 1, total: files.length });
+      try {
+        const result = await uploadArticleMedia(
+          file,
+          {
+            articleId: articleId || 'temp-draft',
+            authorId: authorId || 'anonymous-author',
+            mediaType: 'gallery',
+            altText: file.name,
+            caption: file.name.replace(/\.[^/.]+$/, ''),
+          }
+        );
+
+        if (result.success && result.permanentUrl) {
+          currentList.push({
+            url: result.permanentUrl,
+            caption: file.name.replace(/\.[^/.]+$/, ''),
+            alt: file.name,
+            mediaId: result.id,
+            storagePath: result.storagePath
+          });
+        }
+      } catch (err) {
+        console.error('Gallery file upload error:', err);
+      }
+    }
+
+    onUpdate({
+      ...block,
+      galleryImages: currentList
+    });
+
+    setGalleryUploading({ active: false, current: 0, total: 0 });
+    e.target.value = '';
+  };
+
+  const handleAddGalleryUrl = () => {
+    if (!newImageUrl.trim()) return;
+    const currentList = [...(block.galleryImages || [])];
+    currentList.push({
+      url: newImageUrl.trim(),
+      caption: 'Image caption',
+      alt: 'Gallery photo'
+    });
+    onUpdate({
+      ...block,
+      galleryImages: currentList
+    });
+    setNewImageUrl('');
+    setShowUrlInput(false);
   };
 
   return (
@@ -626,51 +697,219 @@ export function BlockRenderer({
       )}
 
       {/* =========================================================================
-          BLOCK 7: IMAGE GALLERY (Section 26)
+          BLOCK 7: IMAGE GALLERY (Multi-Photo Device Uploader & Manager)
           ========================================================================= */}
       {block.type === 'gallery' && (
-        <div className="space-y-3 rounded-2xl border border-slate-200 p-4 bg-slate-50/60">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-            <span className="text-xs font-semibold text-slate-700">Image Gallery</span>
-            <button
-              type="button"
-              onClick={() => {
-                const currentGallery = block.galleryImages || [];
-                onUpdate({
-                  ...block,
-                  galleryImages: [
-                    ...currentGallery,
-                    { url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80', caption: 'Gallery photo', alt: 'Telemetry' }
-                  ]
-                });
-              }}
-              className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer"
-            >
-              <Plus className="w-3 h-3" />
-              <span>Add Image</span>
-            </button>
+        <div className="space-y-4 rounded-2xl border border-slate-200 p-4 sm:p-5 bg-slate-50/80 shadow-xs">
+          {/* Gallery Header Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-blue-600" />
+                <span>Image Gallery</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-mono font-medium">
+                {(block.galleryImages || []).length} {(block.galleryImages || []).length === 1 ? 'image' : 'images'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Device File Upload Button */}
+              <label className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors">
+                <Upload className="w-3.5 h-3.5" />
+                <span>Upload from Device</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleGalleryFilesUpload}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Add by URL */}
+              <button
+                type="button"
+                onClick={() => setShowUrlInput(!showUrlInput)}
+                className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium border border-slate-200 flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Add URL</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {(block.galleryImages || [
-              { url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80', caption: 'Dashboard Overview', alt: 'Analytics view' },
-              { url: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80', caption: 'Node Architecture', alt: 'Server topology' }
-            ]).map((img, gIdx) => (
-              <div key={gIdx} className="relative group/g rounded-xl overflow-hidden border border-slate-200 bg-slate-900 aspect-16/10">
-                <img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const nextGallery = (block.galleryImages || []).filter((_, i) => i !== gIdx);
-                    onUpdate({ ...block, galleryImages: nextGallery });
-                  }}
-                  className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white hover:bg-rose-500 opacity-0 group-hover/g:opacity-100 transition-opacity"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
+          {/* Quick URL Input Drawer */}
+          {showUrlInput && (
+            <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200 animate-fadeIn">
+              <input
+                type="url"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+                placeholder="Paste direct image URL (https://...)..."
+                className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 text-slate-800"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddGalleryUrl();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleAddGalleryUrl}
+                className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 cursor-pointer"
+              >
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowUrlInput(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Uploading In-Progress Notification */}
+          {galleryUploading.active && (
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-center gap-3 animate-pulse">
+              <Loader2 className="w-4 h-4 animate-spin text-blue-600 shrink-0" />
+              <div>
+                <span className="font-semibold">Uploading photos to Supabase Storage...</span>
+                <span className="ml-1 text-[11px] text-blue-600 font-mono">
+                  ({galleryUploading.current} of {galleryUploading.total} complete)
+                </span>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+
+          {/* Empty State / Dropzone */}
+          {(!block.galleryImages || block.galleryImages.length === 0) && !galleryUploading.active && (
+            <label className="block rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-500 hover:bg-blue-50/40 p-8 text-center cursor-pointer transition-all">
+              <div className="w-12 h-12 rounded-full bg-slate-100 mx-auto flex items-center justify-center text-slate-400 mb-2">
+                <Upload className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="text-xs font-semibold text-slate-800">
+                No images in this gallery yet
+              </div>
+              <div className="text-[11px] text-slate-500 mt-1">
+                Click here or drag & drop to upload images from your device (JPG, PNG, WebP, GIF)
+              </div>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleGalleryFilesUpload}
+                className="hidden"
+              />
+            </label>
+          )}
+
+          {/* Gallery Items Grid */}
+          {block.galleryImages && block.galleryImages.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {block.galleryImages.map((img, gIdx) => (
+                <div 
+                  key={gIdx} 
+                  className="rounded-xl overflow-hidden border border-slate-200 bg-white shadow-xs flex flex-col group/card"
+                >
+                  {/* Thumbnail & Overlay Controls */}
+                  <div className="relative aspect-16/10 bg-slate-900 overflow-hidden">
+                    <img 
+                      src={img.url} 
+                      alt={img.alt || 'Gallery photo'} 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105" 
+                    />
+
+                    {/* Badge */}
+                    <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/60 text-white text-[9px] font-mono backdrop-blur-xs">
+                      #{gIdx + 1}
+                    </div>
+
+                    {/* Actions Overlay */}
+                    <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity z-10">
+                      {/* Move Left */}
+                      {gIdx > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = [...(block.galleryImages || [])];
+                            const temp = next[gIdx - 1];
+                            next[gIdx - 1] = next[gIdx];
+                            next[gIdx] = temp;
+                            onUpdate({ ...block, galleryImages: next });
+                          }}
+                          className="p-1 rounded-md bg-black/70 hover:bg-black text-white text-xs backdrop-blur-xs"
+                          title="Move earlier"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+
+                      {/* Move Right */}
+                      {gIdx < (block.galleryImages || []).length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = [...(block.galleryImages || [])];
+                            const temp = next[gIdx + 1];
+                            next[gIdx + 1] = next[gIdx];
+                            next[gIdx] = temp;
+                            onUpdate({ ...block, galleryImages: next });
+                          }}
+                          className="p-1 rounded-md bg-black/70 hover:bg-black text-white text-xs backdrop-blur-xs"
+                          title="Move later"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+
+                      {/* Delete */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = (block.galleryImages || []).filter((_, i) => i !== gIdx);
+                          onUpdate({ ...block, galleryImages: next });
+                        }}
+                        className="p-1 rounded-md bg-rose-600 hover:bg-rose-700 text-white text-xs backdrop-blur-xs"
+                        title="Remove photo"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inline Captions & Alt Details */}
+                  <div className="p-2.5 space-y-1.5 bg-slate-50/50 border-t border-slate-100">
+                    <input
+                      type="text"
+                      value={img.caption || ''}
+                      onChange={(e) => {
+                        const next = [...(block.galleryImages || [])];
+                        next[gIdx] = { ...next[gIdx], caption: e.target.value };
+                        onUpdate({ ...block, galleryImages: next });
+                      }}
+                      placeholder="Photo caption..."
+                      className="w-full px-2 py-1 rounded text-xs bg-white border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+                    />
+                    <input
+                      type="text"
+                      value={img.alt || ''}
+                      onChange={(e) => {
+                        const next = [...(block.galleryImages || [])];
+                        next[gIdx] = { ...next[gIdx], alt: e.target.value };
+                        onUpdate({ ...block, galleryImages: next });
+                      }}
+                      placeholder="Alt text for SEO & screen readers..."
+                      className="w-full px-2 py-0.5 rounded text-[11px] bg-transparent border-0 text-slate-500 placeholder:text-slate-400 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
