@@ -2280,9 +2280,14 @@ class ObliqueStore {
     return item;
   }
 
-  public getUserFeedback(userId: string): UserFeedbackItem[] {
-    if (!userId) return [];
-    return this.userFeedbackItems.filter(f => f.userId === userId);
+  public getUserFeedback(userId: string, userEmail?: string): UserFeedbackItem[] {
+    if (!userId && !userEmail) return [];
+    const cleanEmail = userEmail?.trim().toLowerCase();
+    return this.userFeedbackItems.filter(f => {
+      if (userId && f.userId === userId) return true;
+      if (cleanEmail && f.userEmail?.trim().toLowerCase() === cleanEmail) return true;
+      return false;
+    });
   }
 
   public async submitUserFeedback(
@@ -2317,19 +2322,42 @@ class ObliqueStore {
     return feedback;
   }
 
-  public getUserProjectInquiries(userId: string): ProjectWizardInquiry[] {
-    if (!userId) return [];
-    return this.wizardInquiries.filter(w => w.userId === userId);
+  public getUserProjectInquiries(userId: string, userEmail?: string): ProjectWizardInquiry[] {
+    if (!userId && !userEmail) return [];
+    const cleanEmail = userEmail?.trim().toLowerCase();
+    return this.wizardInquiries.filter(w => {
+      if (userId && w.userId === userId) return true;
+      if (cleanEmail && w.email?.trim().toLowerCase() === cleanEmail) return true;
+      return false;
+    });
   }
 
-  public getUserCallRequests(userId: string): CallRequest[] {
-    if (!userId) return [];
-    return this.callRequests.filter(c => c.userId === userId);
+  public getUserCallRequests(userId: string, userEmail?: string): CallRequest[] {
+    if (!userId && !userEmail) return [];
+    const cleanEmail = userEmail?.trim().toLowerCase();
+    return this.callRequests.filter(c => {
+      if (userId && c.userId === userId) return true;
+      if (cleanEmail && c.email?.trim().toLowerCase() === cleanEmail) return true;
+      return false;
+    });
   }
 
-  public getUserArticles(userId: string): BlogPost[] {
-    if (!userId) return [];
-    return this.posts.filter(p => p.authorId === userId);
+  public getUserArticles(userId: string, userEmail?: string): BlogPost[] {
+    if (!userId && !userEmail) return [];
+    const cleanEmail = userEmail?.trim().toLowerCase();
+    const cleanSlug = cleanEmail ? cleanEmail.split('@')[0].replace(/[^a-z0-9]/g, '-') : '';
+
+    return this.posts.filter(p => {
+      if (!p.authorId) return false;
+      // 1. Strict user ID match
+      if (userId && p.authorId === userId) return true;
+      // 2. Auth ID prefixed match
+      if (userId && p.authorId === `user-${userId}`) return true;
+      // 3. Clean email or author slug match if user authored it
+      if (cleanEmail && p.authorId.toLowerCase() === cleanEmail) return true;
+      if (cleanSlug && p.authorId.toLowerCase() === `auth-${cleanSlug}`) return true;
+      return false;
+    });
   }
 }
 

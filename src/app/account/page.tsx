@@ -29,9 +29,9 @@ export default function AccountOverviewPage() {
 
   if (!user) return null;
 
-  const projects = obliqueStore.getUserProjectInquiries(user.id);
-  const calls = obliqueStore.getUserCallRequests(user.id);
-  const articles = obliqueStore.getUserArticles(user.id);
+  const projects = obliqueStore.getUserProjectInquiries(user.id, user.email);
+  const calls = obliqueStore.getUserCallRequests(user.id, user.email);
+  const articles = obliqueStore.getUserArticles(user.id, user.email);
   const activities = obliqueStore.getUserActivities(user.id);
   const completion = obliqueStore.calculateProfileCompletion(user);
 

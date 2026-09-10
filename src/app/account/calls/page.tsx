@@ -36,7 +36,7 @@ export default function AccountCallsPage() {
 
   if (!user) return null;
 
-  const calls = obliqueStore.getUserCallRequests(user.id);
+  const calls = obliqueStore.getUserCallRequests(user.id, user.email);
 
   const filteredCalls = calls.filter(c => {
     if (activeTab === 'upcoming') return c.status === 'pending' || c.status === 'confirmed';

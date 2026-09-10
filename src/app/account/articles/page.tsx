@@ -47,14 +47,8 @@ export default function AccountArticlesPage() {
 
   if (!user) return null;
 
-  // Retrieve user articles (matching authorId or user email/id)
-  const allArticles = obliqueStore.getPosts().filter(p => 
-    p.authorId === user.id || 
-    p.authorId?.includes(user.id) || 
-    p.authorId === 'auth-editorial' ||
-    p.slug === 'hii' ||
-    p.slug === 'dem3o'
-  );
+  // Retrieve user articles strictly belonging to this authenticated user
+  const allArticles = obliqueStore.getUserArticles(user.id, user.email);
 
   const filteredArticles = allArticles.filter(a => {
     if (selectedTab === 'All') return true;

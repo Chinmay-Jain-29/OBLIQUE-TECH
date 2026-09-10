@@ -3,6 +3,7 @@
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/navigation';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/lib/authContext';
 import { obliqueStore } from '@/lib/store';
 import { AuthorProfile, AuthorUser } from '@/types';
 import { 
@@ -47,6 +48,7 @@ function AuthorProfileContent() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/insights/write';
 
+  const { user: authUser } = useAuth();
   const [currentUser, setCurrentUser] = useState<AuthorUser | null>(null);
   const [fullName, setFullName] = useState('');
   const [title, setTitle] = useState('');
@@ -65,16 +67,29 @@ function AuthorProfileContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
-    const user = obliqueStore.getCurrentAuthorUser();
-    if (!user) {
-      // Create guest/author fallback user if visiting directly
-      const guest = obliqueStore.loginAuthor('guest.contributor@obliquetech.com');
-      setCurrentUser(guest);
+    let activeUser: AuthorUser | null = null;
+
+    if (authUser) {
+      activeUser = {
+        id: authUser.id,
+        email: authUser.email,
+        name: authUser.fullName || authUser.email.split('@')[0],
+        avatarUrl: authUser.profilePhoto || '/avatars/author-default.png',
+        role: 'author',
+        createdAt: authUser.createdAt,
+        profileCompleted: false
+      };
     } else {
-      setCurrentUser(user);
-      // Populate existing profile data if available
-      const existing = obliqueStore.getAuthorProfile(user.id);
+      activeUser = obliqueStore.getCurrentAuthorUser();
+      if (!activeUser) {
+        activeUser = obliqueStore.loginAuthor('guest.contributor@obliquetech.com');
+      }
+    }
+
+    setCurrentUser(activeUser);
+
+    if (activeUser) {
+      const existing = obliqueStore.getAuthorProfile(activeUser.id);
       if (existing) {
         if (existing.fullName) setFullName(existing.fullName);
         if (existing.title) setTitle(existing.title);
@@ -86,14 +101,19 @@ function AuthorProfileContent() {
         if (existing.githubUrl) setGithubUrl(existing.githubUrl);
         if (existing.websiteUrl) setWebsiteUrl(existing.websiteUrl);
 
-        if (obliqueStore.isAuthorProfileComplete(user.id)) {
+        if (obliqueStore.isAuthorProfileComplete(activeUser.id)) {
           setIsCompleted(true);
         }
-      } else if (user.name) {
-        setFullName(user.name);
+      } else {
+        if (activeUser.name) setFullName(activeUser.name);
+        if (authUser?.jobTitle) setTitle(authUser.jobTitle);
+        if (authUser?.bio) setBio(authUser.bio);
+        if (authUser?.profilePhoto) setAvatarUrl(authUser.profilePhoto);
+        if (authUser?.linkedin) setLinkedInUrl(authUser.linkedin);
+        if (authUser?.website) setWebsiteUrl(authUser.website);
       }
     }
-  }, []);
+  }, [authUser]);
 
   const toggleExpertise = (tag: string) => {
     if (expertise.includes(tag)) {

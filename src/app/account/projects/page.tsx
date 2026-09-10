@@ -42,7 +42,7 @@ export default function AccountProjectsPage() {
 
   if (!user) return null;
 
-  const projects = obliqueStore.getUserProjectInquiries(user.id);
+  const projects = obliqueStore.getUserProjectInquiries(user.id, user.email);
 
   return (
     <div className="space-y-6">

@@ -30,7 +30,7 @@ export default function AccountFeedbackPage() {
 
   if (!user) return null;
 
-  const userFeedback = obliqueStore.getUserFeedback(user.id);
+  const userFeedback = obliqueStore.getUserFeedback(user.id, user.email);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
