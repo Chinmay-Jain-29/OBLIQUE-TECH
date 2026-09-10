@@ -355,7 +355,15 @@ export function InsightDetailView({ slug, initialPost }: InsightDetailViewProps)
                   return (
                     <div key={block.id} className="my-6 space-y-2">
                       <div className="rounded-2xl overflow-hidden border border-white/10">
-                        <img src={block.imageUrl} alt={block.imageAlt || ''} className="w-full h-auto object-cover" />
+                        <img 
+                          src={block.imageUrl} 
+                          alt={block.imageAlt || ''} 
+                          className="w-full h-auto object-cover"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80';
+                          }}
+                        />
                       </div>
                       {block.imageCaption && (
                         <p className="text-center text-xs text-slate-400 italic">
@@ -377,6 +385,10 @@ export function InsightDetailView({ slug, initialPost }: InsightDetailViewProps)
                                 alt={gImg.alt || gImg.caption || 'Article gallery image'}
                                 className="w-full h-full object-cover group-hover/g:scale-105 transition-transform duration-300"
                                 loading="lazy"
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80';
+                                }}
                               />
                             </div>
                             {gImg.caption && (

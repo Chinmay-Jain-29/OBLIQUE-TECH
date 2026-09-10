@@ -223,6 +223,15 @@ async function optimizeAndMeasureImage(file: File): Promise<{
   });
 }
 
+export function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('Failed to convert image to Data URL'));
+    reader.readAsDataURL(blob);
+  });
+}
+
 // =============================================================================
 // MAIN UPLOAD SERVICE (Section 2, 8, 9, 10, 15)
 // =============================================================================
@@ -266,7 +275,10 @@ export async function uploadArticleMedia(
   try {
     // 2. Measure & Optimize Image (Section 25 & 29)
     const { blob, width, height, mimeType } = await optimizeAndMeasureImage(file);
-    options.onProgress?.(45);
+    notifyProgress(45);
+
+    // Convert to permanent base64 Data URL as a fail-safe (never expires or gets revoked)
+    const base64DataUrl = await blobToDataUrl(blob);
 
     const mediaId = `media-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const authorId = options.authorId || 'author-editorial';
@@ -281,34 +293,36 @@ export async function uploadArticleMedia(
 
     // 3. Primary Target: Supabase Storage (Section 2 & 10)
     if (isSupabaseConfigured && supabase) {
-      options.onProgress?.(65);
+      notifyProgress(65);
       const bucketName = 'blog-media';
 
-      // Attempt upload to Supabase bucket
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from(bucketName)
-        .upload(storagePath, blob, {
-          contentType: mimeType,
-          upsert: true,
-          cacheControl: '3600'
-        });
+      try {
+        // Attempt upload to Supabase bucket
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from(bucketName)
+          .upload(storagePath, blob, {
+            contentType: mimeType,
+            upsert: true,
+            cacheControl: '3600'
+          });
 
-      if (!uploadError && uploadData) {
-        const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(storagePath);
-        publicUrl = urlData.publicUrl;
-      } else {
-        console.warn('Supabase storage upload failed, falling back to persistent local storage:', uploadError?.message);
+        if (!uploadError && uploadData) {
+          const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(storagePath);
+          publicUrl = urlData.publicUrl;
+        } else {
+          console.warn('Supabase storage upload error, using self-contained base64 data URL:', uploadError?.message);
+        }
+      } catch (uploadCatch: any) {
+        console.warn('Supabase storage upload exception:', uploadCatch?.message);
       }
     }
 
-    // 4. Fallback / Local Persistent Target (Section 3 & 41)
-    // If Supabase not configured or failed, generate persistent local object reference
+    // 4. Reliable Fallback Target: If Supabase upload didn't succeed (e.g. bucket missing),
+    // use the permanent base64 Data URL!
+    // NEVER use URL.createObjectURL(blob) because blob: URLs get revoked when the tab closes!
     if (!publicUrl) {
-      options.onProgress?.(80);
-      // Create permanent Object URL and register in persistent IndexedDB
-      const permanentBlobUrl = URL.createObjectURL(blob);
-      publicUrl = permanentBlobUrl;
-      localUrlRegistry.set(mediaId, permanentBlobUrl);
+      notifyProgress(85);
+      publicUrl = base64DataUrl;
     }
 
     // 5. Build MediaRecord Metadata (Section 10 & 25)

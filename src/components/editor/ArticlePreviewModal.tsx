@@ -289,7 +289,15 @@ export function ArticlePreviewModal({
                           block.imageSize === 'md' ? 'max-w-md' : 'max-w-2xl'
                         }`}>
                           <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-md">
-                            <img src={block.imageUrl} alt={block.imageAlt || ''} className="w-full h-auto object-cover" />
+                            <img 
+                              src={block.imageUrl} 
+                              alt={block.imageAlt || ''} 
+                              className="w-full h-auto object-cover"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80';
+                              }}
+                            />
                           </div>
                           {block.imageCaption && (
                             <p className="text-center text-xs text-slate-500 italic">
@@ -306,7 +314,15 @@ export function ArticlePreviewModal({
                             {(block.galleryImages || []).map((img, idx) => (
                               <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 shadow-xs flex flex-col bg-slate-50">
                                 <div className="aspect-16/10 overflow-hidden bg-slate-900">
-                                  <img src={img.url} alt={img.alt || ''} className="w-full h-full object-cover" />
+                                  <img 
+                                    src={img.url} 
+                                    alt={img.alt || ''} 
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80';
+                                    }}
+                                  />
                                 </div>
                                 {img.caption && (
                                   <div className="p-2 text-center text-[11px] text-slate-600 italic bg-white border-t border-slate-100">

@@ -556,6 +556,10 @@ export function BlockRenderer({
                 src={block.imageUrl || block.previewUrl}
                 alt={block.imageAlt || 'Article illustration'}
                 className="w-full h-auto object-cover max-h-96"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80';
+                }}
               />
 
               {/* Uploading Overlay */}

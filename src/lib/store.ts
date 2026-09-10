@@ -824,10 +824,42 @@ export const INITIAL_SETTINGS: SiteSettings = {
   ]
 };
 
+function sanitizePostMedia(post: BlogPost): BlogPost {
+  if (!post) return post;
+  const isDeadBlob = (url?: string | null) => Boolean(url && url.startsWith('blob:'));
+  const fallbackImg = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80';
+  const fallbackGallery = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80';
+
+  return {
+    ...post,
+    coverImage: isDeadBlob(post.coverImage) ? fallbackImg : post.coverImage,
+    blocks: (post.blocks || []).map(b => {
+      if (b.type === 'image' && (isDeadBlob(b.imageUrl) || isDeadBlob(b.previewUrl))) {
+        return {
+          ...b,
+          imageUrl: isDeadBlob(b.imageUrl) ? fallbackImg : b.imageUrl,
+          previewUrl: isDeadBlob(b.previewUrl) ? fallbackImg : b.previewUrl,
+        };
+      }
+      if (b.type === 'gallery' && b.galleryImages) {
+        return {
+          ...b,
+          galleryImages: b.galleryImages.map(gi => ({
+            ...gi,
+            url: isDeadBlob(gi.url) ? fallbackGallery : gi.url,
+          }))
+        };
+      }
+      return b;
+    })
+  };
+}
+
 // =============================================================================
 // SUPABASE DATABASE MAPPERS (Snake Case <-> Camel Case)
 // =============================================================================
-function mapBlogToDbPost(post: BlogPost) {
+function mapBlogToDbPost(rawPost: BlogPost) {
+  const post = sanitizePostMedia(rawPost);
   return {
     id: post.id,
     slug: post.slug,
@@ -850,7 +882,7 @@ function mapBlogToDbPost(post: BlogPost) {
 }
 
 function mapDbPostToBlog(row: any): BlogPost {
-  return {
+  const post: BlogPost = {
     id: String(row.id),
     slug: row.slug,
     title: row.title,
@@ -869,6 +901,7 @@ function mapDbPostToBlog(row: any): BlogPost {
     seoDescription: row.seo_description,
     blocks: Array.isArray(row.blocks) ? row.blocks : []
   };
+  return sanitizePostMedia(post);
 }
 
 function mapTsServiceToDb(s: ServiceItem) {
@@ -1330,7 +1363,14 @@ class ObliqueStore {
       if (savedPortfolio) this.portfolio = JSON.parse(savedPortfolio);
 
       const savedPosts = localStorage.getItem('oblique_posts');
-      if (savedPosts) this.posts = JSON.parse(savedPosts);
+      if (savedPosts) {
+        try {
+          const rawPosts = JSON.parse(savedPosts);
+          this.posts = Array.isArray(rawPosts) ? rawPosts.map(sanitizePostMedia) : [];
+        } catch (e) {
+          console.warn('Error parsing oblique_posts:', e);
+        }
+      }
 
       const savedMedia = localStorage.getItem('oblique_media');
       if (savedMedia) this.mediaRecords = JSON.parse(savedMedia);
@@ -1447,7 +1487,8 @@ class ObliqueStore {
     return undefined;
   }
 
-  public savePost(post: BlogPost) {
+  public savePost(rawPost: BlogPost) {
+    const post = sanitizePostMedia(rawPost);
     const existingIndex = this.posts.findIndex(p => p.id === post.id);
     if (existingIndex >= 0) {
       const nextPosts = [...this.posts];

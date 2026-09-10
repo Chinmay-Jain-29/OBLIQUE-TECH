@@ -238,6 +238,23 @@ CREATE POLICY "Public full access project_wizard_inquiries" ON project_wizard_in
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public full access site_settings" ON site_settings FOR ALL USING (true) WITH CHECK (true);
 
+-- 3.1 STORAGE BUCKET & OPEN OBJECT POLICIES (FOR BLOG & MEDIA UPLOADS)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('blog-media', 'blog-media', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Public storage select blog-media" ON storage.objects;
+CREATE POLICY "Public storage select blog-media" ON storage.objects FOR SELECT USING (bucket_id = 'blog-media');
+
+DROP POLICY IF EXISTS "Public storage insert blog-media" ON storage.objects;
+CREATE POLICY "Public storage insert blog-media" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'blog-media');
+
+DROP POLICY IF EXISTS "Public storage update blog-media" ON storage.objects;
+CREATE POLICY "Public storage update blog-media" ON storage.objects FOR UPDATE USING (bucket_id = 'blog-media');
+
+DROP POLICY IF EXISTS "Public storage delete blog-media" ON storage.objects;
+CREATE POLICY "Public storage delete blog-media" ON storage.objects FOR DELETE USING (bucket_id = 'blog-media');
+
 
 -- =============================================================================
 -- 4. DIRECT DATA SEEDING (POPULATES ALL TABLES IMMEDIATELY)
