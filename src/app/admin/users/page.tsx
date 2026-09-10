@@ -46,62 +46,84 @@ export default function AdminUsersPage() {
   const [deleteConfirmUser, setDeleteConfirmUser] = useState<UserProfile | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  // Load users from Supabase Cloud + Local Store
+  // Load users from Supabase Cloud as authoritative runtime source
   const loadUsers = async () => {
     setLoading(true);
-    let allProfiles: UserProfile[] = [];
+    let authoritativeProfiles: UserProfile[] | null = null;
 
-    // 1. Fetch from Supabase
     if (isSupabaseConfigured && supabase) {
+      // 1. Try RPC get_registered_users (direct read of auth.users)
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (!error && data && data.length > 0) {
-          allProfiles = data.map((row: any) => ({
-            id: String(row.id),
-            authUserId: row.auth_user_id || String(row.id),
-            fullName: row.full_name || 'User',
-            email: row.email || '',
-            phone: row.phone || '',
-            countryCode: row.country_code || '+91',
-            companyName: row.company_name || '',
-            jobTitle: row.job_title || '',
-            bio: row.bio || '',
-            country: row.country || '',
-            city: row.city || '',
-            profilePhoto: row.profile_photo || '',
-            linkedin: row.linkedin || '',
-            website: row.website || '',
-            role: (row.role as UserRole) || 'user',
-            createdAt: row.created_at || new Date().toISOString(),
-            updatedAt: row.updated_at || new Date().toISOString()
+        const { data: rpcUsers, error: rpcError } = await supabase.rpc('get_registered_users');
+        if (!rpcError && Array.isArray(rpcUsers)) {
+          authoritativeProfiles = rpcUsers.map((u: any) => ({
+            id: String(u.id),
+            authUserId: String(u.id),
+            fullName: u.full_name || 'User',
+            email: u.email || '',
+            phone: u.phone || '',
+            countryCode: '+91',
+            companyName: u.company_name || '',
+            jobTitle: u.job_title || '',
+            bio: '',
+            country: '',
+            city: '',
+            profilePhoto: '',
+            linkedin: '',
+            website: '',
+            role: (u.role as UserRole) || 'user',
+            createdAt: u.created_at || new Date().toISOString(),
+            updatedAt: u.created_at || new Date().toISOString()
           }));
         }
-      } catch (err) {
-        console.warn('Supabase profiles fetch error:', err);
+      } catch (e) {
+        console.warn('RPC get_registered_users not available:', e);
+      }
+
+      // 2. If RPC not available, try profiles table
+      if (!authoritativeProfiles) {
+        try {
+          const { data: profileRows, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (!profileError && Array.isArray(profileRows) && profileRows.length > 0) {
+            authoritativeProfiles = profileRows.map((row: any) => ({
+              id: String(row.id),
+              authUserId: row.auth_user_id || String(row.id),
+              fullName: row.full_name || 'User',
+              email: row.email || '',
+              phone: row.phone || '',
+              countryCode: row.country_code || '+91',
+              companyName: row.company_name || '',
+              jobTitle: row.job_title || '',
+              bio: row.bio || '',
+              country: row.country || '',
+              city: row.city || '',
+              profilePhoto: row.profile_photo || '',
+              linkedin: row.linkedin || '',
+              website: row.website || '',
+              role: (row.role as UserRole) || 'user',
+              createdAt: row.created_at || new Date().toISOString(),
+              updatedAt: row.updated_at || new Date().toISOString()
+            }));
+          }
+        } catch (e) {
+          console.warn('profiles query error:', e);
+        }
       }
     }
 
-    // 2. Merge with local store profiles
-    const localProfiles = obliqueStore.getUserProfiles();
-    const map = new Map<string, UserProfile>();
+    if (authoritativeProfiles !== null) {
+      // Supabase cloud is authoritative: sync store and purge deleted users
+      obliqueStore.syncLiveUsers(authoritativeProfiles);
+      setUsers(authoritativeProfiles);
+    } else {
+      // Fallback to local store when offline or unconfigured
+      setUsers(obliqueStore.getUserProfiles());
+    }
 
-    // Supabase cloud profiles take priority, fallback to local
-    localProfiles.forEach(p => {
-      if (p.id || p.email) map.set((p.email || p.id).toLowerCase(), p);
-    });
-    allProfiles.forEach(p => {
-      if (p.id || p.email) map.set((p.email || p.id).toLowerCase(), p);
-    });
-
-    const merged = Array.from(map.values()).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    setUsers(merged);
     setLoading(false);
   };
 
@@ -110,7 +132,29 @@ export default function AdminUsersPage() {
 
     const handleUpdate = () => loadUsers();
     window.addEventListener('oblique_profiles_updated', handleUpdate);
-    return () => window.removeEventListener('oblique_profiles_updated', handleUpdate);
+    // Auto re-fetch whenever admin tabs back into this window
+    window.addEventListener('focus', handleUpdate);
+
+    // Live Supabase Realtime subscription
+    let channel: any = null;
+    if (isSupabaseConfigured && supabase) {
+      try {
+        channel = supabase
+          .channel('realtime-profiles-sync')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+            loadUsers();
+          })
+          .subscribe();
+      } catch (e) {
+        console.warn('Realtime subscription error:', e);
+      }
+    }
+
+    return () => {
+      window.removeEventListener('oblique_profiles_updated', handleUpdate);
+      window.removeEventListener('focus', handleUpdate);
+      if (channel && supabase) supabase.removeChannel(channel);
+    };
   }, []);
 
   // Filtered & Searched list
@@ -156,7 +200,16 @@ export default function AdminUsersPage() {
   const handleDeleteUser = async () => {
     if (!deleteConfirmUser) return;
     await obliqueStore.deleteUserProfile(deleteConfirmUser.id);
-    setUsers(prev => prev.filter(u => u.id !== deleteConfirmUser.id));
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('profiles').delete().eq('id', deleteConfirmUser.id);
+        await supabase.from('profiles').delete().eq('email', deleteConfirmUser.email);
+        await supabase.rpc('delete_user_by_admin', { target_user_id: deleteConfirmUser.id });
+      } catch (e) {
+        console.warn('Delete cloud user error:', e);
+      }
+    }
+    setUsers(prev => prev.filter(u => u.id !== deleteConfirmUser.id && u.email !== deleteConfirmUser.email));
     if (inspectUser?.id === deleteConfirmUser.id) {
       setInspectUser(null);
     }

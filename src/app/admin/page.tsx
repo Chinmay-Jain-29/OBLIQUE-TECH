@@ -56,65 +56,93 @@ export default function AdminDashboardPage() {
     setInquiriesCount(contacts.length + wizards.length);
     setCallsCount(calls.length);
 
-    // Fetch and merge registered users
+    // Fetch authoritative live registered users
     const loadUsers = async () => {
-      let allProfiles: UserProfile[] = [];
+      let authoritativeProfiles: UserProfile[] | null = null;
 
       if (isSupabaseConfigured && supabase) {
         try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-          if (!error && data && data.length > 0) {
-            allProfiles = data.map((row: any) => ({
-              id: String(row.id),
-              authUserId: row.auth_user_id || String(row.id),
-              fullName: row.full_name || 'User',
-              email: row.email || '',
-              phone: row.phone || '',
-              countryCode: row.country_code || '+91',
-              companyName: row.company_name || '',
-              jobTitle: row.job_title || '',
-              bio: row.bio || '',
-              country: row.country || '',
-              city: row.city || '',
-              profilePhoto: row.profile_photo || '',
-              linkedin: row.linkedin || '',
-              website: row.website || '',
-              role: row.role || 'user',
-              createdAt: row.created_at || new Date().toISOString(),
-              updatedAt: row.updated_at || new Date().toISOString()
+          const { data: rpcUsers, error: rpcError } = await supabase.rpc('get_registered_users');
+          if (!rpcError && Array.isArray(rpcUsers)) {
+            authoritativeProfiles = rpcUsers.map((u: any) => ({
+              id: String(u.id),
+              authUserId: String(u.id),
+              fullName: u.full_name || 'User',
+              email: u.email || '',
+              phone: u.phone || '',
+              countryCode: '+91',
+              companyName: u.company_name || '',
+              jobTitle: u.job_title || '',
+              bio: '',
+              country: '',
+              city: '',
+              profilePhoto: '',
+              linkedin: '',
+              website: '',
+              role: u.role || 'user',
+              createdAt: u.created_at || new Date().toISOString(),
+              updatedAt: u.created_at || new Date().toISOString()
             }));
           }
-        } catch (err) {
-          console.warn('Supabase profiles fetch error in admin overview:', err);
+        } catch (e) {
+          console.warn('RPC get_registered_users error:', e);
+        }
+
+        if (!authoritativeProfiles) {
+          try {
+            const { data: profileRows, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .order('created_at', { ascending: false });
+
+            if (!profileError && Array.isArray(profileRows) && profileRows.length > 0) {
+              authoritativeProfiles = profileRows.map((row: any) => ({
+                id: String(row.id),
+                authUserId: row.auth_user_id || String(row.id),
+                fullName: row.full_name || 'User',
+                email: row.email || '',
+                phone: row.phone || '',
+                countryCode: row.country_code || '+91',
+                companyName: row.company_name || '',
+                jobTitle: row.job_title || '',
+                bio: row.bio || '',
+                country: row.country || '',
+                city: row.city || '',
+                profilePhoto: row.profile_photo || '',
+                linkedin: row.linkedin || '',
+                website: row.website || '',
+                role: row.role || 'user',
+                createdAt: row.created_at || new Date().toISOString(),
+                updatedAt: row.updated_at || new Date().toISOString()
+              }));
+            }
+          } catch (err) {
+            console.warn('Supabase profiles fetch error in admin overview:', err);
+          }
         }
       }
 
-      const localProfiles = obliqueStore.getUserProfiles();
-      const map = new Map<string, UserProfile>();
+      const activeList = authoritativeProfiles !== null ? authoritativeProfiles : obliqueStore.getUserProfiles();
+      if (authoritativeProfiles !== null) {
+        obliqueStore.syncLiveUsers(authoritativeProfiles);
+      }
 
-      localProfiles.forEach(p => {
-        if (p.id || p.email) map.set((p.email || p.id).toLowerCase(), p);
-      });
-      allProfiles.forEach(p => {
-        if (p.id || p.email) map.set((p.email || p.id).toLowerCase(), p);
-      });
-
-      const merged = Array.from(map.values()).sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-      setUsersCount(merged.length);
-      setClientsCount(merged.filter(u => u.role === 'user' || !u.role).length);
-      setAuthorsCount(merged.filter(u => u.role === 'author').length);
-      setAdminsCount(merged.filter(u => u.role === 'admin').length);
-      setRecentUsers(merged.slice(0, 5));
+      setUsersCount(activeList.length);
+      setClientsCount(activeList.filter(u => u.role === 'user' || !u.role).length);
+      setAuthorsCount(activeList.filter(u => u.role === 'author').length);
+      setAdminsCount(activeList.filter(u => u.role === 'admin').length);
+      setRecentUsers(activeList.slice(0, 5));
     };
 
     loadUsers();
+
+    const handleFocus = () => loadUsers();
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('oblique_profiles_updated', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('oblique_profiles_updated', handleFocus);
+    };
   }, []);
 
   return (

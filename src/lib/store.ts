@@ -2100,6 +2100,18 @@ class ObliqueStore {
     return Object.values(this.userProfiles || {});
   }
 
+  public syncLiveUsers(liveUsers: UserProfile[]): void {
+    const nextProfiles: Record<string, UserProfile> = {};
+    liveUsers.forEach(u => {
+      if (u.id) nextProfiles[u.id] = u;
+    });
+    this.userProfiles = nextProfiles;
+    this.saveToStorage('oblique_user_profiles', this.userProfiles);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_profiles_updated'));
+    }
+  }
+
   public getUserProfileByEmail(email: string): UserProfile | undefined {
     if (!email) return undefined;
     const clean = email.trim().toLowerCase();

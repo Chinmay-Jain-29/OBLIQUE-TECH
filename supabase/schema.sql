@@ -204,6 +204,26 @@ CREATE TABLE site_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE profiles (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  auth_user_id TEXT UNIQUE,
+  full_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  country_code TEXT DEFAULT '+91',
+  company_name TEXT,
+  job_title TEXT,
+  bio TEXT,
+  country TEXT,
+  city TEXT,
+  profile_photo TEXT,
+  linkedin TEXT,
+  website TEXT,
+  role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'author', 'editor', 'admin', 'super_admin')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 3. PERMISSIVE ROW LEVEL SECURITY POLICIES (ENABLES CLIENT & API FULL ACCESS)
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public full access services" ON services FOR ALL USING (true) WITH CHECK (true);
@@ -237,6 +257,9 @@ CREATE POLICY "Public full access project_wizard_inquiries" ON project_wizard_in
 
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public full access site_settings" ON site_settings FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public full access profiles" ON profiles FOR ALL USING (true) WITH CHECK (true);
 
 -- 2.1 USER PLATFORM TABLES & EXTENSIONS
 ALTER TABLE project_wizard_inquiries ADD COLUMN IF NOT EXISTS user_id TEXT;
