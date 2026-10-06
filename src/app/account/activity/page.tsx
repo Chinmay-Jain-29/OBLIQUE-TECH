@@ -5,7 +5,7 @@
 // Chronologically grouped, human-readable actions with accent icons & timestamps
 // =============================================================================
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/authContext';
 import { obliqueStore } from '@/lib/store';
 import { UserActivity, UserActivityType } from '@/types';
@@ -81,10 +81,31 @@ function groupActivities(activities: UserActivity[]) {
 
 export default function AccountActivityPage() {
   const { user } = useAuth();
+  const [activities, setActivities] = useState<UserActivity[]>(() => 
+    user ? obliqueStore.getUserActivities(user.id) : []
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+
+    obliqueStore.fetchUserActivities(user.id).then(data => {
+      if (mounted) setActivities(data);
+    });
+
+    const update = () => {
+      if (mounted) setActivities(obliqueStore.getUserActivities(user.id));
+    };
+
+    window.addEventListener('oblique_activity_logged', update);
+    return () => {
+      mounted = false;
+      window.removeEventListener('oblique_activity_logged', update);
+    };
+  }, [user]);
 
   if (!user) return null;
 
-  const activities = obliqueStore.getUserActivities(user.id);
   const grouped = groupActivities(activities);
 
   return (

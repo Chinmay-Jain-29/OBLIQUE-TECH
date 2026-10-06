@@ -5,7 +5,7 @@
 // Authenticated review submission, star rating, project feedback & status
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/authContext';
 import { obliqueStore } from '@/lib/store';
 import { UserFeedbackItem } from '@/types';
@@ -16,8 +16,8 @@ import {
   AlertCircle, 
   Send, 
   Clock, 
-  Calendar,
-  Sparkles
+  Calendar, 
+  Sparkles 
 } from 'lucide-react';
 
 export default function AccountFeedbackPage() {
@@ -27,10 +27,30 @@ export default function AccountFeedbackPage() {
   const [message, setMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
+  const [userFeedback, setUserFeedback] = useState<UserFeedbackItem[]>(() => 
+    user ? obliqueStore.getUserFeedback(user.id, user.email) : []
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+
+    obliqueStore.fetchUserFeedback(user.id, user.email).then(data => {
+      if (mounted) setUserFeedback(data);
+    });
+
+    const update = () => {
+      if (mounted) setUserFeedback(obliqueStore.getUserFeedback(user.id, user.email));
+    };
+
+    window.addEventListener('oblique_feedback_updated', update);
+    return () => {
+      mounted = false;
+      window.removeEventListener('oblique_feedback_updated', update);
+    };
+  }, [user]);
 
   if (!user) return null;
-
-  const userFeedback = obliqueStore.getUserFeedback(user.id, user.email);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

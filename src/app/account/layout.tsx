@@ -5,12 +5,13 @@
 // Clean, professional SaaS navigation & notification center
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/authContext';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { obliqueStore } from '@/lib/store';
+import { UserNotification } from '@/types';
 import { 
   LayoutDashboard, 
   User, 
@@ -48,7 +49,29 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const { user, logout } = useAuth();
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const notifications = user ? obliqueStore.getUserNotifications(user.id) : [];
+  const [notifications, setNotifications] = useState<UserNotification[]>(() => 
+    user ? obliqueStore.getUserNotifications(user.id) : []
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+
+    obliqueStore.fetchUserNotifications(user.id).then(data => {
+      if (mounted) setNotifications(data);
+    });
+
+    const update = () => {
+      if (mounted) setNotifications(obliqueStore.getUserNotifications(user.id));
+    };
+
+    window.addEventListener('oblique_notifications_updated', update);
+    return () => {
+      mounted = false;
+      window.removeEventListener('oblique_notifications_updated', update);
+    };
+  }, [user]);
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (

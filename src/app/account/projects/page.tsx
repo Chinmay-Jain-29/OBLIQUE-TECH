@@ -43,14 +43,21 @@ export default function AccountProjectsPage() {
 
   useEffect(() => {
     if (!user) return;
+    let mounted = true;
+
+    obliqueStore.fetchUserProjectInquiries(user.id, user.email).then(data => {
+      if (mounted) setProjects(data);
+    });
+
     const update = () => {
+      if (!mounted) return;
       setProjects(obliqueStore.getUserProjectInquiries(user.id, user.email));
     };
 
-    update();
     window.addEventListener('oblique_wizards_updated', update);
     window.addEventListener('oblique_inquiries_updated', update);
     return () => {
+      mounted = false;
       window.removeEventListener('oblique_wizards_updated', update);
       window.removeEventListener('oblique_inquiries_updated', update);
     };

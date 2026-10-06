@@ -5,10 +5,11 @@
 // Real statistics, quick actions, profile completion & activity timeline
 // =============================================================================
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/authContext';
 import { obliqueStore } from '@/lib/store';
+import { ProjectWizardInquiry, CallRequest, BlogPost, UserActivity } from '@/types';
 import { 
   FolderKanban, 
   PhoneCall, 
@@ -18,21 +19,67 @@ import {
   CheckCircle2, 
   Clock, 
   Plus, 
-  Sparkles,
-  MessageSquareText,
-  AlertCircle,
-  ExternalLink
+  Sparkles, 
+  MessageSquareText, 
+  AlertCircle, 
+  ExternalLink 
 } from 'lucide-react';
 
 export default function AccountOverviewPage() {
   const { user } = useAuth();
 
+  const [projects, setProjects] = useState<ProjectWizardInquiry[]>(() => 
+    user ? obliqueStore.getUserProjectInquiries(user.id, user.email) : []
+  );
+  const [calls, setCalls] = useState<CallRequest[]>(() => 
+    user ? obliqueStore.getUserCallRequests(user.id, user.email) : []
+  );
+  const [articles, setArticles] = useState<BlogPost[]>(() => 
+    user ? obliqueStore.getUserArticles(user.id, user.email) : []
+  );
+  const [activities, setActivities] = useState<UserActivity[]>(() => 
+    user ? obliqueStore.getUserActivities(user.id) : []
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+
+    Promise.all([
+      obliqueStore.fetchUserProjectInquiries(user.id, user.email),
+      obliqueStore.fetchUserCallRequests(user.id, user.email),
+      obliqueStore.fetchUserActivities(user.id)
+    ]).then(([pList, cList, aList]) => {
+      if (mounted) {
+        setProjects(pList);
+        setCalls(cList);
+        setActivities(aList);
+        setArticles(obliqueStore.getUserArticles(user.id, user.email));
+      }
+    });
+
+    const handleUpdate = () => {
+      if (!mounted) return;
+      setProjects(obliqueStore.getUserProjectInquiries(user.id, user.email));
+      setCalls(obliqueStore.getUserCallRequests(user.id, user.email));
+      setActivities(obliqueStore.getUserActivities(user.id));
+      setArticles(obliqueStore.getUserArticles(user.id, user.email));
+    };
+
+    window.addEventListener('oblique_inquiries_updated', handleUpdate);
+    window.addEventListener('oblique_calls_updated', handleUpdate);
+    window.addEventListener('oblique_activity_logged', handleUpdate);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener('oblique_inquiries_updated', handleUpdate);
+      window.removeEventListener('oblique_calls_updated', handleUpdate);
+      window.removeEventListener('oblique_activity_logged', handleUpdate);
+    };
+  }, [user]);
+
   if (!user) return null;
 
-  const projects = obliqueStore.getUserProjectInquiries(user.id, user.email);
-  const calls = obliqueStore.getUserCallRequests(user.id, user.email);
-  const articles = obliqueStore.getUserArticles(user.id, user.email);
-  const activities = obliqueStore.getUserActivities(user.id);
   const completion = obliqueStore.calculateProfileCompletion(user);
 
   // Filter actual statistics

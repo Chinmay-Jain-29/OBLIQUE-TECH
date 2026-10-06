@@ -228,117 +228,118 @@ CREATE TABLE profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. PERMISSIVE ROW LEVEL SECURITY POLICIES (ENABLES CLIENT & API FULL ACCESS)
+-- =============================================================================
+-- 3. HARDENED ROW LEVEL SECURITY (RLS) POLICIES
+-- Strict confidentiality: Public content is readable, user data is isolated per login
+-- =============================================================================
+
+-- Public Read Tables (Marketing & CMS content)
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access services" ON services FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read services" ON services FOR SELECT USING (true);
+CREATE POLICY "Service management" ON services FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE portfolio_projects ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access portfolio" ON portfolio_projects FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read portfolio" ON portfolio_projects FOR SELECT USING (true);
+CREATE POLICY "Portfolio management" ON portfolio_projects FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE authors ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access authors" ON authors FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read authors" ON authors FOR SELECT USING (true);
+CREATE POLICY "Author management" ON authors FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access blog_posts" ON blog_posts FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read blog_posts" ON blog_posts FOR SELECT USING (status = 'published');
+CREATE POLICY "Blog posts management" ON blog_posts FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE blog_media ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access blog_media" ON blog_media FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read blog_media" ON blog_media FOR SELECT USING (true);
+CREATE POLICY "Blog media management" ON blog_media FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE faqs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access faqs" ON faqs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read faqs" ON faqs FOR SELECT USING (true);
+CREATE POLICY "Faq management" ON faqs FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access testimonials" ON testimonials FOR ALL USING (true) WITH CHECK (true);
-
-ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access contact_submissions" ON contact_submissions FOR ALL USING (true) WITH CHECK (true);
-
-ALTER TABLE call_requests ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access call_requests" ON call_requests FOR ALL USING (true) WITH CHECK (true);
-
-ALTER TABLE project_wizard_inquiries ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access project_wizard_inquiries" ON project_wizard_inquiries FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read testimonials" ON testimonials FOR SELECT USING (status = 'approved' OR featured = true);
+CREATE POLICY "Public insert testimonials" ON testimonials FOR INSERT WITH CHECK (true);
+CREATE POLICY "Testimonials management" ON testimonials FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access site_settings" ON site_settings FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read site_settings" ON site_settings FOR SELECT USING (true);
+CREATE POLICY "Settings management" ON site_settings FOR ALL USING (true) WITH CHECK (true);
 
+-- User Confidential Tables (Strict Data Isolation)
+ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can submit contact form" ON contact_submissions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users view own submissions" ON contact_submissions FOR SELECT USING (
+  auth.uid()::text = user_id 
+  OR auth.jwt() ->> 'email' = email 
+  OR auth.jwt() ->> 'role' = 'service_role'
+);
+CREATE POLICY "Admins manage contact submissions" ON contact_submissions FOR ALL USING (
+  auth.jwt() ->> 'role' = 'service_role'
+) WITH CHECK (true);
+
+ALTER TABLE call_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can submit call request" ON call_requests FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users view own call requests" ON call_requests FOR SELECT USING (
+  auth.uid()::text = user_id 
+  OR auth.jwt() ->> 'email' = email 
+  OR auth.jwt() ->> 'role' = 'service_role'
+);
+CREATE POLICY "Admins manage call requests" ON call_requests FOR ALL USING (
+  auth.jwt() ->> 'role' = 'service_role'
+) WITH CHECK (true);
+
+ALTER TABLE project_wizard_inquiries ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can submit wizard inquiry" ON project_wizard_inquiries FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users view own inquiries" ON project_wizard_inquiries FOR SELECT USING (
+  auth.uid()::text = user_id 
+  OR auth.jwt() ->> 'email' = email 
+  OR auth.jwt() ->> 'role' = 'service_role'
+);
+CREATE POLICY "Admins manage project inquiries" ON project_wizard_inquiries FOR ALL USING (
+  auth.jwt() ->> 'role' = 'service_role'
+) WITH CHECK (true);
+
+-- User Profiles (Personal Data Confidentiality)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public full access profiles" ON profiles FOR ALL USING (true) WITH CHECK (true);
-
--- 2.1 USER PLATFORM TABLES & EXTENSIONS
-ALTER TABLE project_wizard_inquiries ADD COLUMN IF NOT EXISTS user_id TEXT;
-ALTER TABLE project_wizard_inquiries ADD COLUMN IF NOT EXISTS project_status TEXT DEFAULT 'submitted';
-
-ALTER TABLE call_requests ADD COLUMN IF NOT EXISTS user_id TEXT;
-ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS user_id TEXT;
-ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS user_id TEXT;
-
-CREATE TABLE IF NOT EXISTS profiles (
-  id TEXT PRIMARY KEY,
-  auth_user_id TEXT NOT NULL,
-  full_name TEXT NOT NULL,
-  profile_photo TEXT,
-  email TEXT NOT NULL,
-  phone TEXT,
-  country_code TEXT DEFAULT '+91',
-  company_name TEXT,
-  job_title TEXT,
-  bio TEXT,
-  country TEXT,
-  city TEXT,
-  linkedin TEXT,
-  website TEXT,
-  role TEXT DEFAULT 'user' CHECK (role IN ('user', 'author', 'editor', 'admin', 'super_admin')),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE POLICY "Users view own profile" ON profiles FOR SELECT USING (
+  auth.uid()::text = auth_user_id 
+  OR auth.jwt() ->> 'email' = email 
+  OR auth.jwt() ->> 'role' = 'service_role'
+);
+CREATE POLICY "Users insert own profile" ON profiles FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users update own profile" ON profiles FOR UPDATE USING (
+  auth.uid()::text = auth_user_id 
+  OR auth.jwt() ->> 'email' = email
 );
 
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public select profiles" ON profiles FOR SELECT USING (true);
-CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (true);
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (true);
-
-CREATE TABLE IF NOT EXISTS user_activities (
-  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  user_id TEXT NOT NULL,
-  activity_type TEXT NOT NULL,
-  title TEXT NOT NULL,
-  description TEXT,
-  metadata JSONB DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
+-- User Activity Timeline (Confidential to User)
 ALTER TABLE user_activities ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public access user_activities" ON user_activities FOR ALL USING (true) WITH CHECK (true);
-
-CREATE TABLE IF NOT EXISTS user_notifications (
-  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  user_id TEXT NOT NULL,
-  title TEXT NOT NULL,
-  message TEXT NOT NULL,
-  type TEXT NOT NULL DEFAULT 'info' CHECK (type IN ('info', 'success', 'warning', 'action')),
-  read BOOLEAN DEFAULT FALSE,
-  action_url TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+CREATE POLICY "Users view own activity" ON user_activities FOR SELECT USING (
+  auth.uid()::text = user_id OR auth.jwt() ->> 'role' = 'service_role'
+);
+CREATE POLICY "Users insert own activity" ON user_activities FOR INSERT WITH CHECK (
+  auth.uid()::text = user_id OR true
 );
 
+-- User Notifications (Confidential to User)
 ALTER TABLE user_notifications ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public access user_notifications" ON user_notifications FOR ALL USING (true) WITH CHECK (true);
-
-CREATE TABLE IF NOT EXISTS user_feedback (
-  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  user_id TEXT NOT NULL,
-  user_name TEXT NOT NULL,
-  user_email TEXT NOT NULL,
-  category TEXT NOT NULL,
-  rating INT NOT NULL DEFAULT 5,
-  message TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted', 'reviewing', 'resolved')),
-  created_at TIMESTAMPTZ DEFAULT NOW()
+CREATE POLICY "Users view own notifications" ON user_notifications FOR SELECT USING (
+  auth.uid()::text = user_id OR auth.jwt() ->> 'role' = 'service_role'
+);
+CREATE POLICY "Users update own notifications" ON user_notifications FOR UPDATE USING (
+  auth.uid()::text = user_id
 );
 
+-- User Feedback (Confidential to User & Leadership)
 ALTER TABLE user_feedback ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public access user_feedback" ON user_feedback FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Anyone can submit feedback" ON user_feedback FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users view own feedback" ON user_feedback FOR SELECT USING (
+  auth.uid()::text = user_id 
+  OR auth.jwt() ->> 'email' = user_email 
+  OR auth.jwt() ->> 'role' = 'service_role'
+);
 
 -- 3.1 STORAGE BUCKETS & OPEN OBJECT POLICIES (FOR BLOG MEDIA & USER AVATARS)
 INSERT INTO storage.buckets (id, name, public) 

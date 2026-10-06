@@ -26,7 +26,14 @@ export default function AccountInquiriesPage() {
 
   useEffect(() => {
     if (!user) return;
+    let mounted = true;
+
+    obliqueStore.fetchUserContactSubmissions(user.id, user.email).then(list => {
+      if (mounted) setInquiries(list);
+    });
+
     const update = () => {
+      if (!mounted) return;
       const cleanEmail = user.email?.trim().toLowerCase();
       const list = obliqueStore.getContactSubmissions().filter(c => 
         (c.userId && c.userId === user.id) || 
@@ -35,10 +42,10 @@ export default function AccountInquiriesPage() {
       setInquiries(list);
     };
 
-    update();
     window.addEventListener('oblique_contacts_updated', update);
     window.addEventListener('oblique_inquiries_updated', update);
     return () => {
+      mounted = false;
       window.removeEventListener('oblique_contacts_updated', update);
       window.removeEventListener('oblique_inquiries_updated', update);
     };

@@ -15,6 +15,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { ObliqueLogo } from '@/components/ui/ObliqueLogo';
+import { obliqueStore } from '@/lib/store';
 
 interface AdminAuthGuardProps {
   children: React.ReactNode;
@@ -53,8 +54,8 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
 
     setTimeout(() => {
       const cleanId = adminId.trim().toLowerCase();
-      const validIds = [DEFAULT_ADMIN_ID.toLowerCase(), 'oblique', 'obliquetech', 'superadmin'];
-      const validPasswords = [DEFAULT_ADMIN_PASSWORD, 'ObliqueTech@2026', 'admin123', 'admin2026'];
+      const validIds = [DEFAULT_ADMIN_ID.toLowerCase(), 'superadmin'];
+      const validPasswords = [DEFAULT_ADMIN_PASSWORD, 'ObliqueTech@2026'];
 
       if (validIds.includes(cleanId) && validPasswords.includes(password)) {
         if (rememberMe) {
@@ -71,6 +72,7 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
   };
 
   const handleLogout = () => {
+    obliqueStore.clearAdminData();
     sessionStorage.removeItem('oblique_admin_session');
     localStorage.removeItem('oblique_admin_session');
     setIsAuthenticated(false);
@@ -224,10 +226,10 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
             </button>
           </form>
 
-          {/* Quick Credential Hint for the Administrator */}
+          {/* Security Notice */}
           <div className="pt-3 border-t border-white/5 text-center">
             <p className="text-[11px] text-slate-500">
-              Default credentials: <code className="text-cyan-400 font-mono">admin</code> / <code className="text-cyan-400 font-mono">ObliqueTech@2026</code>
+              Restricted administrative console. Authorized access only.
             </p>
           </div>
         </div>
@@ -244,6 +246,7 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
 
 export function logoutAdmin() {
   if (typeof window !== 'undefined') {
+    obliqueStore.clearAdminData();
     sessionStorage.removeItem('oblique_admin_session');
     localStorage.removeItem('oblique_admin_session');
     window.location.href = '/admin';

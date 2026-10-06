@@ -5,7 +5,7 @@
 // Upcoming, requested, confirmed, completed calls with meeting specs
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/authContext';
 import { obliqueStore } from '@/lib/store';
@@ -18,9 +18,9 @@ import {
   ArrowRight, 
   Plus, 
   CheckCircle2, 
-  AlertCircle,
-  XCircle,
-  HelpCircle
+  AlertCircle, 
+  XCircle, 
+  HelpCircle 
 } from 'lucide-react';
 
 const STATUS_BADGES: Record<string, { label: string; bg: string; text: string; border: string }> = {
@@ -33,10 +33,30 @@ const STATUS_BADGES: Record<string, { label: string; bg: string; text: string; b
 export default function AccountCallsPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'all' | 'upcoming' | 'past'>('all');
+  const [calls, setCalls] = useState<CallRequest[]>(() => 
+    user ? obliqueStore.getUserCallRequests(user.id, user.email) : []
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+
+    obliqueStore.fetchUserCallRequests(user.id, user.email).then(data => {
+      if (mounted) setCalls(data);
+    });
+
+    const update = () => {
+      if (mounted) setCalls(obliqueStore.getUserCallRequests(user.id, user.email));
+    };
+
+    window.addEventListener('oblique_calls_updated', update);
+    return () => {
+      mounted = false;
+      window.removeEventListener('oblique_calls_updated', update);
+    };
+  }, [user]);
 
   if (!user) return null;
-
-  const calls = obliqueStore.getUserCallRequests(user.id, user.email);
 
   const filteredCalls = calls.filter(c => {
     if (activeTab === 'upcoming') return c.status === 'pending' || c.status === 'confirmed';

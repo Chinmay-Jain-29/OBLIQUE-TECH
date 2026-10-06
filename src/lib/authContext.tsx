@@ -157,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (mounted) {
               setUser(null);
               localStorage.removeItem(CURRENT_USER_KEY);
+              obliqueStore.clearUserSession();
             }
           }
         });
@@ -189,6 +190,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password?: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     const cleanEmail = email.trim().toLowerCase();
+
+    // Ensure any previously cached session data is securely wiped
+    obliqueStore.clearUserSession();
 
     if (isSupabaseConfigured && supabase && password) {
       try {
@@ -262,6 +266,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     const cleanEmail = email.trim().toLowerCase();
     const cleanName = fullName.trim();
+
+    // Ensure previous session state is securely purged before registering
+    obliqueStore.clearUserSession();
 
     if (isSupabaseConfigured && supabase && password) {
       try {
@@ -359,7 +366,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(null);
     setSession(null);
-    localStorage.removeItem(CURRENT_USER_KEY);
+    obliqueStore.clearUserSession();
     obliqueStore.logoutAuthor();
     setIsLoading(false);
 

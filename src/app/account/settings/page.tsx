@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/lib/authContext';
+import { obliqueStore } from '@/lib/store';
 import { 
   Settings, 
   Lock, 
@@ -72,8 +73,9 @@ export default function AccountSettingsPage() {
     if (deleteConfirmText !== 'DELETE') return;
     setIsDeleting(true);
 
-    // Simulate account deletion workflow
+    // Account deletion workflow
     setTimeout(async () => {
+      await obliqueStore.deleteUserProfile(user.id);
       setIsDeleting(false);
       setDeleteModalOpen(false);
       await logout();

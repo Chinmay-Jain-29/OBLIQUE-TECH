@@ -1523,88 +1523,8 @@ class ObliqueStore {
         await supabase.from('site_settings').upsert(mapTsSettingsToDb(this.settings));
       }
 
-      // 8. Sync Contact Submissions
-      const { data: cntData, error: cntErr } = await supabase.from('contact_submissions').select('*').order('submitted_at', { ascending: false });
-      if (!cntErr && cntData) {
-        const dbContacts = cntData.map(mapDbContactToTs);
-        const dbIds = new Set(dbContacts.map(c => c.id));
-        const unsyncedContacts = this.contactSubmissions.filter(c => !dbIds.has(c.id));
-        this.contactSubmissions = [...dbContacts, ...unsyncedContacts];
-        this.saveToStorage('oblique_contacts', this.contactSubmissions);
-
-        // Upload any local records that weren't in Supabase yet
-        for (const unsynced of unsyncedContacts) {
-          try {
-            let { error } = await supabase.from('contact_submissions').insert([mapTsContactToDb(unsynced)]);
-            if (error) {
-              await supabase.from('contact_submissions').insert([mapTsContactToBaseDb(unsynced)]);
-            }
-          } catch (_) {}
-        }
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('oblique_contacts_updated'));
-          window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
-        }
-      }
-
-      // 9. Sync Call Requests
-      const { data: callData, error: callErr } = await supabase.from('call_requests').select('*').order('submitted_at', { ascending: false });
-      if (!callErr && callData) {
-        const dbCalls = callData.map(mapDbCallToTs);
-        const dbIds = new Set(dbCalls.map(c => c.id));
-        const unsyncedCalls = this.callRequests.filter(c => !dbIds.has(c.id));
-        this.callRequests = [...dbCalls, ...unsyncedCalls];
-        this.saveToStorage('oblique_calls', this.callRequests);
-
-        for (const unsynced of unsyncedCalls) {
-          try {
-            let { error } = await supabase.from('call_requests').insert([mapTsCallToDb(unsynced)]);
-            if (error) {
-              await supabase.from('call_requests').insert([mapTsCallToBaseDb(unsynced)]);
-            }
-          } catch (_) {}
-        }
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('oblique_calls_updated'));
-        }
-      }
-
-      // 10. Sync Project Wizard Inquiries
-      const { data: wizData, error: wizErr } = await supabase.from('project_wizard_inquiries').select('*').order('submitted_at', { ascending: false });
-      if (!wizErr && wizData) {
-        const dbWizards = wizData.map(mapDbWizardToTs);
-        const dbIds = new Set(dbWizards.map(w => w.id));
-        const unsyncedWizards = this.wizardInquiries.filter(w => !dbIds.has(w.id));
-        this.wizardInquiries = [...dbWizards, ...unsyncedWizards];
-        this.saveToStorage('oblique_wizards', this.wizardInquiries);
-
-        // Auto-upload any local wizard submissions that failed previously
-        for (const unsynced of unsyncedWizards) {
-          try {
-            let { error } = await supabase.from('project_wizard_inquiries').insert([mapTsWizardToDb(unsynced)]);
-            if (error) {
-              await supabase.from('project_wizard_inquiries').insert([mapTsWizardToBaseDb(unsynced)]);
-            }
-          } catch (_) {}
-        }
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('oblique_wizards_updated'));
-          window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
-        }
-      }
-
-      // 11. Sync Profiles
-      const { data: profData } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-      if (profData && profData.length > 0) {
-        profData.forEach((row: any) => {
-          const p = mapDbProfileToTs(row);
-          this.userProfiles[p.id] = p;
-        });
-        this.saveToStorage('oblique_user_profiles', this.userProfiles);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('oblique_profiles_updated'));
-        }
-      }
+      // Site settings synced. Private models (inquiries, calls, profiles) are
+      // strictly scoped and ONLY loaded when authenticated in admin or user workspaces.
     } catch (e) {
       console.warn('Initial Supabase sync check:', e);
     }
@@ -2762,6 +2682,218 @@ class ObliqueStore {
       if (cleanSlug && p.authorId.toLowerCase() === `auth-${cleanSlug}`) return true;
       return false;
     });
+  }
+
+  // =========================================================================
+  // SECURITY & PRIVACY: STRICT SESSION TEARDOWN & USER DATA PURGE
+  // =========================================================================
+  public clearUserSession(): void {
+    // Clear in-memory user-specific repositories
+    this.userActivities = {};
+    this.userNotifications = {};
+    this.userFeedbackItems = [];
+    this.currentAuthorUser = null;
+
+    // Purge in-memory inquiry cache
+    this.wizardInquiries = [];
+    this.contactSubmissions = [];
+    this.callRequests = [];
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('oblique_current_user');
+        localStorage.removeItem('oblique_user_activities');
+        localStorage.removeItem('oblique_user_notifications');
+        localStorage.removeItem('oblique_user_feedback');
+        localStorage.removeItem('oblique_author_user');
+        localStorage.removeItem('oblique_wizards');
+        localStorage.removeItem('oblique_contacts');
+        localStorage.removeItem('oblique_calls');
+        localStorage.removeItem('oblique_user_profiles');
+        sessionStorage.clear();
+      } catch (e) {
+        console.warn('Error clearing user storage:', e);
+      }
+      window.dispatchEvent(new CustomEvent('oblique_user_logged_out'));
+      window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+      window.dispatchEvent(new CustomEvent('oblique_calls_updated'));
+    }
+  }
+
+  public clearAdminData(): void {
+    this.wizardInquiries = [];
+    this.contactSubmissions = [];
+    this.callRequests = [];
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('oblique_admin_session');
+        sessionStorage.removeItem('oblique_admin_session');
+        localStorage.removeItem('oblique_wizards');
+        localStorage.removeItem('oblique_contacts');
+        localStorage.removeItem('oblique_calls');
+      } catch (e) {
+        console.warn('Error clearing admin storage:', e);
+      }
+    }
+  }
+
+  // =========================================================================
+  // USER-SCOPED DATA FETCHERS (PREVENTS CROSS-USER DATA EXPOSURE)
+  // =========================================================================
+  public async fetchUserProjectInquiries(userId: string, email?: string): Promise<ProjectWizardInquiry[]> {
+    if (!userId && !email) return [];
+    const cleanEmail = email?.trim().toLowerCase();
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase.from('project_wizard_inquiries').select('*').order('submitted_at', { ascending: false });
+        if (userId && cleanEmail) {
+          query = query.or(`user_id.eq.${userId},email.ilike.${cleanEmail}`);
+        } else if (userId) {
+          query = query.eq('user_id', userId);
+        } else if (cleanEmail) {
+          query = query.ilike('email', cleanEmail);
+        }
+        const { data, error } = await query;
+        if (!error && data) {
+          const userWizards = data.map(mapDbWizardToTs);
+          this.wizardInquiries = userWizards;
+          return userWizards;
+        }
+      } catch (e) {
+        console.warn('Error fetching user project inquiries:', e);
+      }
+    }
+
+    return this.getUserProjectInquiries(userId, email);
+  }
+
+  public async fetchUserCallRequests(userId: string, email?: string): Promise<CallRequest[]> {
+    if (!userId && !email) return [];
+    const cleanEmail = email?.trim().toLowerCase();
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase.from('call_requests').select('*').order('submitted_at', { ascending: false });
+        if (userId && cleanEmail) {
+          query = query.or(`user_id.eq.${userId},email.ilike.${cleanEmail}`);
+        } else if (userId) {
+          query = query.eq('user_id', userId);
+        } else if (cleanEmail) {
+          query = query.ilike('email', cleanEmail);
+        }
+        const { data, error } = await query;
+        if (!error && data) {
+          const userCalls = data.map(mapDbCallToTs);
+          this.callRequests = userCalls;
+          return userCalls;
+        }
+      } catch (e) {
+        console.warn('Error fetching user call requests:', e);
+      }
+    }
+
+    return this.getUserCallRequests(userId, email);
+  }
+
+  public async fetchUserContactSubmissions(userId: string, email?: string): Promise<ContactSubmission[]> {
+    if (!userId && !email) return [];
+    const cleanEmail = email?.trim().toLowerCase();
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase.from('contact_submissions').select('*').order('submitted_at', { ascending: false });
+        if (userId && cleanEmail) {
+          query = query.or(`user_id.eq.${userId},email.ilike.${cleanEmail}`);
+        } else if (userId) {
+          query = query.eq('user_id', userId);
+        } else if (cleanEmail) {
+          query = query.ilike('email', cleanEmail);
+        }
+        const { data, error } = await query;
+        if (!error && data) {
+          const userContacts = data.map(mapDbContactToTs);
+          this.contactSubmissions = userContacts;
+          return userContacts;
+        }
+      } catch (e) {
+        console.warn('Error fetching user contact submissions:', e);
+      }
+    }
+
+    const clean = cleanEmail;
+    return this.contactSubmissions.filter(c => 
+      (userId && c.userId === userId) || 
+      (clean && c.email?.trim().toLowerCase() === clean)
+    );
+  }
+
+  public async fetchUserActivities(userId: string): Promise<UserActivity[]> {
+    if (!userId) return [];
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('user_activities')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) {
+          const acts = data.map(mapDbActivityToTs);
+          this.userActivities[userId] = acts;
+          return acts;
+        }
+      } catch (e) {
+        console.warn('Error fetching user activities:', e);
+      }
+    }
+    return this.getUserActivities(userId);
+  }
+
+  public async fetchUserNotifications(userId: string): Promise<UserNotification[]> {
+    if (!userId) return [];
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('user_notifications')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) {
+          const notifs = data.map(mapDbNotificationToTs);
+          this.userNotifications[userId] = notifs;
+          return notifs;
+        }
+      } catch (e) {
+        console.warn('Error fetching user notifications:', e);
+      }
+    }
+    return this.getUserNotifications(userId);
+  }
+
+  public async fetchUserFeedback(userId: string, email?: string): Promise<UserFeedbackItem[]> {
+    if (!userId && !email) return [];
+    const cleanEmail = email?.trim().toLowerCase();
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase.from('user_feedback').select('*').order('created_at', { ascending: false });
+        if (userId && cleanEmail) {
+          query = query.or(`user_id.eq.${userId},user_email.ilike.${cleanEmail}`);
+        } else if (userId) {
+          query = query.eq('user_id', userId);
+        } else if (cleanEmail) {
+          query = query.ilike('user_email', cleanEmail);
+        }
+        const { data, error } = await query;
+        if (!error && data && data.length > 0) {
+          const items = data.map(mapDbFeedbackToTs);
+          this.userFeedbackItems = items;
+          return items;
+        }
+      } catch (e) {
+        console.warn('Error fetching user feedback:', e);
+      }
+    }
+    return this.getUserFeedback(userId, email);
   }
 }
 
