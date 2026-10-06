@@ -5,7 +5,7 @@
 // Project tracking, distinct status indicators, scope detail modal & empty state
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/authContext';
 import { obliqueStore } from '@/lib/store';
@@ -39,10 +39,24 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
 export default function AccountProjectsPage() {
   const { user } = useAuth();
   const [selectedProject, setSelectedProject] = useState<ProjectWizardInquiry | null>(null);
+  const [projects, setProjects] = useState<ProjectWizardInquiry[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const update = () => {
+      setProjects(obliqueStore.getUserProjectInquiries(user.id, user.email));
+    };
+
+    update();
+    window.addEventListener('oblique_wizards_updated', update);
+    window.addEventListener('oblique_inquiries_updated', update);
+    return () => {
+      window.removeEventListener('oblique_wizards_updated', update);
+      window.removeEventListener('oblique_inquiries_updated', update);
+    };
+  }, [user]);
 
   if (!user) return null;
-
-  const projects = obliqueStore.getUserProjectInquiries(user.id, user.email);
 
   return (
     <div className="space-y-6">

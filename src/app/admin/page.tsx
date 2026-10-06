@@ -38,23 +38,27 @@ export default function AdminDashboardPage() {
   const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
 
   useEffect(() => {
-    const services = obliqueStore.getServices();
-    const portfolio = obliqueStore.getPortfolio();
-    const posts = obliqueStore.getPosts();
-    const faqs = obliqueStore.getFAQs();
-    const testimonials = obliqueStore.getTestimonials();
-    const contacts = obliqueStore.getContactSubmissions();
-    const wizards = obliqueStore.getProjectWizardInquiries();
-    const calls = obliqueStore.getCallRequests();
+    const refreshMetrics = () => {
+      const services = obliqueStore.getServices();
+      const portfolio = obliqueStore.getPortfolio();
+      const posts = obliqueStore.getPosts();
+      const faqs = obliqueStore.getFAQs();
+      const testimonials = obliqueStore.getTestimonials();
+      const contacts = obliqueStore.getContactSubmissions();
+      const wizards = obliqueStore.getProjectWizardInquiries();
+      const calls = obliqueStore.getCallRequests();
 
-    setServicesCount(services.length);
-    setProjectsCount(portfolio.length);
-    setPostsCount(posts.filter(p => p.status === 'published').length);
-    setDraftsCount(posts.filter(p => p.status === 'draft').length);
-    setFaqsCount(faqs.length);
-    setPendingReviewsCount(testimonials.filter(t => t.status === 'pending').length);
-    setInquiriesCount(contacts.length + wizards.length);
-    setCallsCount(calls.length);
+      setServicesCount(services.length);
+      setProjectsCount(portfolio.length);
+      setPostsCount(posts.filter(p => p.status === 'published').length);
+      setDraftsCount(posts.filter(p => p.status === 'draft').length);
+      setFaqsCount(faqs.length);
+      setPendingReviewsCount(testimonials.filter(t => t.status === 'pending').length);
+      setInquiriesCount(contacts.length + wizards.length);
+      setCallsCount(calls.length);
+    };
+
+    refreshMetrics();
 
     // Fetch authoritative live registered users
     const loadUsers = async () => {
@@ -136,12 +140,23 @@ export default function AdminDashboardPage() {
 
     loadUsers();
 
-    const handleFocus = () => loadUsers();
+    const handleFocus = () => {
+      loadUsers();
+      refreshMetrics();
+    };
     window.addEventListener('focus', handleFocus);
     window.addEventListener('oblique_profiles_updated', handleFocus);
+    window.addEventListener('oblique_inquiries_updated', refreshMetrics);
+    window.addEventListener('oblique_wizards_updated', refreshMetrics);
+    window.addEventListener('oblique_contacts_updated', refreshMetrics);
+    window.addEventListener('oblique_calls_updated', refreshMetrics);
     return () => {
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('oblique_profiles_updated', handleFocus);
+      window.removeEventListener('oblique_inquiries_updated', refreshMetrics);
+      window.removeEventListener('oblique_wizards_updated', refreshMetrics);
+      window.removeEventListener('oblique_contacts_updated', refreshMetrics);
+      window.removeEventListener('oblique_calls_updated', refreshMetrics);
     };
   }, []);
 

@@ -5,10 +5,11 @@
 // Direct contact requests, general inquiries, status tracking
 // =============================================================================
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/authContext';
 import { obliqueStore } from '@/lib/store';
+import { ContactSubmission } from '@/types';
 import { 
   MessageSquareText, 
   Plus, 
@@ -21,10 +22,29 @@ import {
 
 export default function AccountInquiriesPage() {
   const { user } = useAuth();
+  const [inquiries, setInquiries] = useState<ContactSubmission[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const update = () => {
+      const cleanEmail = user.email?.trim().toLowerCase();
+      const list = obliqueStore.getContactSubmissions().filter(c => 
+        (c.userId && c.userId === user.id) || 
+        (cleanEmail && c.email?.trim().toLowerCase() === cleanEmail)
+      );
+      setInquiries(list);
+    };
+
+    update();
+    window.addEventListener('oblique_contacts_updated', update);
+    window.addEventListener('oblique_inquiries_updated', update);
+    return () => {
+      window.removeEventListener('oblique_contacts_updated', update);
+      window.removeEventListener('oblique_inquiries_updated', update);
+    };
+  }, [user]);
 
   if (!user) return null;
-
-  const inquiries = obliqueStore.getContactSubmissions().filter(c => c.userId === user.id || c.email.toLowerCase() === user.email.toLowerCase());
 
   return (
     <div className="space-y-6">

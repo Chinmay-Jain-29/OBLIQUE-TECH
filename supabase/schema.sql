@@ -143,6 +143,7 @@ CREATE TABLE testimonials (
 
 CREATE TABLE contact_submissions (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  user_id TEXT,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   phone TEXT,
@@ -155,6 +156,7 @@ CREATE TABLE contact_submissions (
 
 CREATE TABLE call_requests (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  user_id TEXT,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   phone TEXT NOT NULL,
@@ -172,6 +174,8 @@ CREATE TABLE call_requests (
 
 CREATE TABLE project_wizard_inquiries (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  user_id TEXT,
+  project_status TEXT DEFAULT 'submitted',
   project_type TEXT NOT NULL,
   services_needed JSONB NOT NULL DEFAULT '[]'::jsonb,
   core_objective TEXT NOT NULL,

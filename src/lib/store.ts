@@ -10,6 +10,7 @@ import {
   ContactSubmission, 
   CallRequest, 
   ProjectWizardInquiry, 
+  DetailedProjectStatus,
   SiteSettings,
   MediaRecord,
   UserProfile,
@@ -1131,6 +1132,21 @@ function mapDbTestimonialToTs(row: any): TestimonialSubmission {
 function mapTsContactToDb(c: ContactSubmission) {
   return {
     id: c.id,
+    user_id: c.userId || null,
+    name: c.name,
+    email: c.email,
+    phone: c.phone || '',
+    company: c.company || '',
+    service: c.service,
+    message: c.message,
+    status: c.status || 'new',
+    submitted_at: c.submittedAt || new Date().toISOString()
+  };
+}
+
+function mapTsContactToBaseDb(c: ContactSubmission) {
+  return {
+    id: c.id,
     name: c.name,
     email: c.email,
     phone: c.phone || '',
@@ -1145,6 +1161,7 @@ function mapTsContactToDb(c: ContactSubmission) {
 function mapDbContactToTs(row: any): ContactSubmission {
   return {
     id: String(row.id),
+    userId: row.user_id ? String(row.user_id) : undefined,
     name: row.name,
     email: row.email,
     phone: row.phone,
@@ -1176,10 +1193,29 @@ function mapTsCallToDb(c: CallRequest) {
   };
 }
 
+function mapTsCallToBaseDb(c: CallRequest) {
+  return {
+    id: c.id,
+    name: c.name,
+    email: c.email,
+    phone: c.phone,
+    business_name: c.businessName || '',
+    reason: c.reason,
+    service_required: c.serviceRequired,
+    project_type: c.projectType,
+    preferred_date: c.preferredDate,
+    preferred_time: c.preferredTime,
+    duration_minutes: c.durationMinutes || 30,
+    requirements: c.requirements || '',
+    status: c.status || 'pending',
+    submitted_at: c.submittedAt || new Date().toISOString()
+  };
+}
+
 function mapDbCallToTs(row: any): CallRequest {
   return {
     id: String(row.id),
-    userId: row.user_id,
+    userId: row.user_id ? String(row.user_id) : undefined,
     name: row.name,
     email: row.email,
     phone: row.phone,
@@ -1215,10 +1251,27 @@ function mapTsWizardToDb(w: ProjectWizardInquiry) {
   };
 }
 
+function mapTsWizardToBaseDb(w: ProjectWizardInquiry) {
+  return {
+    id: w.id,
+    project_type: w.projectType,
+    services_needed: w.servicesNeeded || [],
+    core_objective: w.coreObjective,
+    key_features: w.keyFeatures,
+    timeline: w.timeline,
+    name: w.name,
+    email: w.email,
+    phone: w.phone,
+    company: w.company || '',
+    status: w.status || 'new',
+    submitted_at: w.submittedAt || new Date().toISOString()
+  };
+}
+
 function mapDbWizardToTs(row: any): ProjectWizardInquiry {
   return {
     id: String(row.id),
-    userId: row.user_id,
+    userId: row.user_id ? String(row.user_id) : undefined,
     projectStatus: row.project_status || 'submitted',
     projectType: row.project_type,
     servicesNeeded: Array.isArray(row.services_needed) ? row.services_needed : [],
@@ -1471,24 +1524,73 @@ class ObliqueStore {
       }
 
       // 8. Sync Contact Submissions
-      const { data: cntData } = await supabase.from('contact_submissions').select('*').order('submitted_at', { ascending: false });
-      if (cntData && cntData.length > 0) {
-        this.contactSubmissions = cntData.map(mapDbContactToTs);
+      const { data: cntData, error: cntErr } = await supabase.from('contact_submissions').select('*').order('submitted_at', { ascending: false });
+      if (!cntErr && cntData) {
+        const dbContacts = cntData.map(mapDbContactToTs);
+        const dbIds = new Set(dbContacts.map(c => c.id));
+        const unsyncedContacts = this.contactSubmissions.filter(c => !dbIds.has(c.id));
+        this.contactSubmissions = [...dbContacts, ...unsyncedContacts];
         this.saveToStorage('oblique_contacts', this.contactSubmissions);
+
+        // Upload any local records that weren't in Supabase yet
+        for (const unsynced of unsyncedContacts) {
+          try {
+            let { error } = await supabase.from('contact_submissions').insert([mapTsContactToDb(unsynced)]);
+            if (error) {
+              await supabase.from('contact_submissions').insert([mapTsContactToBaseDb(unsynced)]);
+            }
+          } catch (_) {}
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('oblique_contacts_updated'));
+          window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+        }
       }
 
       // 9. Sync Call Requests
-      const { data: callData } = await supabase.from('call_requests').select('*').order('submitted_at', { ascending: false });
-      if (callData && callData.length > 0) {
-        this.callRequests = callData.map(mapDbCallToTs);
+      const { data: callData, error: callErr } = await supabase.from('call_requests').select('*').order('submitted_at', { ascending: false });
+      if (!callErr && callData) {
+        const dbCalls = callData.map(mapDbCallToTs);
+        const dbIds = new Set(dbCalls.map(c => c.id));
+        const unsyncedCalls = this.callRequests.filter(c => !dbIds.has(c.id));
+        this.callRequests = [...dbCalls, ...unsyncedCalls];
         this.saveToStorage('oblique_calls', this.callRequests);
+
+        for (const unsynced of unsyncedCalls) {
+          try {
+            let { error } = await supabase.from('call_requests').insert([mapTsCallToDb(unsynced)]);
+            if (error) {
+              await supabase.from('call_requests').insert([mapTsCallToBaseDb(unsynced)]);
+            }
+          } catch (_) {}
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('oblique_calls_updated'));
+        }
       }
 
       // 10. Sync Project Wizard Inquiries
-      const { data: wizData } = await supabase.from('project_wizard_inquiries').select('*').order('submitted_at', { ascending: false });
-      if (wizData && wizData.length > 0) {
-        this.wizardInquiries = wizData.map(mapDbWizardToTs);
+      const { data: wizData, error: wizErr } = await supabase.from('project_wizard_inquiries').select('*').order('submitted_at', { ascending: false });
+      if (!wizErr && wizData) {
+        const dbWizards = wizData.map(mapDbWizardToTs);
+        const dbIds = new Set(dbWizards.map(w => w.id));
+        const unsyncedWizards = this.wizardInquiries.filter(w => !dbIds.has(w.id));
+        this.wizardInquiries = [...dbWizards, ...unsyncedWizards];
         this.saveToStorage('oblique_wizards', this.wizardInquiries);
+
+        // Auto-upload any local wizard submissions that failed previously
+        for (const unsynced of unsyncedWizards) {
+          try {
+            let { error } = await supabase.from('project_wizard_inquiries').insert([mapTsWizardToDb(unsynced)]);
+            if (error) {
+              await supabase.from('project_wizard_inquiries').insert([mapTsWizardToBaseDb(unsynced)]);
+            }
+          } catch (_) {}
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('oblique_wizards_updated'));
+          window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+        }
       }
 
       // 11. Sync Profiles
@@ -2016,10 +2118,22 @@ class ObliqueStore {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('contact_submissions').insert([mapTsContactToDb(submission)]);
+        let { error } = await supabase.from('contact_submissions').insert([mapTsContactToDb(submission)]);
+        if (error) {
+          console.warn('Supabase contact full insert fallback:', error.message);
+          const retry = await supabase.from('contact_submissions').insert([mapTsContactToBaseDb(submission)]);
+          if (retry.error) {
+            console.error('Supabase contact base insert error:', retry.error);
+          }
+        }
       } catch (err) {
         console.warn('Supabase contact submission error:', err);
       }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_contacts_updated'));
+      window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
     }
 
     return submission;
@@ -2027,6 +2141,70 @@ class ObliqueStore {
 
   public getContactSubmissions(): ContactSubmission[] {
     return this.contactSubmissions;
+  }
+
+  public async fetchContactSubmissions(forceRefresh = true): Promise<ContactSubmission[]> {
+    if (forceRefresh && isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('contact_submissions').select('*').order('submitted_at', { ascending: false });
+        if (!error && data) {
+          const dbContacts = data.map(mapDbContactToTs);
+          const dbIds = new Set(dbContacts.map(c => c.id));
+          const unsyncedContacts = this.contactSubmissions.filter(c => !dbIds.has(c.id));
+          this.contactSubmissions = [...dbContacts, ...unsyncedContacts];
+          this.saveToStorage('oblique_contacts', this.contactSubmissions);
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('oblique_contacts_updated'));
+            window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch contact submissions from Supabase:', e);
+      }
+    }
+    return this.contactSubmissions;
+  }
+
+  public async updateContactStatus(id: string, status: 'new' | 'contacted' | 'archived'): Promise<boolean> {
+    const item = this.contactSubmissions.find(c => c.id === id);
+    if (!item) return false;
+    item.status = status;
+    this.saveToStorage('oblique_contacts', this.contactSubmissions);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('contact_submissions').update({ status }).eq('id', id);
+      } catch (e) {
+        console.warn('Supabase update contact status error:', e);
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_contacts_updated'));
+      window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+    }
+    return true;
+  }
+
+  public async deleteContactSubmission(id: string): Promise<boolean> {
+    const initialLen = this.contactSubmissions.length;
+    this.contactSubmissions = this.contactSubmissions.filter(c => c.id !== id);
+    if (this.contactSubmissions.length === initialLen) return false;
+    this.saveToStorage('oblique_contacts', this.contactSubmissions);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('contact_submissions').delete().eq('id', id);
+      } catch (e) {
+        console.warn('Supabase delete contact error:', e);
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_contacts_updated'));
+      window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+    }
+    return true;
   }
 
   public async submitCallRequest(data: Omit<CallRequest, 'id' | 'submittedAt' | 'status'>): Promise<CallRequest> {
@@ -2041,10 +2219,21 @@ class ObliqueStore {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('call_requests').insert([mapTsCallToDb(request)]);
+        let { error } = await supabase.from('call_requests').insert([mapTsCallToDb(request)]);
+        if (error) {
+          console.warn('Supabase call full insert error, retrying base schema:', error.message);
+          const retry = await supabase.from('call_requests').insert([mapTsCallToBaseDb(request)]);
+          if (retry.error) {
+            console.error('Supabase call base insert error:', retry.error);
+          }
+        }
       } catch (err) {
         console.warn('Supabase call request error:', err);
       }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_calls_updated'));
     }
 
     return request;
@@ -2052,6 +2241,67 @@ class ObliqueStore {
 
   public getCallRequests(): CallRequest[] {
     return this.callRequests;
+  }
+
+  public async fetchCallRequests(forceRefresh = true): Promise<CallRequest[]> {
+    if (forceRefresh && isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('call_requests').select('*').order('submitted_at', { ascending: false });
+        if (!error && data) {
+          const dbCalls = data.map(mapDbCallToTs);
+          const dbIds = new Set(dbCalls.map(c => c.id));
+          const unsyncedCalls = this.callRequests.filter(c => !dbIds.has(c.id));
+          this.callRequests = [...dbCalls, ...unsyncedCalls];
+          this.saveToStorage('oblique_calls', this.callRequests);
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('oblique_calls_updated'));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch call requests from Supabase:', e);
+      }
+    }
+    return this.callRequests;
+  }
+
+  public async updateCallRequestStatus(id: string, status: 'pending' | 'confirmed' | 'completed' | 'cancelled'): Promise<boolean> {
+    const item = this.callRequests.find(c => c.id === id);
+    if (!item) return false;
+    item.status = status;
+    this.saveToStorage('oblique_calls', this.callRequests);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('call_requests').update({ status }).eq('id', id);
+      } catch (e) {
+        console.warn('Supabase update call status error:', e);
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_calls_updated'));
+    }
+    return true;
+  }
+
+  public async deleteCallRequest(id: string): Promise<boolean> {
+    const initialLen = this.callRequests.length;
+    this.callRequests = this.callRequests.filter(c => c.id !== id);
+    if (this.callRequests.length === initialLen) return false;
+    this.saveToStorage('oblique_calls', this.callRequests);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('call_requests').delete().eq('id', id);
+      } catch (e) {
+        console.warn('Supabase delete call error:', e);
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_calls_updated'));
+    }
+    return true;
   }
 
   public async submitProjectWizard(data: Omit<ProjectWizardInquiry, 'id' | 'submittedAt' | 'status'>): Promise<ProjectWizardInquiry> {
@@ -2066,10 +2316,24 @@ class ObliqueStore {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('project_wizard_inquiries').insert([mapTsWizardToDb(inquiry)]);
+        let { error } = await supabase.from('project_wizard_inquiries').insert([mapTsWizardToDb(inquiry)]);
+        if (error) {
+          console.warn('Supabase wizard full insert error, retrying base schema:', error.message);
+          const retry = await supabase.from('project_wizard_inquiries').insert([mapTsWizardToBaseDb(inquiry)]);
+          if (retry.error) {
+            console.error('Supabase wizard base insert error:', retry.error);
+          } else {
+            console.log('Saved wizard inquiry to Supabase using base schema fallback.');
+          }
+        }
       } catch (err) {
         console.warn('Supabase wizard inquiry error:', err);
       }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_wizards_updated'));
+      window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
     }
 
     return inquiry;
@@ -2077,6 +2341,146 @@ class ObliqueStore {
 
   public getProjectWizardInquiries(): ProjectWizardInquiry[] {
     return this.wizardInquiries;
+  }
+
+  public async fetchProjectWizardInquiries(forceRefresh = true): Promise<ProjectWizardInquiry[]> {
+    if (forceRefresh && isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('project_wizard_inquiries').select('*').order('submitted_at', { ascending: false });
+        if (!error && data) {
+          const dbWizards = data.map(mapDbWizardToTs);
+          const dbIds = new Set(dbWizards.map(w => w.id));
+          const unsyncedWizards = this.wizardInquiries.filter(w => !dbIds.has(w.id));
+          this.wizardInquiries = [...dbWizards, ...unsyncedWizards];
+          this.saveToStorage('oblique_wizards', this.wizardInquiries);
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('oblique_wizards_updated'));
+            window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch project wizard inquiries from Supabase:', e);
+      }
+    }
+    return this.wizardInquiries;
+  }
+
+  public async updateProjectWizardStatus(
+    id: string, 
+    status: 'new' | 'in-review' | 'contacted' | 'closed', 
+    projectStatus?: DetailedProjectStatus
+  ): Promise<boolean> {
+    const item = this.wizardInquiries.find(w => w.id === id);
+    if (!item) return false;
+    item.status = status;
+    if (projectStatus) item.projectStatus = projectStatus;
+    this.saveToStorage('oblique_wizards', this.wizardInquiries);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const updatePayload: Record<string, any> = { status };
+        if (projectStatus) updatePayload.project_status = projectStatus;
+        let { error } = await supabase.from('project_wizard_inquiries').update(updatePayload).eq('id', id);
+        if (error) {
+          // If project_status column is missing in DB, update only status
+          await supabase.from('project_wizard_inquiries').update({ status }).eq('id', id);
+        }
+      } catch (e) {
+        console.warn('Supabase update wizard status error:', e);
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_wizards_updated'));
+      window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+    }
+    return true;
+  }
+
+  public async deleteProjectWizardInquiry(id: string): Promise<boolean> {
+    const initialLen = this.wizardInquiries.length;
+    this.wizardInquiries = this.wizardInquiries.filter(w => w.id !== id);
+    if (this.wizardInquiries.length === initialLen) return false;
+    this.saveToStorage('oblique_wizards', this.wizardInquiries);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('project_wizard_inquiries').delete().eq('id', id);
+      } catch (e) {
+        console.warn('Supabase delete wizard error:', e);
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('oblique_wizards_updated'));
+      window.dispatchEvent(new CustomEvent('oblique_inquiries_updated'));
+    }
+    return true;
+  }
+
+  // DEMO / SEED INQUIRIES
+  public async seedSampleInquiries(): Promise<void> {
+    const sampleWizards: Array<Omit<ProjectWizardInquiry, 'id' | 'submittedAt' | 'status'>> = [
+      {
+        projectType: 'Mobile & Cloud Platform',
+        servicesNeeded: ['Mobile App Development', 'Cloud Architecture', 'UI/UX Design'],
+        coreObjective: 'High-frequency digital banking and biometric payment flow with SOC2-compliant microservices.',
+        keyFeatures: 'Real-time notifications, multi-currency ledger, end-to-end encryption, biometric authentication',
+        timeline: '3–6 months',
+        name: 'Rohan Verma',
+        email: 'rohan.verma@novapoint.io',
+        phone: '+91 98201 54321',
+        company: 'NovaPoint Technologies'
+      },
+      {
+        projectType: 'AI / Machine Learning',
+        servicesNeeded: ['AI/ML Engineering', 'Full-Stack Development'],
+        coreObjective: 'DICOM medical imaging inference pipeline with private LLM clinical summary generation.',
+        keyFeatures: 'GPU accelerated inference, HIPAA-compliant patient audit logging, automated radiology summaries',
+        timeline: '1–3 months',
+        name: 'Dr. Sarah Lindqvist',
+        email: 'sarah.l@helixmed.com',
+        phone: '+1 (415) 890-2134',
+        company: 'Helix Medical Intelligence'
+      },
+      {
+        projectType: 'Custom Web Platform',
+        servicesNeeded: ['Enterprise Software', 'DevOps & Cloud', 'Database Architecture'],
+        coreObjective: 'Multi-tenant supply chain tracing platform with automated vendor replenishment and SAP integration.',
+        keyFeatures: 'ERP webhook integration, real-time telemetry tracking, automated invoice generation',
+        timeline: '6+ months',
+        name: 'Marcus Sterling',
+        email: 'm.sterling@sterlinglogistics.co.uk',
+        phone: '+44 20 7946 0912',
+        company: 'Sterling Global Logistics'
+      }
+    ];
+
+    const sampleContacts: Array<Omit<ContactSubmission, 'id' | 'submittedAt' | 'status'>> = [
+      {
+        name: 'Priya Sharma',
+        company: 'Zenith Retail',
+        email: 'priya@zenithretail.in',
+        phone: '+91 91234 56789',
+        service: 'E-Commerce Engineering',
+        message: 'Looking for a headless Next.js storefront overhaul with Shopify Plus integration for our national brand.'
+      },
+      {
+        name: 'Carlos Mendez',
+        company: 'AeroDynamics IO',
+        email: 'carlos@aerodynamics.io',
+        phone: '+1 305 555 7821',
+        service: 'UI/UX & Brand Design',
+        message: 'We need design systems and interactive prototype implementation for an aerospace SaaS dashboard before our Series A.'
+      }
+    ];
+
+    for (const w of sampleWizards) {
+      await this.submitProjectWizard(w);
+    }
+    for (const c of sampleContacts) {
+      await this.submitContact(c);
+    }
   }
 
   // SETTINGS
